@@ -572,16 +572,53 @@ export const BuiltinFuncs = () => {
     };
   }
 
-  // todo: does not follow spec with +-Infinity and values >2**32
   _.__Math_clz32 = {
     params: [ valtypeBinary ],
-    locals: [],
+    locals: [ valtypeBinary ],
     returns: [ valtypeBinary ],
     returnType: TYPES.number,
-    wasm: () => [
+    wasm: () => valtype === 'i32' ? [
       [ Opcodes.local_get, 0 ],
-      Opcodes.i32_to_u,
-      [ Opcodes.i32_clz ],
+      [ Opcodes.i32_clz ]
+    ] : [
+      [ Opcodes.local_get, 0 ],
+      [ Opcodes.local_tee, 1 ],
+      [ Opcodes.f64_abs ],
+      number(Infinity),
+      [ Opcodes.f64_eq ],
+      [ Opcodes.if, Valtype.i32 ],
+         number(32, Valtype.i32),
+      [ Opcodes.else ],
+         [ Opcodes.local_get, 1 ],
+         [ Opcodes.local_get, 1 ],
+         [ Opcodes.f64_ne ],
+         [ Opcodes.if, Valtype.i32 ],
+             number(32, Valtype.i32),
+         [ Opcodes.else ],
+             [ Opcodes.local_get, 0 ],
+             [ Opcodes.f64_trunc ],
+             [ Opcodes.local_get, 0 ],
+             [ Opcodes.f64_trunc ],
+             number(2**32),
+             [ Opcodes.f64_div ],
+             [ Opcodes.f64_trunc ],
+             number(2**32),
+             [ Opcodes.f64_mul ],
+             [ Opcodes.f64_sub ],
+             [ Opcodes.local_tee, 0 ],
+             number(0),
+             [ Opcodes.f64_lt ],
+             [ Opcodes.if, Blocktype.void ],
+                [ Opcodes.local_get, 0 ],
+                number(2**32),
+                [ Opcodes.f64_add ],
+                [ Opcodes.local_set, 0 ],
+             [ Opcodes.end ],
+             [ Opcodes.local_get, 0 ],
+             Opcodes.i32_trunc_sat_f64_u,
+             [ Opcodes.i32_clz ],
+         [ Opcodes.end ],
+      [ Opcodes.end ],
       Opcodes.i32_from
     ]
   };
