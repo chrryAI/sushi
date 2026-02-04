@@ -3,7 +3,7 @@
  * Manages tasks across different stages with FalkorDB
  */
 
-import { FalkorDB } from 'falkordb';
+import { FalkorDB } from "falkordb";
 
 export interface KanbanConfig {
   host?: string;
@@ -45,9 +45,9 @@ export class KanbanSystem {
 
   constructor(config: KanbanConfig = {}) {
     this.config = {
-      host: config.host || 'localhost',
+      host: config.host || "localhost",
       port: config.port || 6380,
-      graphName: config.graphName || 'kanban_board',
+      graphName: config.graphName || "kanban_board",
     };
   }
 
@@ -94,11 +94,11 @@ export class KanbanSystem {
 
     // Create default columns
     const defaultColumns = [
-      { id: 'backlog', name: 'Backlog', order: 0 },
-      { id: 'todo', name: 'To Do', order: 1 },
-      { id: 'in-progress', name: 'In Progress', order: 2, wipLimit: 3 },
-      { id: 'review', name: 'Review', order: 3 },
-      { id: 'done', name: 'Done', order: 4 },
+      { id: "backlog", name: "Backlog", order: 0 },
+      { id: "todo", name: "To Do", order: 1 },
+      { id: "in-progress", name: "In Progress", order: 2, wipLimit: 3 },
+      { id: "review", name: "Review", order: 3 },
+      { id: "done", name: "Done", order: 4 },
     ];
 
     for (const col of defaultColumns) {
@@ -141,7 +141,7 @@ export class KanbanSystem {
 
     await this.graph.query(
       `
-      MATCH (c:Column {id: $columnId})
+      MATCH (b:Board {id: $boardId})-[:HAS_COLUMN]->(c:Column {id: $columnId})
       CREATE (card:Card {
         id: $id,
         title: $title,
@@ -157,11 +157,12 @@ export class KanbanSystem {
     `,
       {
         params: {
+          boardId,
           columnId: card.columnId,
           id: card.id,
           title: card.title,
           description: card.description,
-          assignedTo: card.assignedTo || '',
+          assignedTo: card.assignedTo || "",
           priority: card.priority,
           tags: JSON.stringify(card.tags),
           createdAt: card.createdAt,
@@ -257,6 +258,23 @@ export class KanbanSystem {
   async getBoard(boardId: string): Promise<KanbanBoard | null> {
     if (!this.graph) await this.connect();
 
+    // Get board info
+    const boardResult = await this.graph.query(
+      `
+      MATCH (b:Board {id: $boardId})
+      RETURN b.name as name
+    `,
+      {
+        params: { boardId },
+      },
+    );
+
+    if (!boardResult || !boardResult.data || boardResult.data.length === 0) {
+      return null;
+    }
+
+    const boardName = boardResult.data[0].name;
+
     // Get columns
     const columnsResult = await this.graph.query(
       `
@@ -269,7 +287,11 @@ export class KanbanSystem {
       },
     );
 
-    if (!columnsResult || !columnsResult.data || columnsResult.data.length === 0) {
+    if (
+      !columnsResult ||
+      !columnsResult.data ||
+      columnsResult.data.length === 0
+    ) {
       return null;
     }
 
@@ -280,15 +302,18 @@ export class KanbanSystem {
       wipLimit: row.wipLimit || undefined,
     }));
 
-    // Get all cards
+    // Get cards scoped to this board
     const cardsResult = await this.graph.query(
       `
-      MATCH (c:Column)-[:CONTAINS]->(card:Card)
+      MATCH (b:Board {id: $boardId})-[:HAS_COLUMN]->(c:Column)-[:CONTAINS]->(card:Card)
       RETURN card.id as id, card.title as title, card.description as description,
              c.id as columnId, card.assignedTo as assignedTo, card.priority as priority,
              card.tags as tags, card.createdAt as createdAt, card.updatedAt as updatedAt,
              card.metadata as metadata
     `,
+      {
+        params: { boardId },
+      },
     );
 
     const cards: KanbanCard[] = [];
@@ -301,17 +326,17 @@ export class KanbanSystem {
           columnId: row.columnId,
           assignedTo: row.assignedTo || undefined,
           priority: row.priority,
-          tags: JSON.parse(row.tags || '[]'),
+          tags: JSON.parse(row.tags || "[]"),
           createdAt: row.createdAt,
           updatedAt: row.updatedAt,
-          metadata: JSON.parse(row.metadata || '{}'),
+          metadata: JSON.parse(row.metadata || "{}"),
         });
       }
     }
 
     return {
       id: boardId,
-      name: 'Development Board',
+      name: boardName,
       columns,
       cards,
     };
@@ -342,7 +367,7 @@ export class KanbanSystem {
       columnId,
       assignedTo: row.assignedTo || undefined,
       priority: row.priority,
-      tags: JSON.parse(row.tags || '[]'),
+      tags: JSON.parse(row.tags || "[]"),
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     }));
@@ -386,15 +411,26 @@ export class KanbanSystem {
   }> {
     if (!this.graph) await this.connect();
 
-    const columnStats = await this.graph.query(`
-      MATCH (c:Column)-[:CONTAINS]->(card:Card)
+    const columnStats = await this.graph.query(
+      `
+      MATCH (b:Board {id: $boardId})-[:HAS_COLUMN]->(c:Column)-[:CONTAINS]->(card:Card)
       RETURN c.id as columnId, COUNT(card) as count
-    `);
+    `,
+      {
+        params: { boardId },
+      },
+    );
 
-    const agentStats = await this.graph.query(`
-      MATCH (agent:Agent)-[:ASSIGNED_TO]->(card:Card)
+    const agentStats = await this.graph.query(
+      `
+      MATCH (b:Board {id: $boardId})-[:HAS_COLUMN]->(c:Column)-[:CONTAINS]->(card:Card),
+            (agent:Agent)-[:ASSIGNED_TO]->(card)
       RETURN agent.id as agentId, COUNT(card) as count
-    `);
+    `,
+      {
+        params: { boardId },
+      },
+    );
 
     const stats = {
       totalCards: 0,
