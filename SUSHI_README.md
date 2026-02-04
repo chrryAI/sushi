@@ -8,8 +8,19 @@
 
 ## What is SUSHI?
 
-SUSHI is a comprehensive development platform that combines:
+SUSHI is a **dual-purpose platform**:
 
+### 1. 🍣 SUSHI Store (Vex Ecosystem)
+**AI-powered development assistant** available at `sushi.chrry.ai`:
+- ⚡ **Coder** - Code generation expert
+- 🐛 **Debugger** - Bug detection and fixing
+- 🏗️ **Architect** - System design and architecture
+- 🍜 **PM** - Project management and coordination
+
+Part of the **LifeOS ecosystem** alongside Atlas (travel), Bloom (wellness), Peach (social), Vault (finance), and Focus (productivity).
+
+### 2. 🍕 SUSHI Platform (Compiler Infrastructure)
+**Enterprise-grade compiler and testing tools**:
 - 🍕 **Porffor Compiler** - AOT JS/TS → WASM/C compilation
 - 🌮 **BAM** - Bug Analysis & Memory detection system
 - 🍔 **STRIKE** - Mutation testing framework
@@ -58,6 +69,18 @@ SUSHI is a comprehensive development platform that combines:
 
 ```bash
 npm install -g @chrryai/sushi
+```
+
+### Seed SUSHI Store to FalkorDB
+
+```bash
+# Requires FalkorDB running on localhost:6380
+node tools/seed-sushi-store.js
+
+# Seeds all agents, capabilities, permissions, tools, and relationships
+# Creates: Coder, Debugger, Architect, PM agents
+# Integrations: BAM, STRIKE, Memory, Spatial Agents, Porffor
+# LifeOS ecosystem connections
 ```
 
 ### Compile with Porffor

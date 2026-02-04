@@ -31,24 +31,31 @@ Together, they create a **self-improving, AI-powered development ecosystem**.
 - ✅ Unified interface
 - ✅ Cost-optimized
 
-### SUSHI Store
+### SUSHI Store (LifeOS Integration)
 
-**Hosted Apps:**
-- 🐛 **Debugger** - Debug code with AI
-- 💻 **Coder** - Write code with AI
-- 🏗️ **Architect** - Design systems with AI
+**Specialized Development Agents:**
+- ⚡ **Coder** - Code generation expert (lightning-fast, production-ready)
+- � **Debugger** - Bug detection and fixing (stack trace analysis, root cause)
+- 🏗️ **Architect** - System design and architecture (microservices, scalability)
+- 🍜 **PM** - Project management and coordination (extends Focus productivity)
 
-**Cross-Store Integration:**
-- 🍒 **Chrry** - Base platform
-- 🤖 **Vex** - AI chat
-- 🎯 **Focus** - Productivity
+**Part of LifeOS Ecosystem:**
+- 🍒 **Chrry** - Base platform & app builder
+- 🤖 **Vex** - General AI assistant
+- 🗺️ **Atlas** - Travel planning
+- 🌸 **Bloom** - Wellness & health
+- 🍑 **Peach** - Social connections
+- 💰 **Vault** - Finance management
+- 🎯 **Focus** - Productivity & time management
+- 🍣 **Sushi** - Development & coding (YOU ARE HERE)
 
 **Features:**
-- ✅ Cross-store teleportation
-- ✅ Shared memory
-- ✅ Unified experience
+- ✅ Cross-store memory sharing
+- ✅ Seamless agent switching
+- ✅ Unified experience across all LifeOS apps
+- ✅ PWA installable on all platforms
 
-**URL:** https://sushi.chrry.ai/sushiStore
+**URL:** https://sushi.chrry.ai
 
 ---
 
