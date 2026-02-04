@@ -5,7 +5,6 @@
  */
 
 import { FalkorDB } from "falkordb";
-import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 
