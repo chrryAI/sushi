@@ -76,13 +76,13 @@ async function useCredits(amount, action) {
 
   if (credits.remaining < amount) {
     console.log(
-      chalk.red(`\n❌ Insufficient credits! You need ${amount} credits.`)
+      chalk.red(`\n❌ Insufficient credits! You need ${amount} credits.`),
     );
     console.log(chalk.yellow(`   Remaining: ${credits.remaining} credits`));
     console.log(
       chalk.cyan(
-        `\n💡 Add API key to switch to unlimited mode: ${chalk.bold("sushi config --api-key")}`
-      )
+        `\n💡 Add API key to switch to unlimited mode: ${chalk.bold("sushi config --api-key")}`,
+      ),
     );
     return false;
   }
@@ -108,6 +108,7 @@ program
   .description("Configure SUSHI CLI")
   .option("--api-key <key>", "Set Anthropic API key")
   .option("--openai-key <key>", "Set OpenAI API key")
+  .option("--deepseek-key <key>", "Set DeepSeek API key")
   .option("--show", "Show current configuration")
   .option("--reset", "Reset configuration")
   .action(async (options) => {
@@ -127,29 +128,34 @@ program
       console.log(chalk.cyan("\n🍣 SUSHI Configuration:"));
       console.log(
         chalk.white(
-          `   Mode: ${config.mode === "guest" ? chalk.yellow("Guest (Credit-based)") : chalk.green("Unlimited (API Key)")}`
-        )
+          `   Mode: ${config.mode === "guest" ? chalk.yellow("Guest (Credit-based)") : chalk.green("Unlimited (API Key)")}`,
+        ),
       );
       console.log(
         chalk.white(
-          `   Anthropic API Key: ${config.apiKeys.anthropic ? chalk.green("✓ Set") : chalk.red("✗ Not set")}`
-        )
+          `   Anthropic API Key: ${config.apiKeys.anthropic ? chalk.green("✓ Set") : chalk.red("✗ Not set")}`,
+        ),
       );
       console.log(
         chalk.white(
-          `   OpenAI API Key: ${config.apiKeys.openai ? chalk.green("✓ Set") : chalk.red("✗ Not set")}`
-        )
+          `   OpenAI API Key: ${config.apiKeys.openai ? chalk.green("✓ Set") : chalk.red("✗ Not set")}`,
+        ),
       );
       console.log(
         chalk.white(
-          `   FalkorDB: ${config.falkordb.host}:${config.falkordb.port}`
-        )
+          `   DeepSeek API Key: ${config.apiKeys.deepseek ? chalk.green("✓ Set") : chalk.red("✗ Not set")}`,
+        ),
+      );
+      console.log(
+        chalk.white(
+          `   FalkorDB: ${config.falkordb.host}:${config.falkordb.port}`,
+        ),
       );
 
       if (config.mode === "guest") {
         const credits = await loadCredits();
         console.log(
-          chalk.yellow(`\n💳 Credits: ${credits.remaining}/${credits.total}`)
+          chalk.yellow(`\n💳 Credits: ${credits.remaining}/${credits.total}`),
         );
       }
       return;
@@ -161,15 +167,30 @@ program
       await saveConfig(config);
       console.log(chalk.green("\n✅ Anthropic API key saved"));
       console.log(
-        chalk.cyan("   Switched to unlimited mode - no credit limits!")
+        chalk.cyan("   Switched to unlimited mode - no credit limits!"),
       );
       return;
     }
 
     if (options.openaiKey) {
       config.apiKeys.openai = options.openaiKey;
+      config.mode = "unlimited";
       await saveConfig(config);
       console.log(chalk.green("\n✅ OpenAI API key saved"));
+      console.log(
+        chalk.cyan("   Switched to unlimited mode - no credit limits!"),
+      );
+      return;
+    }
+
+    if (options.deepseekKey) {
+      config.apiKeys.deepseek = options.deepseekKey;
+      config.mode = "unlimited";
+      await saveConfig(config);
+      console.log(chalk.green("\n✅ DeepSeek API key saved"));
+      console.log(
+        chalk.cyan("   Switched to unlimited mode - no credit limits!"),
+      );
       return;
     }
 
@@ -187,6 +208,12 @@ program
         message: "OpenAI API Key (optional, press Enter to skip):",
         default: config.apiKeys.openai || "",
       },
+      {
+        type: "input",
+        name: "deepseekKey",
+        message: "DeepSeek API Key (optional, press Enter to skip):",
+        default: config.apiKeys.deepseek || "",
+      },
     ]);
 
     if (answers.anthropicKey) {
@@ -195,6 +222,11 @@ program
     }
     if (answers.openaiKey) {
       config.apiKeys.openai = answers.openaiKey;
+      config.mode = "unlimited";
+    }
+    if (answers.deepseekKey) {
+      config.apiKeys.deepseek = answers.deepseekKey;
+      config.mode = "unlimited";
     }
 
     await saveConfig(config);
@@ -216,15 +248,15 @@ program
     console.log(chalk.cyan("\n💳 SUSHI Credits"));
     console.log(
       chalk.white(
-        `   Mode: ${config.mode === "guest" ? chalk.yellow("Guest") : chalk.green("Unlimited")}`
-      )
+        `   Mode: ${config.mode === "guest" ? chalk.yellow("Guest") : chalk.green("Unlimited")}`,
+      ),
     );
 
     if (config.mode === "guest") {
       console.log(chalk.white(`   Total: ${credits.total} credits`));
       console.log(chalk.white(`   Used: ${credits.used} credits`));
       console.log(
-        chalk.white(`   Remaining: ${chalk.bold(credits.remaining)} credits`)
+        chalk.white(`   Remaining: ${chalk.bold(credits.remaining)} credits`),
       );
 
       if (options.history && credits.history.length > 0) {
@@ -233,16 +265,16 @@ program
           const date = new Date(entry.timestamp).toLocaleString();
           console.log(
             chalk.white(
-              `   ${date} - ${entry.action} (${entry.amount} credits)`
-            )
+              `   ${date} - ${entry.action} (${entry.amount} credits)`,
+            ),
           );
         });
       }
 
       console.log(
         chalk.yellow(
-          `\n💡 Add API key for unlimited usage: ${chalk.bold("sushi config --api-key")}`
-        )
+          `\n💡 Add API key for unlimited usage: ${chalk.bold("sushi config --api-key")}`,
+        ),
       );
     } else {
       console.log(chalk.green("   ✨ Unlimited credits with API key!"));
@@ -284,7 +316,7 @@ function example() {
   // Your generated code here
   console.log("Hello from SUSHI!");
 }
-    `)
+    `),
     );
 
     if (options.file) {
@@ -294,9 +326,7 @@ function example() {
 
     if (config.mode === "guest") {
       const credits = await loadCredits();
-      console.log(
-        chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`)
-      );
+      console.log(chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`));
     }
   });
 
@@ -335,14 +365,12 @@ const value = obj.property.value;
 
 // After:
 const value = obj?.property?.value;
-    `)
+    `),
     );
 
     if (config.mode === "guest") {
       const credits = await loadCredits();
-      console.log(
-        chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`)
-      );
+      console.log(chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`));
     }
   });
 
@@ -360,7 +388,7 @@ program
     if (config.mode === "guest") {
       const canUse = await useCredits(
         12,
-        `Architect: ${design.substring(0, 50)}`
+        `Architect: ${design.substring(0, 50)}`,
       );
       if (!canUse) return;
     }
@@ -383,7 +411,7 @@ program
 ├─────────────────────────────────────┤
 │         Database (PostgreSQL)       │
 └─────────────────────────────────────┘
-    `)
+    `),
     );
 
     console.log(chalk.cyan("\n💡 Recommendations:"));
@@ -393,9 +421,7 @@ program
 
     if (config.mode === "guest") {
       const credits = await loadCredits();
-      console.log(
-        chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`)
-      );
+      console.log(chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`));
     }
   });
 
@@ -432,9 +458,7 @@ program
 
     if (config.mode === "guest") {
       const credits = await loadCredits();
-      console.log(
-        chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`)
-      );
+      console.log(chalk.yellow(`\n💳 Credits remaining: ${credits.remaining}`));
     }
   });
 
@@ -471,7 +495,7 @@ program
 
     await fs.writeFile(
       ".sushi/config.json",
-      JSON.stringify(projectConfig, null, 2)
+      JSON.stringify(projectConfig, null, 2),
     );
 
     spinner.succeed(chalk.green("✅ SUSHI initialized!"));
@@ -479,16 +503,22 @@ program
     console.log(chalk.cyan("\n🍣 SUSHI is ready!"));
     console.log(chalk.white("\n   Next steps:"));
     console.log(
-      chalk.white(`   1. Configure API key: ${chalk.bold("sushi config")}`)
+      chalk.white(`   1. Configure API key: ${chalk.bold("sushi config")}`),
     );
     console.log(
-      chalk.white(`   2. Generate code: ${chalk.bold("sushi coder 'your task'")}`)
+      chalk.white(
+        `   2. Generate code: ${chalk.bold("sushi coder 'your task'")}`,
+      ),
     );
     console.log(
-      chalk.white(`   3. Debug errors: ${chalk.bold("sushi debugger 'your error'")}`)
+      chalk.white(
+        `   3. Debug errors: ${chalk.bold("sushi debugger 'your error'")}`,
+      ),
     );
     console.log(
-      chalk.white(`   4. Design systems: ${chalk.bold("sushi architect 'your design'")}`)
+      chalk.white(
+        `   4. Design systems: ${chalk.bold("sushi architect 'your design'")}`,
+      ),
     );
   });
 
@@ -506,49 +536,45 @@ program
     console.log(chalk.cyan("\n🍣 SUSHI Status"));
     console.log(
       chalk.white(
-        `   Mode: ${config.mode === "guest" ? chalk.yellow("Guest") : chalk.green("Unlimited")}`
-      )
+        `   Mode: ${config.mode === "guest" ? chalk.yellow("Guest") : chalk.green("Unlimited")}`,
+      ),
     );
 
     if (config.mode === "guest") {
       console.log(
-        chalk.white(`   Credits: ${chalk.bold(credits.remaining)}/${credits.total}`)
+        chalk.white(
+          `   Credits: ${chalk.bold(credits.remaining)}/${credits.total}`,
+        ),
       );
     }
 
     console.log(chalk.cyan("\n👥 Available Agents:"));
     console.log(
       chalk.white(
-        `   ⚡ Coder      - ${chalk.green("Ready")} (10 credits per use)`
-      )
+        `   ⚡ Coder      - ${chalk.green("Ready")} (10 credits per use)`,
+      ),
     );
     console.log(
       chalk.white(
-        `   🐛 Debugger   - ${chalk.green("Ready")} (8 credits per use)`
-      )
+        `   🐛 Debugger   - ${chalk.green("Ready")} (8 credits per use)`,
+      ),
     );
     console.log(
       chalk.white(
-        `   🏗️  Architect  - ${chalk.green("Ready")} (12 credits per use)`
-      )
+        `   🏗️  Architect  - ${chalk.green("Ready")} (12 credits per use)`,
+      ),
     );
     console.log(
       chalk.white(
-        `   🍜 PM         - ${chalk.green("Ready")} (15 credits per use)`
-      )
+        `   🍜 PM         - ${chalk.green("Ready")} (15 credits per use)`,
+      ),
     );
 
     console.log(chalk.cyan("\n🔌 Integrations:"));
     console.log(chalk.white(`   🌮 BAM        - ${chalk.green("Connected")}`));
-    console.log(
-      chalk.white(`   🍔 STRIKE     - ${chalk.green("Connected")}`)
-    );
-    console.log(
-      chalk.white(`   🥑 Memory     - ${chalk.green("Connected")}`)
-    );
-    console.log(
-      chalk.white(`   🍕 Porffor    - ${chalk.green("Connected")}`)
-    );
+    console.log(chalk.white(`   🍔 STRIKE     - ${chalk.green("Connected")}`));
+    console.log(chalk.white(`   🥑 Memory     - ${chalk.green("Connected")}`));
+    console.log(chalk.white(`   🍕 Porffor    - ${chalk.green("Connected")}`));
   });
 
 // ============================================

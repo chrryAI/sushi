@@ -55,8 +55,14 @@ Shows available agents, credits, and integrations.
 # Interactive setup
 sushi config
 
-# Direct setup
+# Direct setup - Anthropic (Claude)
 sushi config --api-key sk-ant-...
+
+# Direct setup - OpenAI (GPT)
+sushi config --openai-key sk-...
+
+# Direct setup - DeepSeek (R1/Chat)
+sushi config --deepseek-key sk-...
 
 # Show current config
 sushi config --show
