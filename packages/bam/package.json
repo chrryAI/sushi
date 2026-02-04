@@ -26,15 +26,13 @@
   ],
   "author": "Chrry AI",
   "license": "MIT",
-  "dependencies": {
-    "falkordb": "^1.0.5"
-  },
   "devDependencies": {
+    "falkordb": "^6.6.0",
     "tsup": "^8.0.1",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
   },
   "peerDependencies": {
-    "falkordb": ">=1.0.0"
+    "falkordb": ">=6.6.0"
   }
 }

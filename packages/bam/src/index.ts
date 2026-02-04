@@ -3,7 +3,7 @@
  * Standalone package for bug detection and analysis
  */
 
-import { FalkorDB } from 'falkordb';
+import { FalkorDB } from "falkordb";
 
 export interface BAMConfig {
   host?: string;
@@ -12,8 +12,13 @@ export interface BAMConfig {
 }
 
 export interface Bug {
-  type: 'TYPE_MISMATCH' | 'HARDCODED_PATH' | 'UNUSED_IMPORT' | 'MISSING_ERROR_HANDLING' | 'LOGIC_ERROR';
-  severity: 'LOW' | 'MEDIUM' | 'HIGH';
+  type:
+    | "TYPE_MISMATCH"
+    | "HARDCODED_PATH"
+    | "UNUSED_IMPORT"
+    | "MISSING_ERROR_HANDLING"
+    | "LOGIC_ERROR";
+  severity: "LOW" | "MEDIUM" | "HIGH";
   file: string;
   line: number;
   message: string;
@@ -27,9 +32,9 @@ export class BAM {
 
   constructor(config: BAMConfig = {}) {
     this.config = {
-      host: config.host || 'localhost',
+      host: config.host || "localhost",
       port: config.port || 6380,
-      graphName: config.graphName || 'bugs',
+      graphName: config.graphName || "bugs",
     };
   }
 
@@ -72,14 +77,16 @@ export class BAM {
           file: bug.file,
           line: bug.line,
           message: bug.message,
-          suggestion: bug.suggestion || '',
+          suggestion: bug.suggestion || "",
           timestamp: Date.now(),
         },
       },
     );
   }
 
-  async analyzeBugPatterns(): Promise<Array<{ type: string; count: number; avgLine: number }>> {
+  async analyzeBugPatterns(): Promise<
+    Array<{ type: string; count: number; avgLine: number }>
+  > {
     if (!this.graph) await this.connect();
 
     const result = await this.graph.query(`
@@ -91,7 +98,7 @@ export class BAM {
     if (!result || !result.data) return [];
 
     return result.data.map((row: any) => ({
-      type: row.type || 'UNKNOWN',
+      type: row.type || "UNKNOWN",
       count: row.count || 0,
       avgLine: Math.round(row.avgLine || 0),
     }));
@@ -99,23 +106,29 @@ export class BAM {
 
   async scanFile(filePath: string, content: string): Promise<Bug[]> {
     const bugs: Bug[] = [];
-    const lines = content.split('\n');
+    const lines = content.split("\n");
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const lineNum = i + 1;
 
       // Check for unused imports
-      if (line.includes('import') && line.includes('from')) {
+      if (line.includes("import") && line.includes("from")) {
         const importMatch = line.match(/import\s+{([^}]+)}\s+from/);
         if (importMatch) {
-          const imports = importMatch[1].split(',').map((s) => s.trim());
+          const imports = importMatch[1].split(",").map((s) => s.trim());
           for (const imp of imports) {
-            const usageCount = content.split(imp).length - 1;
+            // Use word boundaries to avoid matching substrings
+            const regex = new RegExp(
+              `\\b${imp.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+              "g",
+            );
+            const matches = content.match(regex);
+            const usageCount = matches ? matches.length : 0;
             if (usageCount === 1) {
               bugs.push({
-                type: 'UNUSED_IMPORT',
-                severity: 'LOW',
+                type: "UNUSED_IMPORT",
+                severity: "LOW",
                 file: filePath,
                 line: lineNum,
                 message: `Unused import: ${imp}`,
@@ -127,35 +140,35 @@ export class BAM {
       }
 
       // Check for missing error handling in async functions
-      if (line.includes('async function') || line.includes('async (')) {
+      if (line.includes("async function") || line.includes("async (")) {
         let hasErrorHandling = false;
         for (let j = i; j < Math.min(i + 50, lines.length); j++) {
-          if (lines[j].includes('try') || lines[j].includes('catch')) {
+          if (lines[j].includes("try") || lines[j].includes("catch")) {
             hasErrorHandling = true;
             break;
           }
         }
         if (!hasErrorHandling) {
           bugs.push({
-            type: 'MISSING_ERROR_HANDLING',
-            severity: 'MEDIUM',
+            type: "MISSING_ERROR_HANDLING",
+            severity: "MEDIUM",
             file: filePath,
             line: lineNum,
-            message: 'Async function without error handling',
-            suggestion: 'Add try-catch block',
+            message: "Async function without error handling",
+            suggestion: "Add try-catch block",
           });
         }
       }
 
       // Check for hardcoded paths
-      if (line.includes('/Users/') || line.includes('C:\\')) {
+      if (line.includes("/Users/") || line.includes("C:\\")) {
         bugs.push({
-          type: 'HARDCODED_PATH',
-          severity: 'MEDIUM',
+          type: "HARDCODED_PATH",
+          severity: "MEDIUM",
           file: filePath,
           line: lineNum,
-          message: 'Hardcoded absolute path detected',
-          suggestion: 'Use relative paths or environment variables',
+          message: "Hardcoded absolute path detected",
+          suggestion: "Use relative paths or environment variables",
         });
       }
     }
@@ -164,8 +177,8 @@ export class BAM {
   }
 
   async scanDirectory(dirPath: string): Promise<Bug[]> {
-    const fs = await import('fs');
-    const path = await import('path');
+    const fs = await import("fs");
+    const path = await import("path");
     const bugs: Bug[] = [];
 
     const scanDir = async (dir: string): Promise<void> => {
@@ -175,11 +188,14 @@ export class BAM {
         const fullPath = path.join(dir, entry.name);
 
         if (entry.isDirectory()) {
-          if (!entry.name.startsWith('.') && entry.name !== 'node_modules') {
+          if (!entry.name.startsWith(".") && entry.name !== "node_modules") {
             await scanDir(fullPath);
           }
-        } else if (entry.isFile() && (entry.name.endsWith('.js') || entry.name.endsWith('.ts'))) {
-          const content = fs.readFileSync(fullPath, 'utf-8');
+        } else if (
+          entry.isFile() &&
+          (entry.name.endsWith(".js") || entry.name.endsWith(".ts"))
+        ) {
+          const content = fs.readFileSync(fullPath, "utf-8");
           const fileBugs = await this.scanFile(fullPath, content);
           bugs.push(...fileBugs);
 
@@ -202,25 +218,39 @@ export class BAM {
   }> {
     if (!this.graph) await this.connect();
 
-    const result = await this.graph.query(`
+    // Get total count
+    const totalResult = await this.graph.query(`
       MATCH (b:Bug)
-      RETURN 
-        COUNT(b) as total,
-        b.type as type,
-        b.severity as severity
+      RETURN COUNT(b) as total
+    `);
+
+    // Get counts by type
+    const typeResult = await this.graph.query(`
+      MATCH (b:Bug)
+      RETURN b.type as type, COUNT(b) as count
+    `);
+
+    // Get counts by severity
+    const severityResult = await this.graph.query(`
+      MATCH (b:Bug)
+      RETURN b.severity as severity, COUNT(b) as count
     `);
 
     const stats = {
-      total: 0,
+      total: totalResult?.data?.[0]?.total || 0,
       byType: {} as Record<string, number>,
       bySeverity: {} as Record<string, number>,
     };
 
-    if (result && result.data) {
-      for (const row of result.data) {
-        stats.total++;
-        stats.byType[row.type] = (stats.byType[row.type] || 0) + 1;
-        stats.bySeverity[row.severity] = (stats.bySeverity[row.severity] || 0) + 1;
+    if (typeResult && typeResult.data) {
+      for (const row of typeResult.data) {
+        stats.byType[row.type] = row.count;
+      }
+    }
+
+    if (severityResult && severityResult.data) {
+      for (const row of severityResult.data) {
+        stats.bySeverity[row.severity] = row.count;
       }
     }
 
