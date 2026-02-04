@@ -1,10 +1,9 @@
-import {
-  initTracker,
-  logTask,
-  logTest,
-  closeTracker,
-} from "./compiler/tracker.js";
 import { execSync } from "child_process";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const microTests = [
   {
@@ -40,10 +39,10 @@ const microTests = [
   },
 ];
 
-async function runMicroTest(test) {
+function runMicroTest(test) {
   try {
     const output = execSync(`node runtime/index.js ${test.file}`, {
-      cwd: "/Users/ibrahimvelinov/Documents/porffor",
+      cwd: __dirname,
       encoding: "utf-8",
       stdio: "pipe",
     }).trim();
@@ -57,17 +56,13 @@ async function runMicroTest(test) {
   }
 }
 
-async function main() {
-  await initTracker();
-
+function main() {
   console.log("🔬 Running Micro Tests\n");
 
   const results = [];
 
   for (const test of microTests) {
-    await logTask(test.id, test.name, "in_progress", test.file);
-
-    const result = await runMicroTest(test);
+    const result = runMicroTest(test);
     results.push({ test, result });
 
     if (test.failing) {
@@ -78,19 +73,6 @@ async function main() {
       console.log(`❌ ${test.name}: FAIL`);
       console.log(`   Expected: ${test.expected}, Got: ${result.output}`);
     }
-
-    await logTest(
-      test.id,
-      test.file,
-      result.passed,
-      result.error || `Output: ${result.output}`,
-    );
-    await logTask(
-      test.id,
-      test.name,
-      result.passed ? "completed" : "in_progress",
-      test.file,
-    );
   }
 
   console.log("\n📊 Micro Test Results:");
@@ -106,11 +88,8 @@ async function main() {
   console.log(`   ❌ Failing: ${failing}`);
   console.log(`   ⏳ Expected Fails: ${expected}`);
 
-  await closeTracker();
-
   return failing === 0;
 }
 
-main()
-  .then((success) => process.exit(success ? 0 : 1))
-  .catch(console.error);
+const success = main();
+process.exit(success ? 0 : 1);

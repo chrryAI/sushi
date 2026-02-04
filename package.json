@@ -7,7 +7,6 @@
   "scripts": {},
   "dependencies": {
     "acorn": "^8.15.0",
-    "falkordb": "^6.6.0",
     "node-repl-polyfill": "^0.1.2"
   },
   "optionalDependencies": {
