@@ -1,3 +1,25 @@
+# 🍣 SUSHI
+
+**Simple Universal System for Hybrid Intelligence**
+
+> Enterprise-grade compiler infrastructure with multi-agent coordination
+
+---
+
+## What is SUSHI?
+
+SUSHI is a comprehensive development platform combining:
+- 🍕 **Porffor Compiler** - AOT JS/TS → WASM/C compilation
+- 🌮 **BAM** - Bug detection system
+- 🍔 **STRIKE** - Mutation testing framework
+- 🥑 **Memory** - Learning system
+- 🍣 **Spatial Agents** - Multi-agent coordination
+- 🍜 **PM Agent** - Project manager AI
+
+**See [SUSHI_README.md](./SUSHI_README.md) for the complete platform overview.**
+
+---
+
 # Porffor &nbsp;<sup><sub>/ˈpɔrfɔr/ &nbsp;*(poor-for)*</sup></sub>
 A from-scratch experimental **AOT** optimizing JS/TS -> Wasm/C engine/compiler/runtime in JS. Research project, not yet intended for serious use.<br>
 
