@@ -71,6 +71,18 @@ Part of the **LifeOS ecosystem** alongside Atlas (travel), Bloom (wellness), Pea
 npm install -g @chrryai/sushi
 ```
 
+### Seed SUSHI Store to FalkorDB
+
+```bash
+# Requires FalkorDB running on localhost:6380
+node tools/seed-sushi-store.js
+
+# Seeds all agents, capabilities, permissions, tools, and relationships
+# Creates: Coder, Debugger, Architect, PM agents
+# Integrations: BAM, STRIKE, Memory, Spatial Agents, Porffor
+# LifeOS ecosystem connections
+```
+
 ### Compile with Porffor
 
 ```bash
