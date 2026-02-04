@@ -12,12 +12,48 @@ import inquirer from "inquirer";
 import fs from "fs/promises";
 import path from "path";
 import os from "os";
+import crypto from "crypto";
 import { FalkorDB } from "falkordb";
 
 const program = new Command();
 const CONFIG_DIR = path.join(os.homedir(), ".sushi");
 const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 const CREDITS_FILE = path.join(CONFIG_DIR, "credits.json");
+
+// Encryption key derived from machine-specific data
+const ENCRYPTION_KEY = crypto
+  .createHash("sha256")
+  .update(os.hostname() + os.userInfo().username)
+  .digest();
+
+// ============================================
+// ENCRYPTION UTILITIES
+// ============================================
+
+function encrypt(text) {
+  if (!text) return null;
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-cbc", ENCRYPTION_KEY, iv);
+  let encrypted = cipher.update(text, "utf8", "hex");
+  encrypted += cipher.final("hex");
+  return iv.toString("hex") + ":" + encrypted;
+}
+
+function decrypt(text) {
+  if (!text) return null;
+  try {
+    const parts = text.split(":");
+    const iv = Buffer.from(parts[0], "hex");
+    const encryptedText = parts[1];
+    const decipher = crypto.createDecipheriv("aes-256-cbc", ENCRYPTION_KEY, iv);
+    let decrypted = decipher.update(encryptedText, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+  } catch (err) {
+    // If decryption fails, return null (corrupted or wrong key)
+    return null;
+  }
+}
 
 // ============================================
 // CONFIG MANAGEMENT
@@ -34,7 +70,22 @@ async function ensureConfigDir() {
 async function loadConfig() {
   try {
     const data = await fs.readFile(CONFIG_FILE, "utf-8");
-    return JSON.parse(data);
+    const config = JSON.parse(data);
+
+    // Decrypt API keys if they exist
+    if (config.apiKeys) {
+      if (config.apiKeys.anthropic) {
+        config.apiKeys.anthropic = decrypt(config.apiKeys.anthropic);
+      }
+      if (config.apiKeys.openai) {
+        config.apiKeys.openai = decrypt(config.apiKeys.openai);
+      }
+      if (config.apiKeys.deepseek) {
+        config.apiKeys.deepseek = decrypt(config.apiKeys.deepseek);
+      }
+    }
+
+    return config;
   } catch (err) {
     return {
       apiKeys: {},
@@ -49,7 +100,24 @@ async function loadConfig() {
 
 async function saveConfig(config) {
   await ensureConfigDir();
-  await fs.writeFile(CONFIG_FILE, JSON.stringify(config, null, 2));
+
+  // Create a copy to avoid mutating the original
+  const configToSave = JSON.parse(JSON.stringify(config));
+
+  // Encrypt API keys before saving
+  if (configToSave.apiKeys) {
+    if (configToSave.apiKeys.anthropic) {
+      configToSave.apiKeys.anthropic = encrypt(configToSave.apiKeys.anthropic);
+    }
+    if (configToSave.apiKeys.openai) {
+      configToSave.apiKeys.openai = encrypt(configToSave.apiKeys.openai);
+    }
+    if (configToSave.apiKeys.deepseek) {
+      configToSave.apiKeys.deepseek = encrypt(configToSave.apiKeys.deepseek);
+    }
+  }
+
+  await fs.writeFile(CONFIG_FILE, JSON.stringify(configToSave, null, 2));
 }
 
 async function loadCredits() {

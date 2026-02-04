@@ -178,12 +178,37 @@ sushi credits --history
 - No credit limits
 - All agents available unlimited
 
+## Security
+
+### API Key Encryption
+
+All API keys are **encrypted** before being saved to disk:
+
+- **AES-256-CBC encryption** with machine-specific key
+- Encryption key derived from hostname + username
+- Keys are never stored in plain text
+- Automatic encryption/decryption on save/load
+
+**Config file example:**
+```json
+{
+  "apiKeys": {
+    "anthropic": "a1b2c3d4:encrypted_data_here...",
+    "openai": "e5f6g7h8:encrypted_data_here...",
+    "deepseek": "i9j0k1l2:encrypted_data_here..."
+  },
+  "mode": "unlimited"
+}
+```
+
+Your API keys are safe! 🔒
+
 ## Configuration
 
 ### Config File Location
 
 ```
-~/.sushi/config.json
+~/.sushi/config.json (API keys encrypted)
 ~/.sushi/credits.json
 ```
 
