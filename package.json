@@ -1,0 +1,41 @@
+{
+  "name": "porffor",
+  "description": "An ahead-of-time JavaScript compiler",
+  "version": "0.61.5",
+  "author": "Oliver Medhurst <honk@goose.icu>",
+  "license": "MIT",
+  "scripts": {
+    "test": "node test_suite.js",
+    "test:micro": "node run_micro_tests.js",
+    "test:bam": "node tools/run-bam-strike.js",
+    "test:memory": "node tools/run-memory.js",
+    "test:autofix": "node tools/run-autofix.js",
+    "test:dashboard": "node tools/dashboard.js",
+    "test:enterprise": "npm run test:bam && npm run test:memory && npm run test:autofix && npm run test:dashboard",
+    "test:learn": "npm run test:bam && npm run test:memory"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "falkordb": "^6.6.0",
+    "node-repl-polyfill": "^0.1.2"
+  },
+  "optionalDependencies": {
+    "@babel/parser": "^7.24.4",
+    "hermes-parser": "^0.18.2",
+    "meriyah": "^4.3.9",
+    "oxc-parser": "^0.72.2"
+  },
+  "bin": {
+    "porf": "./runtime/index.js"
+  },
+  "main": "./compiler/wrap.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CanadaHonk/porffor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CanadaHonk/porffor/issues"
+  },
+  "homepage": "https://porffor.dev"
+}
