@@ -1,0 +1,42 @@
+{
+  "name": "porffor",
+  "version": "0.61.12",
+  "description": "An ahead-of-time JavaScript compiler",
+  "homepage": "https://porffor.dev",
+  "bugs": {
+    "url": "https://github.com/CanadaHonk/porffor/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CanadaHonk/porffor.git"
+  },
+  "license": "MIT",
+  "author": "Oliver Medhurst <honk@goose.icu>",
+  "type": "module",
+  "main": "./compiler/wrap.js",
+  "bin": {
+    "porf": "./runtime/index.js",
+    "sushi": "./cli/sushi.js"
+  },
+  "scripts": {
+    "test": "node test_suite.js",
+    "test:autofix": "node tools/run-autofix.js",
+    "test:bam": "node tools/run-bam-strike.js",
+    "test:dashboard": "node tools/dashboard.js",
+    "test:enterprise": "npm run test:bam && npm run test:memory && npm run test:autofix && npm run test:dashboard",
+    "test:learn": "npm run test:bam && npm run test:memory",
+    "test:memory": "node tools/run-memory.js",
+    "test:micro": "node run_micro_tests.js"
+  },
+  "dependencies": {
+    "acorn": "^8.15.0",
+    "falkordb": "^6.6.0",
+    "node-repl-polyfill": "^0.1.2"
+  },
+  "optionalDependencies": {
+    "@babel/parser": "^7.24.4",
+    "hermes-parser": "^0.18.2",
+    "meriyah": "^4.3.9",
+    "oxc-parser": "^0.72.2"
+  }
+}

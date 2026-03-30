@@ -1,0 +1,52 @@
+{
+  "name": "@chrryai/sushi-cli",
+  "version": "0.61.12",
+  "description": "🍣 SUSHI CLI - Terminal AI Development Assistant with mutation testing (Porffor v0.61.12)",
+  "keywords": [
+    "ai",
+    "aot",
+    "architecture",
+    "assistant",
+    "cli",
+    "code-generation",
+    "compiler",
+    "debugging",
+    "development",
+    "mutation-testing",
+    "porffor",
+    "strike",
+    "sushi",
+    "terminal"
+  ],
+  "homepage": "https://porffor.dev",
+  "bugs": {
+    "url": "https://github.com/CanadaHonk/porffor/issues"
+  },
+  "license": "AGPL-3.0",
+  "author": "Iliyan Velinov <chrry.ai>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CanadaHonk/porffor.git",
+    "directory": "cli"
+  },
+  "bin": {
+    "sushi": "./sushi.js"
+  },
+  "type": "module",
+  "main": "./sushi.js",
+  "scripts": {
+    "start": "node sushi.js",
+    "link": "npm link",
+    "unlink": "npm unlink -g @chrryai/sushi-cli"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^11.1.0",
+    "falkordb": "^6.6.0",
+    "inquirer": "^9.2.12",
+    "ora": "^8.0.1"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

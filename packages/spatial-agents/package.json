@@ -1,0 +1,38 @@
+{
+  "name": "@chrryai/spatial-agents",
+  "version": "0.1.0",
+  "description": "Spatial Multi-Agent Coordination System using FalkorDB Graph Database",
+  "keywords": [
+    "agent-communication",
+    "falkordb",
+    "graph-database",
+    "multi-agent",
+    "spatial-coordination"
+  ],
+  "license": "MIT",
+  "author": "Chrry AI",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "falkordb": "^6.6.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "falkordb": "^6.6.0"
+  }
+}
