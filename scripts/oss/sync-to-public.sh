@@ -9,7 +9,7 @@ set -e
 SOURCE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 TARGET_REMOTE="https://github.com/chrryai/sushi.git"
 TMP_DIR=$(mktemp -d)
-BRANCH="ramen"
+BRANCH="main"
 
 # Cleanup on exit
 trap 'rm -rf "$TMP_DIR"' EXIT
