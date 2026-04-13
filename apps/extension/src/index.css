@@ -1,0 +1,13 @@
+/* Hide Chrome's built-in Customize Chrome bar */
+#oneGoogleBarEndSlot,
+.customize-chrome-button,
+ntp-customize-button,
+ntp-customize-dialog,
+#customizeChromeButton {
+  display: none;
+}
+
+/* Hide the entire bottom bar container */
+#oneGoogleBar {
+  display: none;
+}

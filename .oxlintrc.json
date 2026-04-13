@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "unicorn"],
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off",
+    "pedantic": "off",
+    "style": "off",
+    "complexity": "off",
+    "security": "off",
+    "jsx-a11y": "off"
+  },
+  "rules": {
+    "no-unused-vars": "warn",
+    "use-isnan": "warn",
+    "react/no-duplicate-props": "warn",
+    "prefer-const": "warn",
+    "no-array-constructor": "off",
+    "no-async-promise-executor": "off",
+    "no-caller": "off",
+    "no-cond-assign": "off",
+    "no-const-assign": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*.styles.ts"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
+}

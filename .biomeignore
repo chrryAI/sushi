@@ -1,0 +1,19 @@
+# Ignore CSS files with SCSS syntax
+**/*.module.css
+**/ChrryDotDev.module.css
+
+# Ignore compiler code (intentional low-level patterns)
+packages/sushi/**
+
+# Ignore generated test files
+**/__tests__/**/*.styles.ts
+
+# Ignore generated files
+**/*.d.ts
+**/dist
+**/build
+**/.next
+**/.turbo
+**/node_modules
+apps/flash/public/nato/quick_tips.html
+packages/ui/src/ai/chrry.ts

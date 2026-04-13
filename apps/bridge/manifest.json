@@ -1,0 +1,7 @@
+{
+  "name": "com.chrry.sushi.bridge",
+  "description": "Sushi Bridge - Connect browser extensions to local file system",
+  "path": "/usr/local/bin/bridge",
+  "type": "stdio",
+  "allowed_origins": ["chrome-extension://EXTENSION_ID_PLACEHOLDER/"]
+}

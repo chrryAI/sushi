@@ -1,0 +1,20 @@
+{
+  "name": "@repo/bridge",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "command -v bun >/dev/null 2>&1 && bun build src/index.ts --compile --outfile dist/sushi-bridge || echo 'Skipping Sushi Bridge build (Bun not available)'",
+    "install:chrome": "node scripts/install-chrome.js",
+    "install:firefox": "node scripts/install-firefox.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
+    "bun-types": "^1.1.38"
+  }
+}

@@ -1,0 +1,58 @@
+# Gitleaks configuration file
+# https://github.com/gitleaks/gitleaks#configuration
+
+title = "Vex Gitleaks Config"
+
+[extend]
+# Extend default gitleaks config
+useDefault = true
+
+[allowlist]
+description = "Allowlist for known false positives"
+
+# Ignore common test/example patterns
+regexes = [
+  # Test files with dummy secrets
+  '''(?i)(test|example|dummy|fake|mock).*secret''',
+  '''(?i)secret.*(test|example|dummy|fake|mock)''',
+  # Common false positives
+  '''EXAMPLE''',
+  '''YOUR_.*_HERE''',
+  '''<.*>''', # Placeholder syntax
+]
+
+# Paths to ignore completely
+# Note: .env files are excluded (gitignored), but .env.example files ARE scanned
+# to ensure they only contain placeholder values, not real secrets
+paths = [
+  '''\.env$''', # Exclude .env (gitignored)
+  '''\.env\.local$''', # Exclude .env.local (gitignored)
+  '''\.env\.development$''', # Exclude .env.development (gitignored)
+  '''\.env\.production$''', # Exclude .env.production (gitignored)
+  '''\.env\.test$''', # Exclude .env.test (gitignored)
+  # NOTE: .env.example is NOT excluded - it should be scanned!
+  '''node_modules/''',
+  '''dist/''',
+  '''build/''',
+  '''.turbo/''',
+  '''.next/''',
+  '''pnpm-lock.yaml''',
+  '''package-lock.json''',
+  '''yarn.lock''',
+  '''.git/''',
+  '''\.min\.js$''',
+  '''\.bundle\.js$''',
+  '''PITCH_DECK.pdf''',
+  '''playwright-report/''',
+  '''Podfile\.lock$''',
+]
+
+# .env.example files WILL be scanned to ensure they don't contain real secrets
+# This is important for open-source projects where .env.example is committed
+
+# Custom rules (optional - add your own patterns)
+# [[rules]]
+# id = "custom-api-key"
+# description = "Custom API key pattern"
+# regex = '''custom-pattern-here'''
+# tags = ["key", "custom"]

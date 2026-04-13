@@ -1,0 +1,99 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# testing
+coverage
+
+# next.js
+.next/
+out/
+build
+
+# misc
+.DS_Store
+*.pem
+*.key
+google-*.json
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev_output.log*
+tsc_output.txt
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# turbo
+.turbo
+
+# vercel
+.vercel
+
+# ui
+dist/
+
+# typedoc generated docs
+docs/api/
+docs/api-markdown/
+.stryker
+.stryker-tmp
+stryker.log
+
+# Android/Expo
+artifacts/
+android/app/build/
+android/app/debug
+android/app/release/
+android/build/
+android/gradlew
+android/gradlew.bat
+android/gradle/
+android/.gradle/
+android/local.properties
+android/app/google-services.json
+
+# Firebase iOS
+**/GoogleService-Info.plist
+GoogleService-Info.plist
+android/app/src/debug/
+android/app/src/release/
+android/*.keystore
+android/*.jks
+*.p12
+*.jks
+*.apk
+*.aab
+apps/extension/dist-*.zip
+
+# Translation temp files
+packages/ui/locales/en.new.json
+
+# test results
+test-results
+packages/waffles/test-results/*
+**/dist-chrome-*.zip
+junit.xml
+
+# Binary / installer files
+*.dmg
+*.app
+*.p8
+apps/flash/public/install/*.dmg
+public/installs/*.dmg
+apps/flash/public/installs/*.dmg
+
+# Generated Tauri config
+apps/desktop/src-tauri/tauri.conf.json
+
+# Logs
+*.log
+dev.log

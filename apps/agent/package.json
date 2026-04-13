@@ -1,0 +1,18 @@
+{
+  "name": "@chrryai/agent",
+  "version": "1.0.0",
+  "description": "Autonomous AI agents that hunt jobs, send emails, and level up",
+  "main": "src/zarathustra.ts",
+  "scripts": {
+    "hunt": "tsx src/zarathustra.ts",
+    "dev": "tsx watch src/zarathustra.ts"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.48.2",
+    "@repo/db": "workspace:*"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}

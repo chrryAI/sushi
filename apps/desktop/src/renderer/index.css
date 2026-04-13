@@ -1,0 +1,113 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: transparent; /* Keep transparent for native macOS blur */
+  color: #fff;
+  overflow: hidden;
+}
+
+.app {
+  -webkit-app-region: drag; /* Make entire window draggable */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  border-radius: 12px; /* Match macOS window rounded corners */
+  overflow: hidden; /* Clip content to rounded corners */
+}
+
+/* Floating Window Controls */
+.window-controls {
+  -webkit-app-region: no-drag;
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.control-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.control-btn.minimize:hover {
+  background: rgba(255, 193, 7, 0.3);
+}
+
+.control-btn.maximize:hover {
+  background: rgba(76, 175, 80, 0.3);
+}
+
+.control-btn.close:hover {
+  background: rgba(244, 67, 54, 0.5);
+}
+
+/* Content */
+.content {
+  -webkit-app-region: no-drag; /* Allow text selection and interaction */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  user-select: none;
+}
+
+p {
+  user-select: none;
+}
+
+.status {
+  -webkit-app-region: no-drag;
+  margin: 2rem 0;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info {
+  margin-top: 2rem;
+  opacity: 0.7;
+}
+
+.info p {
+  margin: 0.5rem 0;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

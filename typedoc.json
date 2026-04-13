@@ -1,0 +1,59 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Vex Monorepo API Documentation",
+  "entryPoints": [
+    "packages/shared/src/index.ts",
+    "packages/ui/index.ts",
+    "packages/calendar/src/index.ts",
+    "packages/waffles/src/index.ts",
+    "packages/pepper/src/index.ts",
+    "packages/focus/src/index.ts"
+  ],
+  "out": "docs/api",
+  "tsconfig": "./tsconfig.json",
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ],
+  "hideGenerator": true,
+  "theme": "default",
+  "sidebarLinks": {
+    "GitHub": "https://github.com/chrryai/vex"
+  },
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true
+  },
+  "sort": ["source-order"],
+  "kindSortOrder": [
+    "Document",
+    "Project",
+    "Module",
+    "Namespace",
+    "Enum",
+    "EnumMember",
+    "Class",
+    "Interface",
+    "TypeAlias",
+    "Constructor",
+    "Property",
+    "Variable",
+    "Function",
+    "Accessor",
+    "Method"
+  ],
+  "readme": "./README.md",
+  "githubPages": false,
+  "preserveWatchOutput": true,
+  "skipErrorChecking": true,
+  "logLevel": "Warn",
+  "compilerOptions": {
+    "strictNullChecks": false,
+    "skipLibCheck": true
+  }
+}

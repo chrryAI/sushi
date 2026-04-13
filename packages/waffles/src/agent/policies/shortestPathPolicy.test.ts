@@ -1,0 +1,91 @@
+import { expect, test } from "vitest"
+import { assign, createActor, setup } from "xstate"
+import { z } from "zod"
+import { createExpert, type TypesFromExpert } from ".."
+import { dummyResponseValues, MockLanguageModelV1 } from "../mockModel"
+import { experimental_shortestPathPolicy } from "./shortestPathPolicy"
+
+test.skip("should find shortest path to goal", async () => {
+  const expert = createExpert({
+    id: "counter",
+    model: new MockLanguageModelV1({
+      doGenerate: async () => {
+        return {
+          ...dummyResponseValues,
+          text: JSON.stringify({
+            type: "object",
+            properties: {
+              count: {
+                type: "number",
+                const: 3,
+              },
+            },
+            required: ["count"],
+          }),
+        }
+      },
+    }),
+    events: {
+      increment: z.object({}).describe("Increment the counter by 1"),
+      decrement: z.object({}).describe("Decrement the counter by 1"),
+    },
+    context: {
+      count: z.number().int().describe("Current count value"),
+    },
+  })
+
+  const counterMachine = setup({
+    types: {} as TypesFromExpert<typeof expert>,
+  }).createMachine({
+    initial: "counting",
+    context: { count: 0 },
+    states: {
+      counting: {
+        always: {
+          guard: ({ context }) => context.count === 3,
+          target: "success",
+        },
+        on: {
+          increment: {
+            actions: assign({ count: ({ context }) => context.count + 1 }),
+          },
+          decrement: {
+            actions: assign({ count: ({ context }) => context.count - 1 }),
+          },
+        },
+      },
+      success: {
+        type: "final",
+      },
+    },
+  })
+
+  const counterActor = createActor(counterMachine).start()
+
+  const decision = await expert.decide({
+    machine: counterMachine,
+    model: new MockLanguageModelV1({
+      defaultObjectGenerationMode: "tool",
+      doGenerate: async () => {
+        return {
+          ...dummyResponseValues,
+          text: JSON.stringify({
+            type: "object",
+            properties: {
+              count: {
+                type: "number",
+                const: 3,
+              },
+            },
+            required: ["count"],
+          }),
+        }
+      },
+    }),
+    goal: "Get the counter to exactly 3",
+    state: counterActor.getSnapshot(),
+    policy: experimental_shortestPathPolicy,
+  })
+
+  expect(decision?.nextEvent?.type).toBe("increment")
+})

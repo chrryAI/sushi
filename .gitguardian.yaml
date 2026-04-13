@@ -1,0 +1,17 @@
+version: 2
+
+paths-ignore:
+  - .env.local.template
+  - docker-compose.local.yml
+  - .env.example
+  - "**/*.template"
+  - "**/*.example"
+
+  # Ignore test files
+  - "**/test/**"
+  - "**/tests/**"
+  - "**/__tests__/**"
+
+  # Ignore documentation
+  - "**/*.md"
+  - "**/docs/**"

@@ -1,0 +1,48 @@
+{
+  "name": "@chrryai/desktop",
+  "version": "0.1.0",
+  "description": "AI Workspace for Mac - Your intelligent desktop companion",
+  "type": "module",
+  "scripts": {
+    "build": "vp build",
+    "build:all": "pnpm build:tribe && pnpm build:sushi && pnpm build:atlas && pnpm build:focus && pnpm build:vex && pnpm build:popcorn && pnpm build:chrry && pnpm build:zarathustra && pnpm build:search && pnpm build:grape && pnpm build:burn && pnpm build:vault && pnpm build:pear",
+    "build:atlas": "MODE=atlas pnpm icon:generate && MODE=atlas pnpm config:generate && MODE=atlas vp build && MODE=atlas tauri build && bash copy-dmg.sh Atlas",
+    "build:burn": "MODE=burn pnpm icon:generate && MODE=burn pnpm config:generate && MODE=burn vp build && MODE=burn tauri build && bash copy-dmg.sh Burn",
+    "build:chrry": "MODE=chrryAI pnpm icon:generate && MODE=chrryAI pnpm config:generate && MODE=chrryAI vp build && MODE=chrryAI tauri build && bash copy-dmg.sh Chrry",
+    "build:desktop": "pnpm icon:generate && pnpm config:generate && vp build && tauri build",
+    "build:focus": "MODE=focus pnpm icon:generate && MODE=focus pnpm config:generate && MODE=focus vp build && MODE=focus tauri build && bash copy-dmg.sh Focus",
+    "build:grape": "MODE=grape pnpm icon:generate && MODE=grape pnpm config:generate && MODE=grape vp build && MODE=grape tauri build && bash copy-dmg.sh Grape",
+    "build:popcorn": "MODE=popcorn pnpm icon:generate && MODE=popcorn pnpm config:generate && MODE=popcorn vp build && MODE=popcorn tauri build && bash copy-dmg.sh Popcorn",
+    "build:search": "MODE=search pnpm icon:generate && MODE=search pnpm config:generate && MODE=search vp build && MODE=search tauri build && bash copy-dmg.sh Search",
+    "build:sushi": "MODE=sushi pnpm icon:generate && MODE=sushi pnpm config:generate && MODE=sushi vp build && MODE=sushi tauri build && bash copy-dmg.sh Sushi",
+    "build:vex": "MODE=vex pnpm icon:generate && MODE=vex pnpm config:generate && MODE=vex vp build && MODE=vex tauri build && bash copy-dmg.sh Vex",
+    "build:tribe": "MODE=tribe pnpm icon:generate && MODE=tribe pnpm config:generate && MODE=tribe vp build && MODE=tribe tauri build && bash copy-dmg.sh Tribe",
+    "build:pear": "MODE=pear pnpm icon:generate && MODE=pear pnpm config:generate && MODE=pear vp build && MODE=pear tauri build && bash copy-dmg.sh Pear",
+    "build:vault": "MODE=vault pnpm icon:generate && MODE=vault pnpm config:generate && MODE=vault vp build && MODE=vault tauri build && bash copy-dmg.sh Vault",
+    "build:vite": "vp build",
+    "build:zarathustra": "MODE=zarathustra pnpm icon:generate && MODE=zarathustra pnpm config:generate && MODE=zarathustra vp build && MODE=zarathustra tauri build && bash copy-dmg.sh Zarathustra",
+    "config:generate": "tsx ../../apps/scripts/generate-tauri-config.js",
+    "dev": "MODE=tribe pnpm config:generate && MODE=tribe pnpm icon:generate && MODE=tribe tauri dev",
+    "dev:vite": "vp dev",
+    "icon:generate": "node ../../apps/scripts/generate-icons.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.10.1",
+    "@tauri-apps/plugin-shell": "^2.3.5",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-native-web": "^0.19.13",
+    "typescript": "^5.9.3",
+    "vite": "catalog:",
+    "vite-plugin-compression": "^0.5.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.10.1",
+    "@types/node": "^25.5.0",
+    "vite-plus": "catalog:"
+  }
+}

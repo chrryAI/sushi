@@ -1,0 +1,11 @@
+[
+  {
+    "context": "Editor",
+    "bindings": {
+      "cmd-j-j": [
+        "workspace::SendKeystrokes",
+        "cmd-c end enter console.log(\"value: \", cmd-v)"
+      ]
+    }
+  }
+]

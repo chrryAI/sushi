@@ -1,0 +1,10 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.22.1 # Use latest stable version
+    hooks:
+      - id: gitleaks
+        name: Detect secrets with Gitleaks
+        entry: gitleaks protect --staged --redact --verbose --config .gitleaks.toml
+        language: system
+        pass_filenames: false
+        exclude: '.*Podfile\.lock$'

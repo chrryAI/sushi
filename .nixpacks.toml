@@ -1,0 +1,16 @@
+[phases.setup]
+nixPkgs = ["nodejs_22", "ffmpeg"]
+nixLibs = []
+
+[phases.install]
+cmds = [
+  "corepack enable",
+  "corepack prepare pnpm@9.1.2 --activate",
+  "pnpm install --frozen-lockfile",
+]
+
+[phases.build]
+cmds = ["pnpm build --filter web..."]
+
+[start]
+cmd = "pnpm --filter web start"

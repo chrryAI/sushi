@@ -1,0 +1,117 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "{{PRODUCT_NAME}}",
+  "version": "0.1.0",
+  "identifier": "{{BUNDLE_ID}}",
+  "build": {
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:5174",
+    "beforeDevCommand": "pnpm dev:vite",
+    "beforeBuildCommand": "vite build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "{{WINDOW_TITLE}}",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": true,
+        "transparent": false,
+        "center": true,
+        "titleBarStyle": "Overlay",
+        "theme": "Dark",
+        "windowEffects": {
+          "effects": ["underWindowBackground"],
+          "state": "active",
+          "radius": 12
+        }
+      }
+    ],
+    "security": {
+      "csp": null,
+      "capabilities": [
+        {
+          "identifier": "window-controls",
+          "description": "Window control permissions for traffic lights",
+          "windows": ["*"],
+          "permissions": [
+            "core:window:allow-close",
+            "core:window:allow-minimize",
+            "core:window:allow-maximize",
+            "core:window:allow-unmaximize",
+            "core:window:allow-toggle-maximize",
+            "core:window:allow-is-maximized",
+            "core:window:allow-is-fullscreen",
+            "core:window:allow-set-title",
+            "core:window:allow-set-resizable",
+            "core:window:allow-set-fullscreen",
+            "core:window:allow-start-dragging",
+            "shell:default",
+            "shell:allow-open"
+          ]
+        },
+        {
+          "identifier": "http-requests",
+          "description": "Allow HTTP requests to chrry.ai and chrry.dev API",
+          "windows": ["*"],
+          "permissions": ["core:default"],
+          "remote": {
+            "urls": [
+              "https://*.chrry.ai/*",
+              "https://chrry.ai/*",
+              "https://*.chrry.dev/*",
+              "https://chrry.dev/*",
+              "http://localhost:*/*"
+            ]
+          }
+        }
+      ]
+    },
+    "macOSPrivateApi": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "Productivity",
+    "shortDescription": "{{SHORT_DESCRIPTION}}",
+    "longDescription": "{{LONG_DESCRIPTION}}",
+    "macOS": {
+      "entitlements": "entitlements.plist",
+      "signingIdentity": "Developer ID Application: iliyan velinov (F5MTBDR7VX)",
+      "minimumSystemVersion": "10.13",
+      "dmg": {
+        "appPosition": {
+          "x": 180,
+          "y": 170
+        },
+        "applicationFolderPosition": {
+          "x": 480,
+          "y": 170
+        },
+        "windowSize": {
+          "width": 660,
+          "height": 400
+        }
+      },
+      "frameworks": [],
+      "exceptionDomain": ""
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "schemes": ["vex"],
+      "mobile": []
+    }
+  }
+}

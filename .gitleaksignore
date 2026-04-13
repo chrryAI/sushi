@@ -1,0 +1,22 @@
+# False positives - Pod checksums in Podfile.lock
+apps/mobile/ios/App/Podfile.lock:generic-api-key:44
+apps/mobile/ios/App/Podfile.lock:generic-api-key:47
+apps/mobile/ios/App/Podfile.lock:generic-api-key:49
+apps/mobile/ios/App/Podfile.lock:generic-api-key:83
+apps/mobile/ios/App/Podfile.lock:generic-api-key:85
+apps/mobile/ios/App/Podfile.lock:generic-api-key:86
+apps/mobile/ios/App/Podfile.lock:generic-api-key:95
+apps/mobile/ios/App/Podfile.lock:generic-api-key:97
+apps/mobile/ios/App/Podfile.lock:generic-api-key:98
+
+# False positives - Documentation with REDACTED placeholders
+docs/SONARCLOUD_AUTO_SYNC.md:curl-auth-header:97
+docs/SONARCLOUD_AUTO_SYNC.md:curl-auth-header:101
+docs/SONARCLOUD_SETUP.md:curl-auth-header:40
+
+# False positives - Malware Scanner example values (not real secrets)
+malwareScanner/.env.example:generic-api-key:18
+malwareScanner/README.md:curl-auth-header:85
+
+# False positive - n8n workflow URL (hostname:port, not user:password)
+packages/ai-core/src/machines/n8n-workflow.json:generic-api-key:30

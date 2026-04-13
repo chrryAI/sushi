@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+
+# Only run if commit message is empty (not amending, not merging)
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+
+# Skip if message already exists (amend, merge, etc.)
+if [ -n "$COMMIT_SOURCE" ]; then
+  exit 0
+fi
+
+# Check if message file is empty, only has comments, or is just the rocket emoji
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE" | grep -v '^#' | tr -d '[:space:]')
+
+if [ -z "$COMMIT_MSG" ] || [ "$COMMIT_MSG" = "🚀" ]; then
+  echo "🤖 Generating AI commit message..." >&2
+  
+  # Generate and write commit message (stderr goes to terminal, stdout to file)
+  node scripts/generate-commit-message.js > "$COMMIT_MSG_FILE" 2>&1
+  
+  echo "✅ AI commit message generated! Edit if needed." >&2
+fi

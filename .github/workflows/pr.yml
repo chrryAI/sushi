@@ -1,0 +1,376 @@
+name: CI
+on:
+  # # will update to main when is ready
+  pull_request:
+    branches: [oops]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  STAGING_URL: https://e2e.chrry.ai
+  STAGING_API_URL: https://e2e.chrry.dev
+  TURBO_TOKEN: ${{ secrets.VPS_TURBO_TOKEN }}
+  TURBO_TEAM: vex
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+  TURBO_API: ${{ secrets.TURBO_API }}
+  TURBO_VERBOSE: 1
+  NODE_OPTIONS: --max-old-space-size=8192
+  TESTING_ENV: e2e
+  VITE_TESTING_ENV: e2e
+  VITE_CI: true
+  CI: true
+  BUILD_ID: ${{ github.sha }}
+
+  # Node environment
+  NODE_ENV: development
+  VITE_NODE_ENV: development
+
+  # Database
+  DB_URL: ${{ secrets.DB_URL }}
+
+  # Test users
+  VEX_TEST_EMAIL: ${{ secrets.VEX_TEST_EMAIL }}
+  VEX_TEST_NAME: ${{ secrets.VEX_TEST_NAME }}
+  VEX_TEST_PASSWORD: ${{ secrets.VEX_TEST_PASSWORD }}
+  VEX_TEST_EMAIL_2: ${{ secrets.VEX_TEST_EMAIL_2 }}
+  VEX_TEST_NAME_2: ${{ secrets.VEX_TEST_NAME_2 }}
+  VEX_TEST_PASSWORD_2: ${{ secrets.VEX_TEST_PASSWORD_2 }}
+  VEX_TEST_EMAIL_3: ${{ secrets.VEX_TEST_EMAIL_3 }}
+  VEX_TEST_NAME_3: ${{ secrets.VEX_TEST_NAME_3 }}
+  VEX_TEST_PASSWORD_3: ${{ secrets.VEX_TEST_PASSWORD_3 }}
+  VEX_TEST_EMAIL_4: ${{ secrets.VEX_TEST_EMAIL_4 }}
+  VEX_TEST_NAME_4: ${{ secrets.VEX_TEST_NAME_4 }}
+  VEX_TEST_PASSWORD_4: ${{ secrets.VEX_TEST_PASSWORD_4 }}
+  TEST_MEMBER_FINGERPRINTS: ${{ secrets.TEST_MEMBER_FINGERPRINTS }}
+  TEST_MEMBER_EMAILS: ${{ secrets.TEST_MEMBER_EMAILS }}
+  TEST_GUEST_FINGERPRINTS: ${{ secrets.TEST_GUEST_FINGERPRINTS }}
+
+  # URLs
+  CHRRY_URL: ${{ secrets.CHRRY_URL }}
+
+jobs:
+  # Safety check: prevent external PRs from triggering deployments
+  cancel-deployments:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel in-progress API deployment
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        continue-on-error: true
+        run: |
+          echo "🛑 Canceling any in-progress API deployment..."
+          curl -X POST "https://coolify.askvex.com/api/v1/applications/z84cko4g4kwss0gockcgkogw/cancel" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" || echo "No deployment to cancel"
+
+      - name: Cancel in-progress Web deployment
+        env:
+          COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+        continue-on-error: true
+        run: |
+          echo "🛑 Canceling any in-progress Web deployment..."
+          curl -X POST "https://coolify.askvex.com/api/v1/applications/xcgo4kw884kkow40wk040sco/cancel" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" || echo "No deployment to cancel"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: cancel-deployments
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/pnpm-lock.yaml', 'turbo.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run bun postinstall
+        run: cd apps/api/node_modules/bun && node install.js
+
+      # - name: Lint
+      #   run: pnpm turbo lint
+
+      - name: Unit Tests
+        env:
+          FALKORDB_HOST: localhost
+          FALKORDB_PORT: 6379
+        run: pnpm turbo test
+
+      - name: Type check
+        run: pnpm turbo check-types
+
+      - name: Build packages
+        env:
+          FALKORDB_HOST: localhost
+          FALKORDB_PORT: 6379
+        run: pnpm run build
+
+  # Deploy both API and Web sequentially
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: [build, cancel-deployments]
+  #   # Security: Only run for PRs from same repo (not forks) or trusted bots
+  #   if: |
+  #     github.event.pull_request.head.repo.fork == false ||
+  #     github.actor == 'dependabot[bot]' ||
+  #     github.actor == 'google-labs-jules[bot]'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: ${{ github.ref }}
+
+  #     - name: Check Versions
+  #       id: check_versions
+  #       run: |
+  #         LOCAL_VERSION=$(jq -r '.version' package.json)
+  #         echo "LOCAL_VERSION=$LOCAL_VERSION" >> $GITHUB_ENV
+  #         echo "local_version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
+  #         # Check API
+  #         LIVE_API_VERSION=$(curl -s -A "Chrry-Health-Check" -H "X-Internal-Request: flash-server" --compressed --connect-timeout 5 --max-time 10 "$STAGING_API_URL/api/health" | jq -r '.version' 2>/dev/null || echo "unknown")
+  #         echo "live_api_version=$LIVE_API_VERSION" >> $GITHUB_OUTPUT
+  #         if [ "$LOCAL_VERSION" != "$LIVE_API_VERSION" ]; then
+  #           echo "deploy_api=true" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "deploy_api=false" >> $GITHUB_OUTPUT
+  #         fi
+  #         # Check Web
+  #         LIVE_WEB_VERSION=$(curl -s -A "Chrry-Health-Check" --compressed --connect-timeout 5 --max-time 10 "$STAGING_URL/api/health" | jq -r '.version' 2>/dev/null || echo "unknown")
+  #         echo "live_web_version=$LIVE_WEB_VERSION" >> $GITHUB_OUTPUT
+  #         if [ "$LOCAL_VERSION" != "$LIVE_WEB_VERSION" ]; then
+  #           echo "deploy_web=true" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "deploy_web=false" >> $GITHUB_OUTPUT
+  #         fi
+
+  #     - name: Deploy API to Coolify
+  #       if: steps.check_versions.outputs.deploy_api == 'true'
+  #       env:
+  #         COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+  #       run: |
+  #         echo "📦 Deploying API app (e2e.chrry.dev)..."
+  #         curl -X GET "https://coolify.askvex.com/api/v1/deploy?uuid=z84cko4g4kwss0gockcgkogw&force=false" \
+  #           -H "Authorization: Bearer $COOLIFY_TOKEN"
+
+  #     - name: Wait for API deployment
+  #       if: steps.check_versions.outputs.deploy_api == 'true'
+  #       run: |
+  #         echo "⏳ Waiting for API to finish deploying..."
+  #         MAX_ATTEMPTS=150
+  #         ATTEMPT=0
+
+  #         # Read expected version from package.json
+  #         EXPECTED_VERSION=$(jq -r '.version' package.json)
+
+  #         while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+  #           ATTEMPT=$((ATTEMPT + 1))
+  #           echo "🔍 Attempt $ATTEMPT/$MAX_ATTEMPTS: Checking $STAGING_API_URL/api/health..."
+
+  #           # Use a temporary file for the response body
+  #           RESPONSE_FILE=$(mktemp)
+  #           HTTP_STATUS=$(curl -s -A "Chrry-Health-Check" -H "X-Internal-Request: flash-server" -o "$RESPONSE_FILE" -w "%{http_code}" --compressed --connect-timeout 5 "$STAGING_API_URL/api/health")
+
+  #           if [ "$HTTP_STATUS" -eq 200 ]; then
+  #             API_VERSION=$(cat "$RESPONSE_FILE" | jq -r '.version' 2>/dev/null || echo "unknown")
+  #             echo "✅ API is up! version: $API_VERSION (expected: $EXPECTED_VERSION)"
+
+  #             if [ "$API_VERSION" = "$EXPECTED_VERSION" ]; then
+  #               echo "✅ API version match! Deployment complete."
+  #               rm "$RESPONSE_FILE"
+  #               exit 0
+  #             fi
+  #           else
+  #             echo "❌ Health check failed with status: $HTTP_STATUS"
+  #             # Only print body if it's not too large
+  #             DATA=$(cat "$RESPONSE_FILE")
+  #             if [ ${#DATA} -lt 1000 ]; then
+  #               echo "📄 Response body: $DATA"
+  #             else
+  #               echo "📄 Response body too large to show"
+  #             fi
+  #           fi
+
+  #           rm "$RESPONSE_FILE"
+  #           sleep 10
+  #         done
+
+  #         echo "❌ API deployment timed out"
+  #         exit 1
+
+  #     - name: Deploy Web to Coolify
+  #       if: steps.check_versions.outputs.deploy_web == 'true'
+  #       env:
+  #         COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+  #       run: |
+  #         echo "📦 Deploying web app (e2e.chrry.ai)..."
+  #         curl -X GET "https://coolify.askvex.com/api/v1/deploy?uuid=xcgo4kw884kkow40wk040sco&force=false" \
+  #           -H "Authorization: Bearer $COOLIFY_TOKEN"
+
+  #     - name: Wait for Web deployment
+  #       if: steps.check_versions.outputs.deploy_web == 'true'
+  #       run: |
+  #         echo "⏳ Waiting for Web to finish deploying..."
+  #         MAX_ATTEMPTS=150
+  #         ATTEMPT=0
+
+  #         # Read expected version from package.json
+  #         EXPECTED_VERSION=$(jq -r '.version' package.json)
+
+  #         while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+  #           ATTEMPT=$((ATTEMPT + 1))
+  #           echo "🔍 Attempt $ATTEMPT/$MAX_ATTEMPTS: Checking $STAGING_URL/api/health..."
+
+  #           # Use a temporary file for the response body
+  #           RESPONSE_FILE=$(mktemp)
+  #           HTTP_STATUS=$(curl -s -A "Chrry-Health-Check" -o "$RESPONSE_FILE" -w "%{http_code}" --compressed --connect-timeout 5 "$STAGING_URL/api/health")
+
+  #           if [ "$HTTP_STATUS" -eq 200 ]; then
+  #             WEB_VERSION=$(cat "$RESPONSE_FILE" | jq -r '.version' 2>/dev/null || echo "unknown")
+  #             echo "✅ Web is up! version: $WEB_VERSION (expected: $EXPECTED_VERSION)"
+
+  #             if [ "$WEB_VERSION" = "$EXPECTED_VERSION" ]; then
+  #               echo "✅ Web version match! Deployment complete."
+  #               rm "$RESPONSE_FILE"
+  #               exit 0
+  #             fi
+  #           else
+  #             echo "❌ Health check failed with status: $HTTP_STATUS"
+  #             # Only print body if it's not too large
+  #             DATA=$(cat "$RESPONSE_FILE")
+  #             if [ ${#DATA} -lt 1000 ]; then
+  #               echo "📄 Response body: $DATA"
+  #             else
+  #               echo "📄 Response body too large to show"
+  #             fi
+  #           fi
+
+  #           rm "$RESPONSE_FILE"
+  #           sleep 10
+  #         done
+
+  #         echo "❌ Web deployment timed out"
+  #         exit 1
+
+  # Run Guest E2E tests first (uses shared fingerprints)
+  # e2e-guest-live:
+  #   runs-on: ubuntu-latest
+  #   needs: deploy
+  #   timeout-minutes: 120
+  #   # Security: Only run for PRs from same repo (not forks) or trusted bots
+  #   if: |
+  #     github.event.pull_request.head.repo.fork == false ||
+  #     github.actor == 'dependabot[bot]' ||
+  #     github.actor == 'google-labs-jules[bot]'
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #       with:
+  #         ref: ${{ github.ref }}
+
+  #     - name: Setup pnpm
+  #       uses: pnpm/action-setup@v4
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: 20
+  #         cache: pnpm
+
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+
+  #     - name: Install Playwright Browsers
+  #       run: pnpm --filter @chrryai/waffles exec playwright install --with-deps
+
+  #     - name: Run Critical Playwright tests
+  #       if: ${{ !cancelled() }}
+  #       env:
+  #         PLAYWRIGHT_BASE_URL: ${{ env.STAGING_URL }}
+  #         VEX_LIVE_FINGERPRINTS: ${{ secrets.VEX_LIVE_FINGERPRINTS }}
+  #       run: pnpm --filter @chrryai/waffles exec playwright test critical.spec.ts
+
+  #     - name: Run Live Guest Playwright tests
+  #       if: ${{ !cancelled() }}
+  #       env:
+  #         PLAYWRIGHT_BASE_URL: ${{ env.STAGING_URL }}
+  #         VEX_LIVE_FINGERPRINTS: ${{ secrets.VEX_LIVE_FINGERPRINTS }}
+  #       run: pnpm --filter @chrryai/waffles exec playwright test guest.spec.ts
+
+  #     - uses: actions/upload-artifact@v4
+  #       if: ${{ !cancelled() }}
+  #       with:
+  #         name: playwright-report-guest-live
+  #         path: packages/waffles/playwright-report/
+  #         retention-days: 30
+
+  #     - name: Upload Test Results to Trunk
+  #       if: ${{ !cancelled() }}
+  #       continue-on-error: true
+  #       uses: trunk-io/analytics-uploader@293e9b144a101ef4b8fe3485a5afd0224fc48255
+  #       with:
+  #         junit-paths: packages/waffles/junit.xml
+  #         org-slug: chrry
+  #         token: ${{ secrets.TRUNK_API_TOKEN }}
+
+  # CRITICAL PATH: Auto-merge to dev after guest tests pass
+  auto-merge:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    needs: [build]
+    # Security: Only run for PRs from same repo (not forks) or trusted bots, AND if tests pass
+    if: |
+      success() && (
+        github.event.pull_request.head.repo.fork == false ||
+        github.actor == 'dependabot[bot]' ||
+        github.actor == 'google-labs-jules[bot]'
+      )
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge to main
+        env:
+          HEAD_REF: ${{ github.head_ref || github.ref_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "🔀 Auto-merging $HEAD_REF to main branch (critical path passed)..."
+          git fetch origin main
+          git checkout main
+
+          if [ -n "$PR_NUMBER" ]; then
+            MSG="Auto-merge PR #$PR_NUMBER to main (critical path passed): $PR_TITLE"
+          else
+            MSG="Auto-merge branch $HEAD_REF to main (critical path passed)"
+          fi
+
+          git merge --no-ff "origin/$HEAD_REF" -m "$MSG"
+          git push origin main
+          echo "✅ Successfully merged to main!"
