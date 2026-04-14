@@ -1,7 +1,7 @@
 // apps/web/src/app/api/ai/[...route]/route.ts
 
 import { makeAiProvider } from "@chrryai/ai-core/provider"
-import { chopStick } from "@chrryai/chrry/db" // senin mevcut fonksiyonun
+import { chopStick } from "@chrryai/donut/db" // senin mevcut fonksiyonun
 import { Effect } from "effect"
 import { Hono } from "hono"
 import { handle } from "hono/vercel"

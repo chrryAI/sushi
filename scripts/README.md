@@ -182,7 +182,7 @@ tail -f /var/log/nginx/error.log
 
 ```bash
 # Check siteConfig.ts
-grep "berlin" packages/ui/utils/siteConfig.ts
+grep "berlin" packages/donut/utils/siteConfig.ts
 
 # Restart dev server
 pnpm vs

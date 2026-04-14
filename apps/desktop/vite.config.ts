@@ -43,7 +43,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@chrryai/chrry": path.resolve(__dirname, "../../packages/ui"),
+      "@chrryai/donut": path.resolve(__dirname, "../../packages/donut"),
       "react-native": path.resolve(__dirname, "node_modules/react-native-web"),
     },
   },

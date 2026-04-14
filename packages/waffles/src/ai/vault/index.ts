@@ -1,4 +1,4 @@
-import type { aiAgent, guest, nil, sushi, user } from "@chrryai/chrry/types"
+import type { aiAgent, guest, nil, sushi, user } from "@chrryai/donut/types"
 
 // Return type for getModelProvider - provider is intentionally typed as unknown
 // to avoid exposing internal SDK types that have private/protected members
@@ -16,7 +16,7 @@ export type ModelProviderResult = {
   isFree?: boolean
 }
 
-import { isE2E } from "@chrryai/chrry/utils"
+import { isE2E } from "@chrryai/donut/utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
 
 // import type { LanguageModel } from "ai"

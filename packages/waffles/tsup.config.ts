@@ -6,8 +6,10 @@ export default defineConfig({
   },
   format: ["cjs", "esm"],
   dts: true,
+  bundle: false,
   sourcemap: true,
   clean: true,
   external: ["@playwright/test", "dotenv"],
   treeshake: true,
+  tsconfig: "./tsconfig.build.json",
 })

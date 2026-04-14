@@ -261,7 +261,7 @@ export const buttonStyles = Platform.select({
 **B. Platform Detection & Conditional Rendering**
 
 ```typescript
-// packages/ui/src/Platform.ts
+// packages/donut/src/Platform.ts
 export const Platform = {
   OS: detectPlatform(),  // "web" | "ios" | "android" | "windows" | "macos"
 
@@ -291,7 +291,7 @@ const Button = ({ label, onClick }) => {
 **C. Universal Component Library (151+ Components)**
 
 ```typescript
-// packages/ui/index.ts exports:
+// packages/donut/index.ts exports:
 export { Button, Input, Card, Modal, Dropdown, Tabs, Table, Form, ... } // 151+ components
 
 // Each component has:
@@ -301,7 +301,7 @@ export { Button, Input, Card, Modal, Dropdown, Tabs, Table, Form, ... } // 151+ 
 // 4. ComponentName.test.tsx - Unit tests
 
 // Example: Button component works everywhere
-import { Button } from "@chrryai/chrry"
+import { Button } from "@chrryai/donut"
 
 // Web PWA: renders <button type="button" > with CSS
 <Button label="Click me" />
@@ -456,7 +456,7 @@ Total: 12 extensions + 36 desktop + 24 mobile + 12 PWA = 84 unique applications 
 **D. Shared Component Reusability**
 
 ```typescript
-// packages/ui/App.tsx - Works across ALL platforms
+// packages/donut/App.tsx - Works across ALL platforms
 export const App = ({ app, store }) => {
   return (
     <AppProvider app={app} store={store}>
@@ -1041,7 +1041,7 @@ pnpm build:mobile      # React Native (iOS/Android)
 
 # Pipeline requires:
 # - Monorepo structure (Turbo)
-# - Universal component library (@chrryai/chrry)
+# - Universal component library (@chrryai/donut)
 # - Database schema (Drizzle ORM)
 # - Dynamic routing (Hono)
 # All proprietary, all integrated

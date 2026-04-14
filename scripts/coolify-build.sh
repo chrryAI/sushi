@@ -28,7 +28,7 @@
 #   pnpm install --frozen-lockfile
 
 #   # Build packages first
-#   pnpm turbo build --filter="@repo/db" --filter="@chrryai/chrry" --filter="@chrryai/waffles" --filter="@chrryai/pepper"
+#   pnpm turbo build --filter="@repo/db" --filter="@chrryai/donut" --filter="@chrryai/waffles" --filter="@chrryai/pepper"
 
 #   # Build apps
 #   NODE_OPTIONS='--max-old-space-size=8192' CI=true pnpm turbo build --filter="flash"

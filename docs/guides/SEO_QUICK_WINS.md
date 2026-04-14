@@ -34,7 +34,7 @@ You have components rendering multiple `<h1>` tags.
 
 ```bash
 # Find all H1 usage
-grep -r "<h1" apps/web packages/ui --include="*.tsx"
+grep -r "<h1" apps/web packages/donut --include="*.tsx"
 ```
 
 **Rule**: Only your main page title should be `<h1>`. Everything else should be `<h2>` or lower.

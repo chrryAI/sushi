@@ -1,5 +1,5 @@
-// import { LANGUAGES, locales } from "@chrryai/chrry/locales"
-// import type { instructionBase, sushi } from "@chrryai/chrry/types"
+// import { LANGUAGES, locales } from "@chrryai/donut/locales"
+// import type { instructionBase, sushi } from "@chrryai/donut/types"
 // import {
 //   ADDITIONAL_CREDITS,
 //   isCI,
@@ -9,8 +9,8 @@
 //   isProduction,
 //   MAX_FILE_LIMITS,
 //   MAX_FILE_SIZES,
-// } from "@chrryai/chrry/utils"
-// import { getFeatures } from "@chrryai/chrry/utils/subscription"
+// } from "@chrryai/donut/utils"
+// import { getFeatures } from "@chrryai/donut/utils/subscription"
 // import { faker } from "@faker-js/faker"
 // import {
 //   type aiAgent,

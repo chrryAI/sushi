@@ -1,5 +1,5 @@
 // Re-export shared upstream types
-export type { aiModel, ramen, swarm } from "@chrryai/chrry/types"
+export type { aiModel, ramen, swarm } from "@chrryai/donut/types"
 
 // Custom application-level types (originally in schema.ts)
 export type aiModelResponse = Omit<aiModel, "provider"> & {

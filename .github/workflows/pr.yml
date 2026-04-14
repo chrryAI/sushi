@@ -2,7 +2,7 @@ name: CI
 on:
   # # will update to main when is ready
   pull_request:
-    branches: [ramen]
+    branches: [main]
 
 permissions:
   contents: read
@@ -106,7 +106,12 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run bun postinstall
-        run: cd apps/api/node_modules/bun && node install.js
+        run: |
+          if [ -d "apps/api/node_modules/bun" ]; then
+            cd apps/api/node_modules/bun && node install.js
+          else
+            cd node_modules/bun && node install.js
+          fi
 
       # - name: Lint
       #   run: pnpm turbo lint

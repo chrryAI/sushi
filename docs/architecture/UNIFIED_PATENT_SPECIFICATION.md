@@ -295,12 +295,12 @@ High Priority (Z=10):
 - /apps/api/hono/routes/premium.ts
 
 Medium Priority (Z=5):
-- /packages/ui/App.tsx
-- /packages/ui/Thread.tsx
+- /packages/donut/App.tsx
+- /packages/donut/Thread.tsx
 
 Low Priority (Z=1):
-- /packages/ui/Skeleton.tsx
-- /packages/ui/Button.tsx
+- /packages/donut/Skeleton.tsx
+- /packages/donut/Button.tsx
 
 Mutation injection weighted by Z-coordinate
 ```

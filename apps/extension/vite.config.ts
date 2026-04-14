@@ -5,7 +5,7 @@ import * as esbuild from "esbuild"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import type { PluginOption } from "vite-plus"
 import { loadEnv } from "vite-plus"
-import { getSiteConfig } from "../../packages/ui/utils/siteConfig"
+import { getSiteConfig } from "../../packages/donut/utils/siteConfig"
 
 function chromeExtensionPlugin(): PluginOption {
   return {
@@ -117,7 +117,7 @@ export default async ({ command, mode }) => {
   const manifestBase = {
     manifest_version: 3,
     name: `${siteConfig.name} 🍒`,
-    version: siteConfig.version || "2.4.45",
+    version: siteConfig.version || "2.4.50",
     description: siteConfig.description,
     permissions: isFirefox
       ? ["storage", "tabs", "contextMenus", "cookies"] // Firefox doesn't support sidePanel permission
@@ -257,15 +257,15 @@ export default async ({ command, mode }) => {
     resolve: {
       alias: [
         { find: "@", replacement: path.resolve(__dirname, "./src") },
-        // Map chrry/* to packages/ui/* (source, not dist)
+        // Map chrry/* to packages/donut/* (source, not dist)
         {
           find: /^chrry\/(.*)$/,
-          replacement: path.resolve(__dirname, "../../packages/ui/$1"),
+          replacement: path.resolve(__dirname, "../../packages/donut/$1"),
         },
         // Map chrry to source index, not package.json main
         {
           find: "chrry",
-          replacement: path.resolve(__dirname, "../../packages/ui/index.ts"),
+          replacement: path.resolve(__dirname, "../../packages/donut/index.ts"),
         },
         // Map @chrryai/code to source (not built dist)
         {
@@ -315,17 +315,17 @@ export default async ({ command, mode }) => {
         {
           find: path.resolve(
             __dirname,
-            "../../packages/ui/platform/navigation.web.ts",
+            "../../packages/donut/platform/navigation.web.ts",
           ),
           replacement: path.resolve(
             __dirname,
-            "../../packages/ui/platform/navigation.extension.ts",
+            "../../packages/donut/platform/navigation.extension.ts",
           ),
         },
         {
           find: path.resolve(
             __dirname,
-            "../../packages/ui/platform/navigation.ts",
+            "../../packages/donut/platform/navigation.ts",
           ),
           replacement: path.resolve(__dirname, "./src/stubs/navigation.ts"),
         },

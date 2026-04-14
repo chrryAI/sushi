@@ -11,7 +11,7 @@ import path from "node:path"
 console.log("🧹 Removing unused imports and variables...\n")
 
 // Patterns to process
-const _patterns = ["apps/api/**/*.{ts,tsx}", "packages/ui/**/*.{ts,tsx}"]
+const _patterns = ["apps/api/**/*.{ts,tsx}", "packages/donut/**/*.{ts,tsx}"]
 
 try {
   // Run ESLint with fix on all TypeScript files

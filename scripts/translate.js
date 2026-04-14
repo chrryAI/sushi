@@ -15,7 +15,7 @@ const openai = new OpenAI({
 })
 
 async function main() {
-  const enPath = path.join(__dirname, "../packages/ui/locales/en.json")
+  const enPath = path.join(__dirname, "../packages/donut/locales/en.json")
   const en = JSON.parse(fs.readFileSync(enPath, "utf8"))
 
   const languages = [
@@ -35,12 +35,12 @@ async function main() {
   for (const lang of languages) {
     try {
       const transPaths = [
-        path.join(__dirname, `../packages/ui/locales/${lang}.json`),
+        path.join(__dirname, `../packages/donut/locales/${lang}.json`),
         path.join(__dirname, `../apps/api/locales/${lang}.json`),
       ]
       const transPath = path.join(
         __dirname,
-        `../packages/ui/locales/${lang}.json`,
+        `../packages/donut/locales/${lang}.json`,
       )
 
       // Initialize if file doesn't exist or is empty

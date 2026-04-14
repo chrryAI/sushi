@@ -231,7 +231,7 @@ Priority Order:
 ### **Step 1: Update Domain Detection**
 
 ```typescript
-// packages/ui/utils/siteConfig.ts
+// packages/donut/utils/siteConfig.ts
 
 if (
   host.includes("focus.chrry.ai") ||

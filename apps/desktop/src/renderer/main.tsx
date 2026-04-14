@@ -1,7 +1,7 @@
-import AppProviders from "@chrryai/chrry/context/providers"
+import AppProviders from "@chrryai/donut/context/providers"
 import React, { useEffect, useState } from "react"
 import ReactDOM from "react-dom/client"
-import "@chrryai/chrry/styles.scss"
+import "@chrryai/donut/styles.scss"
 import "./styles/browser-chrome.css"
 
 interface Tab {

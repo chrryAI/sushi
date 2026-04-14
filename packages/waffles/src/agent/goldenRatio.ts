@@ -7,7 +7,7 @@
 
 export const FIBONACCI = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144]
 
-export type GoldenFeature =
+export type goldenFeature =
   | "memory"
   | "kanban"
   | "characterProfile"
@@ -15,24 +15,24 @@ export type GoldenFeature =
   | "placeholders"
   | "vectorEmbed"
 
-export interface GoldenTrigger {
-  feature: GoldenFeature
+export interface goldenTrigger {
+  feature: goldenFeature
   homeApp: "hippo" | "focus" | "sushi" | "grape"
   threadThreshold: number
   messageThreshold: number
 }
 
-export interface GoldenTriggerConfig {
+export interface goldenTriggerConfig {
   threadThreshold: number
   messageThreshold: number
   enabled: boolean
 }
 
-export type GoldenRatioConfig = Partial<
-  Record<GoldenFeature, GoldenTriggerConfig>
+export type goldenRatioConfig = Partial<
+  Record<goldenFeature, goldenTriggerConfig>
 >
 
-export const DEFAULT_TRIGGERS: GoldenTrigger[] = [
+export const DEFAULT_TRIGGERS: goldenTrigger[] = [
   {
     feature: "memory",
     homeApp: "hippo",
@@ -71,13 +71,13 @@ export const DEFAULT_TRIGGERS: GoldenTrigger[] = [
   },
 ]
 
-export function getDefaultTriggers(): GoldenTrigger[] {
+export function getDefaultTriggers(): goldenTrigger[] {
   return DEFAULT_TRIGGERS.map((t) => ({ ...t }))
 }
 
 export function getUserGoldenRatioConfig(
-  userConfig?: GoldenRatioConfig | null,
-): Record<GoldenFeature, GoldenTriggerConfig> {
+  userConfig?: goldenRatioConfig | null,
+): Record<goldenFeature, goldenTriggerConfig> {
   const defaults = Object.fromEntries(
     DEFAULT_TRIGGERS.map((t) => [
       t.feature,
@@ -87,11 +87,11 @@ export function getUserGoldenRatioConfig(
         enabled: true,
       },
     ]),
-  ) as Record<GoldenFeature, GoldenTriggerConfig>
+  ) as Record<goldenFeature, goldenTriggerConfig>
 
   if (!userConfig) return defaults
 
-  for (const key of Object.keys(userConfig) as GoldenFeature[]) {
+  for (const key of Object.keys(userConfig) as goldenFeature[]) {
     const cfg = userConfig[key]
     if (!cfg) continue
     defaults[key] = {
@@ -104,9 +104,9 @@ export function getUserGoldenRatioConfig(
   return defaults
 }
 
-export interface GoldenRatioEvaluation {
-  feature: GoldenFeature
-  homeApp: GoldenTrigger["homeApp"]
+export interface goldenRatioEvaluation {
+  feature: goldenFeature
+  homeApp: goldenTrigger["homeApp"]
   triggered: boolean
   alreadyTriggered: boolean
   threadThreshold: number
@@ -118,9 +118,9 @@ export interface GoldenRatioEvaluation {
 export function evaluateGoldenRatio(
   userThreadCount: number,
   threadMessageCount: number,
-  lastTriggeredFeatures: GoldenFeature[],
-  userConfig?: GoldenRatioConfig | null,
-): GoldenRatioEvaluation[] {
+  lastTriggeredFeatures: goldenFeature[],
+  userConfig?: goldenRatioConfig | null,
+): goldenRatioEvaluation[] {
   const config = getUserGoldenRatioConfig(userConfig)
   const triggeredSet = new Set(lastTriggeredFeatures)
 
@@ -147,9 +147,9 @@ export function evaluateGoldenRatio(
 export function getNewlyTriggeredFeatures(
   userThreadCount: number,
   threadMessageCount: number,
-  lastTriggeredFeatures: GoldenFeature[],
-  userConfig?: GoldenRatioConfig | null,
-): GoldenRatioEvaluation[] {
+  lastTriggeredFeatures: goldenFeature[],
+  userConfig?: goldenRatioConfig | null,
+): goldenRatioEvaluation[] {
   return evaluateGoldenRatio(
     userThreadCount,
     threadMessageCount,
@@ -166,9 +166,9 @@ export function getNextFibonacciThreshold(value: number): number {
 export function formatFibonacciPreview(
   userThreadCount: number,
   threadMessageCount: number,
-  userConfig?: GoldenRatioConfig | null,
+  userConfig?: goldenRatioConfig | null,
 ): {
-  feature: GoldenFeature
+  feature: goldenFeature
   homeApp: string
   progressThread: number
   progressMessage: number
@@ -201,7 +201,7 @@ export function formatFibonacciPreview(
  * Maps a triggered feature to the ChopStick join weight key
  * so that generateAIContent can dynamically boost context.
  */
-export function featureToJoinBoost(feature: GoldenFeature):
+export function featureToJoinBoost(feature: goldenFeature):
   | {
       key: "memories" | "instructions" | "placeholders" | "characterProfile"
       boost: number

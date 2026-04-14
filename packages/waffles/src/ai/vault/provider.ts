@@ -1,6 +1,6 @@
 // packages/db/src/ai/vault/provider.ts
 
-import type { guest, nil, sushi, user } from "@chrryai/chrry/types"
+import type { guest, nil, sushi, user } from "@chrryai/donut/types"
 import * as AiEmbeddingModel from "@effect/ai/EmbeddingModel"
 import * as AiLanguageModel from "@effect/ai/LanguageModel"
 import {

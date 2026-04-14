@@ -4,11 +4,11 @@ import {
   evaluateGoldenRatio,
   FIBONACCI,
   formatFibonacciPreview,
-  type GoldenFeature,
   getDefaultTriggers,
   getNewlyTriggeredFeatures,
   getNextFibonacciThreshold,
   getUserGoldenRatioConfig,
+  type goldenFeature,
 } from "../../agent/goldenRatio"
 
 describe("Golden Ratio φ-Engine (Unit)", () => {

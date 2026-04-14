@@ -1,4 +1,4 @@
-import type { aiModel, instruction, ramen, swarm } from "@chrryai/chrry/types"
+import type { aiModel, instruction, ramen, swarm } from "@chrryai/donut/types"
 import { sql } from "drizzle-orm"
 
 import {

@@ -229,7 +229,7 @@ function MyComponent() {
 ## Files Created 📦
 
 ```
-packages/ui/platform/
+packages/donut/platform/
 ├── PlatformProvider.tsx       ✅ Context & detection
 ├── usePlatformStyles.tsx      ✅ Adaptive styling
 ├── PlatformPrimitives.tsx     ✅ Universal components (FIXED!)

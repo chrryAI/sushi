@@ -233,7 +233,7 @@ vex/
 │   ├── extension/        # Browser extension
 │   └── native/           # React Native app
 ├── packages/
-│   ├── ui/               # Shared UI components (@chrryai/chrry)
+│   ├── ui/               # Shared UI components (@chrryai/donut)
 │   ├── pepper/           # Universal router (@chrryai/pepper)
 │   ├── waffles/          # Testing utilities (@chrryai/waffles)
 │   └── db/               # Database layer (@repo/db)

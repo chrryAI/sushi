@@ -19,7 +19,7 @@ echo ""
 
 # Build and publish Chrry
 echo "🍒 Publishing Chrry..."
-cd packages/ui
+cd packages/donut
 npm run build
 npm publish --access public
 cd ../..

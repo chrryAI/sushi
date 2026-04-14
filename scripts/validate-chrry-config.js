@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url"
 import {
   loadAndValidateConfig,
   printValidationResults,
-} from "../packages/ui/utils/chrryConfigValidator.js"
+} from "../packages/donut/utils/chrryConfigValidator.js"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

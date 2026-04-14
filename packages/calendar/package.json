@@ -11,7 +11,7 @@
     "dev": "echo 'Calendar - Coming soon'"
   },
   "dependencies": {
-    "@chrryai/chrry": "workspace:*"
+    "@chrryai/donut": "workspace:*"
   },
   "peerDependencies": {
     "react": "^19.0.0",

@@ -84,7 +84,7 @@ ComponentName.module.scss  →  ComponentName.styles.ts
 
 ```bash
 # Convert single file
-npm run s packages/ui/Button.module.scss packages/ui/Button.styles.ts
+npm run s packages/donut/Button.module.scss packages/donut/Button.styles.ts
 
 # Convert all SCSS files
 npm run s:all
@@ -223,7 +223,7 @@ npm run test:scss
 
 ### Test File
 
-The test file `packages/ui/__tests__/TestComponent.module.scss` contains comprehensive examples of all supported features.
+The test file `packages/donut/__tests__/TestComponent.module.scss` contains comprehensive examples of all supported features.
 
 ### What Gets Tested
 
@@ -281,11 +281,11 @@ npm run test:scss
 - `scripts/scss-to-universal.js` - Main converter
 - `scripts/convert-changed-scss.js` - Git-aware converter
 - `scripts/test-scss-converter.js` - Test runner
-- `packages/ui/styles/createStyleHook.ts` - Hook factory
-- `packages/ui/styles/createStyleProxy.ts` - Proxy with caching
-- `packages/ui/styles/resolveThemeValue.ts` - Theme resolver
-- `packages/ui/styles/useInteractiveStyles.ts` - Interactive states
-- `packages/ui/styles/theme.ts` - Theme definitions
+- `packages/donut/styles/createStyleHook.ts` - Hook factory
+- `packages/donut/styles/createStyleProxy.ts` - Proxy with caching
+- `packages/donut/styles/resolveThemeValue.ts` - Theme resolver
+- `packages/donut/styles/useInteractiveStyles.ts` - Interactive states
+- `packages/donut/styles/theme.ts` - Theme definitions
 
 ### Flow
 
@@ -323,4 +323,4 @@ React Component
 
 ## 📖 Examples
 
-See `packages/ui/__tests__/TestComponent.module.scss` for a comprehensive example covering all features.
+See `packages/donut/__tests__/TestComponent.module.scss` for a comprehensive example covering all features.

@@ -301,7 +301,7 @@ All services support hot reload:
 pnpm test
 
 # Run specific package tests
-cd packages/ui && pnpm test
+cd packages/donut && pnpm test
 cd apps/api && pnpm test
 ```
 

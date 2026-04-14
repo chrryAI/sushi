@@ -9,8 +9,8 @@
  */
 
 import * as dotenv from "dotenv"
-import { ALL_TRACKABLE_EVENTS } from "../packages/ui/utils/analyticsEvents"
-import { whiteLabels } from "../packages/ui/utils/siteConfig"
+import { ALL_TRACKABLE_EVENTS } from "../packages/donut/utils/analyticsEvents"
+import { whiteLabels } from "../packages/donut/utils/siteConfig"
 
 // Load environment variables from .env
 dotenv.config()
