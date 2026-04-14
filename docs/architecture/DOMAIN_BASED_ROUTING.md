@@ -35,7 +35,7 @@ One Server: Detects domain automatically
 ### **1. Domain Detection Function**
 
 ```typescript
-// packages/ui/utils/siteConfig.ts
+// packages/donut/utils/siteConfig.ts
 
 export function detectsiteModeDomain(hostname?: string): siteMode {
   const host = hostname || (typeof window !== "undefined" ? window.location.hostname : "");
@@ -144,7 +144,7 @@ export default async function Page() {
 
 ## 📍 Updated Files
 
-### **1. packages/ui/utils/siteConfig.ts**
+### **1. packages/donut/utils/siteConfig.ts**
 
 - ✅ Added `detectsiteModeDomain()` for pure domain detection
 - ✅ Updated `detectsiteMode()` to try domain first, then env vars

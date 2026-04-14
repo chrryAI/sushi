@@ -451,7 +451,7 @@ export class Expert<
 
         if (decision?.nextEvent) {
           // @ts-expect-error
-          decision.nextEvent["_decision"] = decision.id
+          decision.nextEvent._decision = decision.id
           actorRef.send(decision.nextEvent)
         }
       }
@@ -471,9 +471,7 @@ export class Expert<
               return
             }
 
-            const decisionId = inspEvent.event["_decision"] as
-              | string
-              | undefined
+            const decisionId = inspEvent.event._decision as string | undefined
 
             const decisions = this.getDecisions()
 
@@ -526,9 +524,7 @@ export class Expert<
               return
             }
 
-            const decisionId = inspEvent.event["_decision"] as
-              | string
-              | undefined
+            const decisionId = inspEvent.event._decision as string | undefined
 
             const decisions = this.getDecisions()
 

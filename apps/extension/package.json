@@ -1,6 +1,6 @@
 {
   "name": "@repo/extension",
-  "version": "2.4.45",
+  "version": "2.4.50",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,10 +34,10 @@
     "reload:watch": "chokidar \"dist/**/*\" -c \"echo Extension updated - please refresh in Chrome\"",
     "zip:chrome": "zip -r dist-chrome.zip dist -x 'dist/node_modules/**' 'dist/*/node_modules/**'",
     "zip:firefox": "zip -r dist-firefox.zip dist -x 'dist/node_modules/**' 'dist/*/node_modules/**'",
-    "zip:source": "cd ../.. && zip -r apps/extension/vex.zip apps/extension packages/ui -x '*/node_modules/**' '*/dist/**' '*/.next/**' '*/.turbo/**' '*.zip' '*.env' '*.gitignore' '*.tsconfig.json' -x@.gitignore"
+    "zip:source": "cd ../.. && zip -r apps/extension/vex.zip apps/extension packages/donut -x '*/node_modules/**' '*/dist/**' '*/.next/**' '*/.turbo/**' '*.zip' '*.env' '*.gitignore' '*.tsconfig.json' -x@.gitignore"
   },
   "dependencies": {
-    "@chrryai/chrry": "workspace:*",
+    "@chrryai/donut": "workspace:*",
     "@sentry/react": "^10.10.0",
     "@types/chrome": "^0.1.1",
     "@types/webextension-polyfill": "^0.12.3",

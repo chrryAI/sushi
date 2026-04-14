@@ -49,12 +49,12 @@ const files = [
   "package.json",
   "apps/extension/package.json",
   "apps/extension/vite.config.ts",
-  "packages/ui/package.json",
+  "packages/donut/package.json",
   "packages/pepper/package.json",
   "packages/waffles/package.json",
-  "packages/ui/utils/index.ts",
+  "packages/donut/utils/index.ts",
   "packages/db/package.json",
-  "packages/ui/context/providers/AuthProvider.tsx",
+  "packages/donut/context/providers/AuthProvider.tsx",
   "apps/flash/server.js",
 ].map((f) => path.resolve(__dirname, "..", f))
 

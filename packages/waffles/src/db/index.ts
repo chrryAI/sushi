@@ -1,4 +1,4 @@
-import { type locale, locales } from "@chrryai/chrry/locales"
+import { type locale, locales } from "@chrryai/donut/locales"
 import type {
   aiAgent,
   cherry,
@@ -12,7 +12,7 @@ import type {
   sushi,
   user,
   userWithRelations,
-} from "@chrryai/chrry/types"
+} from "@chrryai/donut/types"
 import * as bcrypt from "bcrypt"
 import * as dotenv from "dotenv"
 import {

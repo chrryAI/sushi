@@ -1,89 +1,42 @@
 {
   "name": "@chrryai/waffles",
-  "version": "2.4.45",
-  "description": "Production-ready Playwright testing utilities and helpers for modern web apps",
-  "keywords": [
-    "automation",
-    "e2e",
-    "playwright",
-    "test-helpers",
-    "test-utils",
-    "testing",
-    "typescript"
-  ],
-  "homepage": "https://github.com/chrryai/waffles",
-  "bugs": {
-    "url": "https://github.com/chrryai/waffles/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/chrryai/waffles.git"
-  },
-  "license": "AGPL-3.0",
-  "author": "Ibrahim Velinov",
-  "sideEffects": false,
+  "version": "2.4.50",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist",
-    "README.md",
-    "LICENSE"
-  ],
   "scripts": {
-    "api:test": "playwright test --project api",
-    "api:test:live": "API_URL=https://api.chrry.ai playwright test --project api",
-    "api:test:local": "API_URL=http://localhost:3001 playwright test --project api",
-    "build": "pnpm exec tsup",
-    "dev": "pnpm exec tsup --watch",
-    "e": "pnpm exec playwright install chromium && playwright test --project chromium",
-    "e2e": "playwright test --project chromium",
-    "ec": "pnpm exec playwright install chromium && playwright test critical.spec.ts --project chromium",
-    "lint": "biome check .",
-    "sync-goals": "tsx src/scripts/sync-plausible-goals.ts",
-    "test": "vitest run",
-    "test:all": "pnpm e2e && pnpm api:test",
-    "test:coverage": "vitest run --coverage",
-    "test:integration": "vitest run src/__tests__/integration --testTimeout 60000",
-    "test:tauri": "TEST_URL=http://localhost:5173 playwright test --project tauri-macos",
-    "test:unit": "vitest run src/__tests__/unit",
-    "test:phi:unit": "npx tsx src/__tests__/unit/goldenRatio.node-test.ts",
-    "test:phi:integration": "cd ../db && pnpm exec tsx scripts/test-golden-ratio.ts"
+    "dev": "vp dev run --port 3000",
+    "build": "tsup",
+    "lint": "eslint .",
+    "preview": "vp preview run"
   },
   "dependencies": {
-    "@chrryai/machine": "workspace:*",
-    "@faker-js/faker": "^9.3.0",
-    "@openrouter/ai-sdk-provider": "^2.3.3",
-    "@playwright/test": "^1.49.1",
-    "@types/node": "^22.18.12",
-    "@types/react": "^19.1.12",
-    "ai": "^6.0.134",
-    "dotenv": "^17.3.1",
-    "effect": "^3.0.0",
-    "uuid": "^13.0.0"
+    "effect": "^3.21.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@repo/db": "workspace:*",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^9.0.0",
-    "tsup": "^8.0.0",
-    "tsx": "^4.19.3",
-    "typescript": "^5.0.0",
-    "vitest": "^1.0.0"
-  },
-  "peerDependencies": {
-    "@chrryai/chrry": "workspace:*",
-    "@playwright/test": "^1.40.0",
-    "react": "^18.0.0 || ^19.0.0"
-  },
-  "publishConfig": {
-    "access": "public"
+    "@eslint/js": "^9.39.4",
+    "@faker-js/faker": "^9.0.0",
+    "@playwright/test": "^1.51.0",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.58.0",
+    "vite": "^8.0.4"
   }
 }

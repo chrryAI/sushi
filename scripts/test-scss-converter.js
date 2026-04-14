@@ -15,11 +15,11 @@ const __dirname = dirname(__filename)
 
 const testScssPath = path.join(
   __dirname,
-  "../packages/ui/__tests__/TestComponent.module.scss",
+  "../packages/donut/__tests__/TestComponent.module.scss",
 )
 const testOutputPath = path.join(
   __dirname,
-  "../packages/ui/__tests__/TestComponent.styles.ts",
+  "../packages/donut/__tests__/TestComponent.styles.ts",
 )
 
 console.log("🧪 Testing SCSS to TypeScript converter...\n")

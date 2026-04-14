@@ -75,7 +75,7 @@ android/*.jks
 apps/extension/dist-*.zip
 
 # Translation temp files
-packages/ui/locales/en.new.json
+packages/donut/locales/en.new.json
 
 # test results
 test-results

@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker"
 
 /**
  * Tribe Schedule Fixture
- * Matches tribeScheduleSchema from @chrryai/chrry/schemas/tribeScheduleSchema
+ * Matches tribeScheduleSchema from @chrryai/donut/schemas/tribeScheduleSchema
  */
 
 // Alias for backward compatibility

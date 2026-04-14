@@ -297,7 +297,7 @@ export function recordMutation(
 // Effect.js wrappers for robust error tracking
 export function getCurrentBranchSafe() {
   return Effect.sync(() => getCurrentBranch()).pipe(
-    Effect.catchAll((e) => Effect.succeed(undefined)),
+    Effect.catchAll((_e: unknown) => Effect.succeed(undefined)),
   )
 }
 
@@ -306,12 +306,12 @@ export function switchBranchContextSafe(
   previousBranch?: string,
 ) {
   return Effect.sync(() => switchBranchContext(newBranch, previousBranch)).pipe(
-    Effect.catchAll((e) => Effect.fail(String(e))),
+    Effect.catchAll((e: unknown) => Effect.fail(String(e))),
   )
 }
 
 export function autoDetectAndSwitchSafe(previousBranch?: string) {
   return Effect.sync(() => autoDetectAndSwitch(previousBranch)).pipe(
-    Effect.catchAll((e) => Effect.fail(String(e))),
+    Effect.catchAll((e: unknown) => Effect.fail(String(e))),
   )
 }

@@ -658,10 +658,10 @@ const generateCode = (styles, inputFile) => {
     .replace(/^([a-z])/, (g) => g.toUpperCase())
 
   // Calculate relative path to the shared styles directory based on file location
-  // This ensures subfolders like packages/ui/addToHomeScreen generate
+  // This ensures subfolders like packages/donut/addToHomeScreen generate
   // imports such as "../styles/createStyleHook" instead of "./styles/..."
   const inputDir = path.dirname(path.resolve(inputFile))
-  const stylesDir = path.resolve(__dirname, "../packages/ui/styles")
+  const stylesDir = path.resolve(__dirname, "../packages/donut/styles")
   let stylesImportPath = path.relative(inputDir, stylesDir)
 
   // Normalize path separators for cross-platform support
@@ -928,7 +928,7 @@ const main = async () => {
     console.log(`  node scripts/scss-to-unified.js --all\n`)
     console.log(`Examples:`)
     console.log(
-      `  node scripts/scss-to-unified.js packages/ui/Thread.module.scss`,
+      `  node scripts/scss-to-unified.js packages/donut/Thread.module.scss`,
     )
     console.log(`  node scripts/scss-to-unified.js --all`)
     process.exit(0)
@@ -936,14 +936,14 @@ const main = async () => {
 
   // Handle --all flag
   if (args[0] === "--all") {
-    const uiDir = path.join(__dirname, "../packages/ui")
+    const uiDir = path.join(__dirname, "../packages/donut")
 
     if (!fs.existsSync(uiDir)) {
       console.error(`❌ Directory not found: ${uiDir}`)
       process.exit(1)
     }
 
-    // Recursively collect all *.module.scss files inside packages/ui
+    // Recursively collect all *.module.scss files inside packages/donut
     const collectScssFiles = (dir) => {
       const entries = fs.readdirSync(dir, { withFileTypes: true })
       const files = []

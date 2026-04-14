@@ -3,7 +3,7 @@
   "name": "Vex Monorepo API Documentation",
   "entryPoints": [
     "packages/shared/src/index.ts",
-    "packages/ui/index.ts",
+    "packages/donut/index.ts",
     "packages/calendar/src/index.ts",
     "packages/waffles/src/index.ts",
     "packages/pepper/src/index.ts",

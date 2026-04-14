@@ -105,7 +105,7 @@ Based on the latest SonarCloud analysis:
 
 📊 Code Hotspots (files needing attention):
 1. apps/api/routes/auth.ts (Risk Score: 45)
-2. packages/ui/components/legacy/Modal.tsx (Risk Score: 32)
+2. packages/donut/components/legacy/Modal.tsx (Risk Score: 32)
 3. apps/api/lib/database/queries.ts (Risk Score: 28)
 
 💡 Recommendations:

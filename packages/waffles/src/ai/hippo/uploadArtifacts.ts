@@ -1,7 +1,7 @@
 "use server"
 
-import type { sushi } from "@chrryai/chrry/types"
-import { isE2E as isE2EInternal } from "@chrryai/chrry/utils"
+import type { sushi } from "@chrryai/donut/types"
+import { isE2E as isE2EInternal } from "@chrryai/donut/utils"
 // Note: getMember/getGuest are passed as parameters, not imported
 import {
   type app,

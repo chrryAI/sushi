@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+  - "packages/sushi/packages/*"
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.1.14
   vite-plus: latest

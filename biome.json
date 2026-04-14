@@ -12,7 +12,7 @@
       "!!packages/sushi",
       "!!**/__tests__/**/*.styles.ts",
       "!apps/flash/public/nato/quick_tips.html",
-      "!packages/ui/src/ai/chrry.ts"
+      "!packages/donut/src/ai/chrry.ts"
     ]
   },
   "formatter": {

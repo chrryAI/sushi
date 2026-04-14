@@ -141,7 +141,7 @@ fi
 echo -e "${CYAN}[4/6]${NC} 📝 Updating siteConfig.ts..."
 
 # Find the line with "// City subdomains" and add after it
-SITE_CONFIG="packages/ui/utils/siteConfig.ts"
+SITE_CONFIG="packages/donut/utils/siteConfig.ts"
 if ! grep -q "matchesDomain(host, \"$CITY.chrry.ai\")" "$SITE_CONFIG"; then
   # Add domain detection before vex.chrry.ai check
   sed -i '' "/if (matchesDomain(host, \"vex.chrry.ai\"))/i\\

@@ -6,5 +6,5 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": ["vite.config.ts", "../../packages/ui/utils/siteConfig.ts"]
+  "include": ["vite.config.ts", "../../packages/donut/utils/siteConfig.ts"]
 }

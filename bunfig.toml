@@ -2,4 +2,4 @@
 [module]
 # Configure path aliases for module resolution
 [module.paths]
-"chrry" = ["./packages/ui"]
+"chrry" = ["./packages/donut"]

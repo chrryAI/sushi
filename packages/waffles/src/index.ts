@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test"
+import type { ConsoleMessage, Page } from "@playwright/test"
 import * as dotenv from "dotenv"
 
 dotenv.config()
@@ -107,7 +107,7 @@ export const storeApps = [
 ]
 
 const simulateInputPaste = async (page: Page, text: string) => {
-  await page.evaluate((content) => {
+  await page.evaluate((content: string) => {
     const textarea = document.querySelector(
       'textarea[data-testid="chat-textarea"]',
     ) as HTMLTextAreaElement
@@ -151,7 +151,7 @@ const simulateInputPaste = async (page: Page, text: string) => {
 
 const simulatePaste = async (page: Page, text: string) => {
   // Use Playwright's built-in clipboard API
-  await page.evaluate(async (content) => {
+  await page.evaluate(async (content: string) => {
     // Write to clipboard
     await navigator.clipboard.writeText(content)
 
@@ -171,7 +171,7 @@ function capitalizeFirstLetter(val: string) {
 
 const logs = new Map<string, number>() // msg → timestamp
 export const log = ({ page }: { page: Page }) => {
-  page.on("console", (msg) => {
+  page.on("console", (msg: ConsoleMessage) => {
     const now = Date.now()
     const lastSeen = logs.get(msg.text())
 
@@ -187,24 +187,7 @@ export const log = ({ page }: { page: Page }) => {
 }
 
 // 🌿 Branch-Based AI Agents
-export {
-  autoDetectAndSwitch,
-  autoDetectAndSwitchSafe,
-  type BranchAgentWorkspace,
-  type BranchContext,
-  createBranchWorkspace,
-  deleteBranchWorkspace,
-  generateAgentId,
-  getCurrentBranch,
-  getCurrentBranchSafe,
-  getOrCreateBranchWorkspace,
-  loadBranchWorkspace,
-  parseBranchName,
-  recordMutation,
-  saveBranchWorkspace,
-  switchBranchContext,
-  switchBranchContextSafe,
-} from "./agent/branchContext"
+export * from "./agent/branchContext"
 // 🤖 ChopStick Expert - Payload & Model Optimizer
 export {
   buildRamenPayload,
@@ -229,13 +212,13 @@ export {
   evaluateGoldenRatio,
   FIBONACCI,
   formatFibonacciPreview,
-  type GoldenFeature,
-  type GoldenRatioConfig,
-  type GoldenTrigger,
-  type GoldenTriggerConfig,
   getDefaultTriggers,
   getNewlyTriggeredFeatures,
   getNextFibonacciThreshold,
   getUserGoldenRatioConfig,
+  type goldenFeature,
+  type goldenRatioConfig,
+  type goldenTrigger,
+  type goldenTriggerConfig,
 } from "./agent/goldenRatio"
 export { capitalizeFirstLetter, getURL, simulateInputPaste, simulatePaste }

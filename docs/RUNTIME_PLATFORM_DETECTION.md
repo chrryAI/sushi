@@ -64,7 +64,7 @@ export default function App() {
 ### 2. Use platform-aware components
 
 ```tsx
-// packages/ui/Weather.tsx
+// packages/donut/Weather.tsx
 import { Box, Text, usePlatform } from "chrry/platform";
 
 export function Weather() {

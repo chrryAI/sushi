@@ -16,4 +16,4 @@ packages/sushi/**
 **/.turbo
 **/node_modules
 apps/flash/public/nato/quick_tips.html
-packages/ui/src/ai/chrry.ts
+packages/donut/src/ai/chrry.ts

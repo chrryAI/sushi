@@ -5,7 +5,7 @@
  * knowledge base that gets injected into the AI context.
  */
 
-import type { sushi } from "@chrryai/chrry/types"
+import type { sushi } from "@chrryai/donut/types"
 import { getThread } from "../../db"
 
 /**

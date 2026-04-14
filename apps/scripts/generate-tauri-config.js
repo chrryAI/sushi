@@ -12,7 +12,9 @@ const __dirname = dirname(__filename)
 const mode = process.env.MODE || "vex"
 
 // Dynamically import site config
-const { getSiteConfig } = await import("../../packages/ui/utils/siteConfig.ts")
+const { getSiteConfig } = await import(
+  "../../packages/donut/utils/siteConfig.ts"
+)
 const siteConfig = getSiteConfig(mode)
 
 // Read template config

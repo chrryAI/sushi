@@ -17,7 +17,7 @@ sushi/
 │   ├── bridge/        # Native messaging bridge
 │   └── agent/         # Autonomous AI agent
 ├── packages/
-│   ├── ui/            # @chrryai/chrry — cross-platform UI library
+│   ├── ui/            # @chrryai/donut — cross-platform UI library
 │   ├── pepper/        # @chrryai/pepper — universal router
 │   ├── waffles/       # @chrryai/waffles — testing utilities
 │   ├── machine/       # @chrryai/machine — AI state machines
@@ -57,7 +57,7 @@ These packages are published under the `@chrryai` scope and synced to the public
 
 | Package | Description | License |
 |---------|-------------|---------|
-| `@chrryai/chrry` | Cross-platform React / React Native UI library | MIT |
+| `@chrryai/donut` | Cross-platform React / React Native UI library | MIT |
 | `@chrryai/pepper` | Universal router for web, extension, and mobile | MIT |
 | `@chrryai/waffles` | Playwright + Vitest testing primitives | MIT |
 | `@chrryai/machine` | Effect.js + XState AI orchestration utilities | MIT |

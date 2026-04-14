@@ -9,7 +9,7 @@ set -e
 SOURCE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 TARGET_REMOTE="https://github.com/chrryai/sushi.git"
 TMP_DIR=$(mktemp -d)
-BRANCH="main"
+BRANCH="ramen"
 
 # Cleanup on exit
 trap 'rm -rf "$TMP_DIR"' EXIT
@@ -172,7 +172,7 @@ android/*.jks
 apps/extension/dist-*.zip
 
 # Translation temp files
-packages/ui/locales/en.new.json
+packages/donut/locales/en.new.json
 
 # test results
 test-results

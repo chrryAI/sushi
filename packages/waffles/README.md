@@ -1,234 +1,73 @@
-# 🧇 Waffles
+# React + TypeScript + Vite
 
-**Production-ready Playwright testing utilities for AI applications**
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-[![npm](https://img.shields.io/npm/v/@chrryai/waffles)](https://www.npmjs.com/package/@chrryai/waffles)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+Currently, two official plugins are available:
 
-> Battle-tested helpers from [Vex](https://vex.chrry.ai) - A production AI platform with 6,813+ commits in 2025
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
----
+## React Compiler
 
-## 🎯 Why Waffles?
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-Waffles provides a collection of battle-tested Playwright utilities that make E2E testing delightful. Born from real-world production testing at Vex, these helpers solve common testing challenges like simulating user input, waiting for elements, and generating test data.
+## Expanding the ESLint configuration
 
-## ✨ Features
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-- 🎭 **Playwright-first** - Built specifically for Playwright
-- 🧪 **Production-tested** - Used in Vex's extensive test suite
-- 📦 **Zero config** - Works out of the box
-- 🎯 **TypeScript** - Full type safety
-- 🚀 **Lightweight** - Minimal dependencies
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-## 📦 Installation
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-```bash
-npm install @chrryai/waffles @playwright/test
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
 
-## 🚀 Quick Start
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```typescript
-import { test, expect } from "@playwright/test";
-import { wait, simulateInputPaste, waitForElement, generateTestEmail } from "@chrryai/waffles";
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-test("chat interaction", async ({ page }) => {
-  await page.goto("https://yourapp.com");
-
-  // Wait for chat to load
-  await waitForElement(page, '[data-testid="chat-textarea"]');
-
-  // Simulate pasting text
-  await simulateInputPaste(page, "Hello, AI!");
-
-  // Wait for response
-  await wait(1000);
-
-  // Assert
-  await expect(page.locator(".message")).toBeVisible();
-});
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 ```
-
-## 📚 API Reference
-
-### Timing Utilities
-
-#### `wait(ms: number)`
-
-Wait for a specified number of milliseconds.
-
-```typescript
-await wait(1000); // Wait 1 second
-```
-
-#### `waitForElement(page, selector, timeout?)`
-
-Wait for an element to be visible.
-
-```typescript
-await waitForElement(page, ".loading-spinner", 5000);
-```
-
-#### `waitForElementToDisappear(page, selector, timeout?)`
-
-Wait for an element to disappear.
-
-```typescript
-await waitForElementToDisappear(page, ".loading-spinner");
-```
-
-### Input Simulation
-
-#### `simulateInputPaste(page, text, selector?)`
-
-Simulate pasting text into a textarea.
-
-```typescript
-await simulateInputPaste(page, "Pasted content");
-```
-
-#### `simulatePaste(page, text, buttonSelector?)`
-
-Simulate pasting using clipboard API and clicking paste button.
-
-```typescript
-await simulatePaste(page, "Clipboard content");
-```
-
-### Navigation
-
-#### `getURL(options)`
-
-Generate a URL with optional fingerprint for testing.
-
-```typescript
-const url = getURL({
-  baseURL: "https://app.com",
-  path: "/chat",
-  isMember: true,
-  memberFingerprint: "abc-123",
-});
-```
-
-#### `scrollToBottom(page)`
-
-Scroll to the bottom of the page.
-
-```typescript
-await scrollToBottom(page);
-```
-
-### Utilities
-
-#### `capitalizeFirstLetter(str: string)`
-
-Capitalize the first letter of a string.
-
-```typescript
-capitalizeFirstLetter("hello"); // "Hello"
-```
-
-#### `generateTestEmail(prefix?)`
-
-Generate a unique test email.
-
-```typescript
-const email = generateTestEmail("user"); // user-1234567890-abc123@test.com
-```
-
-#### `generateTestPassword(length?)`
-
-Generate a random password for testing.
-
-```typescript
-const password = generateTestPassword(16);
-```
-
-### Cleanup
-
-#### `clearLocalStorage(page)`
-
-Clear browser local storage.
-
-```typescript
-await clearLocalStorage(page);
-```
-
-#### `clearCookies(page)`
-
-Clear browser cookies.
-
-```typescript
-await clearCookies(page);
-```
-
-### Screenshots
-
-#### `takeScreenshot(page, name, fullPage?)`
-
-Take a screenshot with a custom name.
-
-```typescript
-await takeScreenshot(page, "error-state", true);
-```
-
-## 🎨 Real-World Examples
-
-### Testing Chat Flow
-
-```typescript
-import { test } from "@playwright/test";
-import { simulateInputPaste, waitForElement, wait } from "@chrryai/waffles";
-
-test("complete chat interaction", async ({ page }) => {
-  await page.goto("https://app.com/chat");
-
-  // Wait for chat to be ready
-  await waitForElement(page, '[data-testid="chat-textarea"]');
-
-  // Send message
-  await simulateInputPaste(page, "What's the weather?");
-  await page.click('[data-testid="send-button"]');
-
-  // Wait for AI response
-  await wait(2000);
-  await waitForElement(page, ".ai-message");
-});
-```
-
-### Testing Authentication
-
-```typescript
-import { test } from "@playwright/test";
-import { generateTestEmail, generateTestPassword, wait } from "@chrryai/waffles";
-
-test("user registration", async ({ page }) => {
-  const email = generateTestEmail("newuser");
-  const password = generateTestPassword();
-
-  await page.goto("https://app.com/signup");
-  await page.fill('[name="email"]', email);
-  await page.fill('[name="password"]', password);
-  await page.click('button[type="submit"]');
-
-  await wait(1000);
-  await expect(page).toHaveURL(/dashboard/);
-});
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Waffles is extracted from Vex's production test suite, and we're always improving it.
-
-## 🔗 Links
-
-- [GitHub](https://github.comchrryAIwaffles)
-- [npm](https://npmjs.com/package/@chrryai/waffles)
-- [Issues](https://github.comchrryAIwaffles/issues)
-- [Vex - Powered by Waffles](https://vex.chrry.ai)
-
----
-
-**Built with ❤️ by the Vex team**

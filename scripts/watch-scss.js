@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-const WATCH_DIR = path.join(__dirname, "../packages/ui")
+const WATCH_DIR = path.join(__dirname, "../packages/donut")
 const CONVERTER_SCRIPT = path.join(__dirname, "scss-to-universal.js")
 
 console.log("👀 SCSS Watcher Started")

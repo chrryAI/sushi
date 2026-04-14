@@ -4,7 +4,7 @@
 // Effect + Schema-based, her katman compose edilebilir
 // ============================================
 
-import type { guest, sushi, swarm, user } from "@chrryai/chrry/types"
+import type { guest, sushi, swarm, user } from "@chrryai/donut/types"
 import { Context, Data, Effect, Layer, pipe, Schema } from "effect"
 
 // ============================================

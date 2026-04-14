@@ -59,7 +59,7 @@ vex/
 │   ├── bridge/      # Native messaging bridge
 │   └── agent/       # Autonomous AI agent
 ├── packages/
-│   ├── ui/          # @chrryai/chrry — UI library
+│   ├── ui/          # @chrryai/donut — UI library
 │   ├── pepper/      # @chrryai/pepper — universal router
 │   ├── waffles/     # @chrryai/waffles — testing utilities
 │   ├── machine/     # @chrryai/machine — AI state machines

@@ -10,8 +10,8 @@
     "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
-      "@chrryai/chrry": ["../../packages/ui/index.ts"],
-      "@chrryai/chrry/*": ["../../packages/ui/*"]
+      "@chrryai/donut": ["../../packages/donut/index.ts"],
+      "@chrryai/donut/*": ["../../packages/donut/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,

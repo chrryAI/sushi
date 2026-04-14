@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai"
-import type { sushi } from "@chrryai/chrry/types"
+import type { sushi } from "@chrryai/donut/types"
 import {
   type app,
   db,
