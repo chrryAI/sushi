@@ -1,5 +1,9 @@
 name: Dojo
 
+permissions:
+  contents: read
+  actions: read
+
 # Runs on every push to a slug branch (chrry, vex, focus, burn, etc.)
 # Branch name IS the slug. Ramen infra is shared (no deploy).
 # Jobs: detect slug → flash build → extension build (if supported) → test
