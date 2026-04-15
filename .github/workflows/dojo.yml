@@ -15,6 +15,9 @@ on:
     branches:
       - ramen
 
+permissions:
+  contents: read
+
 concurrency:
   group: dojo-${{ github.ref }}
   cancel-in-progress: true
