@@ -1,0 +1,260 @@
+name: Dojo
+
+# Runs on every push to a slug branch (chrry, vex, focus, burn, etc.)
+# Branch name IS the slug. Ramen infra is shared (no deploy).
+# Jobs: detect slug → flash build → extension build (if supported) → test
+
+on:
+  push:
+    branches-ignore:
+      - ramen
+      - main
+      - dev
+      - staging
+  pull_request:
+    branches:
+      - ramen
+
+concurrency:
+  group: dojo-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: true
+  NODE_OPTIONS: --max-old-space-size=4096
+  TURBO_TOKEN: ${{ secrets.VPS_TURBO_TOKEN }}
+  TURBO_TEAM: vex
+  TURBO_REMOTE_CACHE_SIGNATURE_KEY: ${{ secrets.TURBO_REMOTE_CACHE_SIGNATURE_KEY }}
+  TURBO_API: ${{ secrets.TURBO_API }}
+
+# ─────────────────────────────────────────────────────────────
+# STEP 1: Detect slug from branch name and resolve MODE
+# ─────────────────────────────────────────────────────────────
+jobs:
+  detect:
+    name: Detect slug
+    runs-on: ubuntu-latest
+    outputs:
+      slug: ${{ steps.resolve.outputs.slug }}
+      mode: ${{ steps.resolve.outputs.mode }}
+      has_extension: ${{ steps.resolve.outputs.has_extension }}
+      is_dojo_branch: ${{ steps.resolve.outputs.is_dojo_branch }}
+    steps:
+      - name: Resolve slug and MODE
+        id: resolve
+        run: |
+          # Branch name is the slug (e.g. refs/heads/chrry → chrry)
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          SLUG="$BRANCH"
+
+          echo "Branch: $BRANCH"
+          echo "Slug: $SLUG"
+
+          # slug → MODE mapping (chrry is special: MODE=chrryAI)
+          declare -A MODE_MAP=(
+            [chrry]="chrryAI"
+            [vex]="vex"
+            [focus]="focus"
+            [burn]="burn"
+            [vault]="vault"
+            [atlas]="atlas"
+            [sushi]="sushi"
+            [grape]="grape"
+            [pear]="pear"
+            [popcorn]="popcorn"
+            [zarathustra]="zarathustra"
+            [search]="search"
+            [tribe]="tribe"
+          )
+
+          # Slugs that have an extension build
+          EXT_SLUGS="chrry vex focus burn vault atlas sushi grape pear popcorn zarathustra search tribe"
+
+          # All known dojo slugs
+          ALL_SLUGS="chrry vex focus burn hippo donut peach bloom vault atlas sushi jules debugger architect coder writer reviewer researcher nebula quantumlab starmap cosmos grape pear popcorn fightClub inception pulpFiction hungerGames zarathustra 1984 meditations dune grok benjamin harper lucas search tribe"
+
+          # Check if this is a known dojo branch
+          IS_DOJO="false"
+          for s in $ALL_SLUGS; do
+            if [ "$SLUG" = "$s" ]; then
+              IS_DOJO="true"
+              break
+            fi
+          done
+
+          MODE="${MODE_MAP[$SLUG]:-$SLUG}"
+
+          HAS_EXT="false"
+          for s in $EXT_SLUGS; do
+            if [ "$SLUG" = "$s" ]; then
+              HAS_EXT="true"
+              break
+            fi
+          done
+
+          echo "slug=$SLUG"         >> $GITHUB_OUTPUT
+          echo "mode=$MODE"         >> $GITHUB_OUTPUT
+          echo "has_extension=$HAS_EXT" >> $GITHUB_OUTPUT
+          echo "is_dojo_branch=$IS_DOJO" >> $GITHUB_OUTPUT
+
+          echo "Resolved: slug=$SLUG mode=$MODE has_extension=$HAS_EXT is_dojo=$IS_DOJO"
+
+# ─────────────────────────────────────────────────────────────
+# STEP 2: Install shared deps (cached)
+# ─────────────────────────────────────────────────────────────
+  install:
+    name: Install dependencies
+    needs: detect
+    if: needs.detect.outputs.is_dojo_branch == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Run bun postinstall
+        run: |
+          if [ -d "apps/api/node_modules/bun" ]; then
+            cd apps/api/node_modules/bun && node install.js
+          elif [ -d "node_modules/bun" ]; then
+            cd node_modules/bun && node install.js
+          fi
+
+      # Cache node_modules for downstream jobs
+      - name: Cache node_modules
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: nm-${{ github.sha }}
+
+# ─────────────────────────────────────────────────────────────
+# STEP 3a: Flash (web SSR) build
+# ─────────────────────────────────────────────────────────────
+  flash:
+    name: Flash build (${{ needs.detect.outputs.slug }})
+    needs: [detect, install]
+    if: needs.detect.outputs.is_dojo_branch == 'true'
+    runs-on: ubuntu-latest
+    env:
+      MODE: ${{ needs.detect.outputs.mode }}
+      VITE_APP_SLUG: ${{ needs.detect.outputs.slug }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: nm-${{ github.sha }}
+
+      - name: Build packages (deps only)
+        run: pnpm turbo build --filter=flash^...
+
+      - name: Build flash
+        run: pnpm --filter flash build
+
+      - name: Type check
+        run: pnpm --filter flash check-types
+
+      - name: Unit tests
+        run: pnpm --filter flash test
+
+# ─────────────────────────────────────────────────────────────
+# STEP 3b: Extension build (only for supported slugs)
+# ─────────────────────────────────────────────────────────────
+  extension:
+    name: Extension build (${{ needs.detect.outputs.slug }})
+    needs: [detect, install]
+    if: |
+      needs.detect.outputs.is_dojo_branch == 'true' &&
+      needs.detect.outputs.has_extension == 'true'
+    runs-on: ubuntu-latest
+    env:
+      MODE: ${{ needs.detect.outputs.mode }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            apps/*/node_modules
+            packages/*/node_modules
+          key: nm-${{ github.sha }}
+
+      - name: Build packages (deps only)
+        run: pnpm turbo build --filter=@repo/extension^...
+
+      - name: Build extension
+        working-directory: apps/extension
+        run: pnpm build:chrome:${{ needs.detect.outputs.slug }}
+
+      - name: Type check
+        working-directory: apps/extension
+        run: pnpm type-check
+
+      - name: Upload extension artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-${{ needs.detect.outputs.slug }}-${{ github.sha }}
+          path: apps/extension/dist-chrome-${{ needs.detect.outputs.slug }}.zip
+          retention-days: 7
+
+# ─────────────────────────────────────────────────────────────
+# STEP 4: Summary — single status check for branch protection
+# ─────────────────────────────────────────────────────────────
+  dojo-ok:
+    name: Dojo OK
+    runs-on: ubuntu-latest
+    needs: [detect, flash, extension]
+    if: always() && needs.detect.outputs.is_dojo_branch == 'true'
+    steps:
+      - name: Check results
+        run: |
+          FLASH="${{ needs.flash.result }}"
+          EXT="${{ needs.extension.result }}"
+
+          echo "flash: $FLASH"
+          echo "extension: $EXT"
+
+          # extension is allowed to be skipped (not all slugs have it)
+          if [ "$FLASH" != "success" ]; then
+            echo "Flash build failed or was cancelled"
+            exit 1
+          fi
+
+          if [ "$EXT" != "success" ] && [ "$EXT" != "skipped" ]; then
+            echo "Extension build failed or was cancelled"
+            exit 1
+          fi
+
+          echo "All dojo checks passed"

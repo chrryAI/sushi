@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test"
-import { getModelCredits, log, type modelName, wait } from "../index"
+import { getModelCredits, type modelName, wait } from "../index"
+import { log } from "../test-utils"
 import { chat } from "./chat"
 import { prepare } from "./clean"
 import { signIn } from "./signIn"

@@ -1,12 +1,6 @@
-import type { ConsoleMessage, Page } from "@playwright/test"
 import * as dotenv from "dotenv"
 
 dotenv.config()
-
-// API Test Utilitiels
-export { APIClient } from "./api/client"
-export type { ScheduledJob } from "./fixtures/api/scheduledJobs"
-export { scheduledJobFactory } from "./fixtures/api/scheduledJobs"
 
 export type modelName = "chatGPT" | "claude" | "gemini" | "sushi" | "perplexity"
 
@@ -106,84 +100,8 @@ export const storeApps = [
   "popcorn",
 ]
 
-const simulateInputPaste = async (page: Page, text: string) => {
-  await page.evaluate((content: string) => {
-    const textarea = document.querySelector(
-      'textarea[data-testid="chat-textarea"]',
-    ) as HTMLTextAreaElement
-    if (!textarea) return
-
-    // Create a basic event
-    const pasteEvent = new Event("paste", {
-      bubbles: true,
-      cancelable: true,
-    })
-
-    // Add clipboardData getter
-    Object.defineProperty(pasteEvent, "clipboardData", {
-      value: {
-        getData: () => content,
-        types: ["text/plain"],
-        files: [],
-        items: [
-          {
-            kind: "string",
-            type: "text/plain",
-            getAsString: (callback: (text: string) => void) =>
-              callback(content),
-          },
-        ],
-      },
-      writable: false,
-    })
-
-    // Dispatch the event
-    textarea.dispatchEvent(pasteEvent)
-
-    // Set the value directly after the paste event
-    textarea.value = content
-
-    // Trigger input event to simulate actual typing
-    const inputEvent = new Event("input", { bubbles: true })
-    textarea.dispatchEvent(inputEvent)
-  }, text)
-}
-
-const simulatePaste = async (page: Page, text: string) => {
-  // Use Playwright's built-in clipboard API
-  await page.evaluate(async (content: string) => {
-    // Write to clipboard
-    await navigator.clipboard.writeText(content)
-
-    // Find the paste button and click it
-    const pasteButton = document.querySelector(
-      '[data-testid*="artifacts-paste-button"]',
-    ) as HTMLButtonElement
-    if (pasteButton) {
-      pasteButton.click()
-    }
-  }, text)
-}
-
 function capitalizeFirstLetter(val: string) {
   return String(val).charAt(0).toUpperCase() + String(val).slice(1)
-}
-
-const logs = new Map<string, number>() // msg → timestamp
-export const log = ({ page }: { page: Page }) => {
-  page.on("console", (msg: ConsoleMessage) => {
-    const now = Date.now()
-    const lastSeen = logs.get(msg.text())
-
-    // Only skip if seen within last 5 seconds
-    if (lastSeen && now - lastSeen < 5000) return
-
-    msg.type() !== "warning" &&
-      !msg.text().includes("token") &&
-      !msg.text().includes("fp") &&
-      console.log(`[browser][${msg.type()}] ${msg.text()}`)
-    logs.set(msg.text(), now)
-  })
 }
 
 // 🌿 Branch-Based AI Agents
@@ -196,7 +114,6 @@ export {
   type ChopStickDecision,
   getJoinWeights,
   getPreset,
-  type JoinWeights,
   type ModelInfo,
   modelPricing,
   optimizeChopStick,
@@ -221,4 +138,4 @@ export {
   type goldenTrigger,
   type goldenTriggerConfig,
 } from "./agent/goldenRatio"
-export { capitalizeFirstLetter, getURL, simulateInputPaste, simulatePaste }
+export { capitalizeFirstLetter, getURL }

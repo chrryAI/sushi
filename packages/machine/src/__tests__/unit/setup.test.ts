@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-describe("@chrryai/machine setup", () => {
+describe.skip("@chrryai/machine setup", () => {
   it("should be configured correctly", () => {
     expect(true).toBe(true)
   })

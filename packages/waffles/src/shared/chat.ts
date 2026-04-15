@@ -6,12 +6,10 @@ import {
   capitalizeFirstLetter,
   getModelCredits,
   getURL,
-  log,
   type modelName,
-  simulateInputPaste,
-  simulatePaste,
   wait,
 } from ".."
+import { log, simulateInputPaste, simulatePaste } from "../test-utils"
 import { prepare } from "./clean"
 
 // Resolve paths relative to the waffles package root

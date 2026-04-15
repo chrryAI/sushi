@@ -11,7 +11,6 @@ import { Effect } from "effect"
 import { beforeAll, describe, expect, it } from "vitest"
 import {
   FREE_MODELS,
-  type LanguageModel,
   makeLanguageModel,
   resolveProvider,
 } from "../../ai/index.js"
