@@ -20,3 +20,8 @@ malwareScanner/README.md:curl-auth-header:85
 
 # False positive - n8n workflow URL (hostname:port, not user:password)
 packages/ai-core/src/machines/n8n-workflow.json:generic-api-key:30
+
+# False positive - Cloudflare Web Analytics beacon token (public tracking token)
+apps/flash/src/App.tsx:generic-api-key:77
+apps/flash/src/App.tsx:generic-api-key:84
+apps/flash/index.html:generic-api-key:15

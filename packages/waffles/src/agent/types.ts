@@ -2588,7 +2588,7 @@ export type spatialNavigationEntry = {
 // Constants
 export const PLUS_CREDITS_PER_MONTH = 2000
 export const ADDITIONAL_CREDITS = 500
-export const GUEST_CREDITS_PER_MONTH = 30
+export const GUEST_CREDITS_PER_MONTH = 50
 export const MEMBER_CREDITS_PER_MONTH = 150
 export const MAX_INSTRUCTIONS_CHAR_COUNT = 7500
 export const MAX_THREAD_TITLE_CHAR_COUNT = 100

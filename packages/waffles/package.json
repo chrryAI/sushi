@@ -1,6 +1,6 @@
 {
   "name": "@chrryai/waffles",
-  "version": "2.4.53",
+  "version": "2.4.72",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -21,14 +21,25 @@
     "dev": "vp dev run --port 3000",
     "build": "tsup",
     "lint": "eslint .",
-    "preview": "vp preview run"
+    "preview": "vp preview run",
+    "e": "pnpm exec playwright install chromium && playwright test --project chromium",
+    "e2e": "playwright test --project chromium",
+    "ec": "pnpm exec playwright install chromium && playwright test critical.spec.ts --project chromium"
   },
   "dependencies": {
+    "@xstate/graph": "^3.0.4",
+    "ai": "^6.0.134",
+    "ajv": "^8.18.0",
     "effect": "^3.21.0",
+    "object-hash": "^3.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "uuid": "^13.0.0",
     "vite-plugin-commonjs": "^0.10.4",
-    "vite-plugin-node": "^8.0.0"
+    "vite-plugin-node": "^8.0.0",
+    "xstate": "^5.30.0",
+    "zod": "^4.3.6",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

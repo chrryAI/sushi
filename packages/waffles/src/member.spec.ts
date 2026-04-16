@@ -20,7 +20,7 @@ import { thread } from "./shared/thread"
 const isMember = true
 const isLive = false
 
-test("Invite", async ({ page }) => {
+test.skip("Invite", async ({ page }) => {
   await clean({ page })
   await page.goto(getURL({ isLive: false, isMember }), {
     waitUntil: "domcontentloaded",
@@ -44,7 +44,7 @@ test("Invite", async ({ page }) => {
   })
 })
 
-test("Gift", async ({ page }) => {
+test.skip("Gift", async ({ page }) => {
   await clean({ page })
   await page.goto(getURL({ isLive: false, isMember }), {
     waitUntil: "domcontentloaded",

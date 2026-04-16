@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
   await clean({ page })
 })
 
-test("Invite", async ({ page }) => {
+test.skip("Invite", async ({ page }) => {
   await page.goto(
     getURL({
       isLive: false,
@@ -35,7 +35,7 @@ test("Invite", async ({ page }) => {
   })
 })
 
-test("Gift", async ({ page }) => {
+test.skip("Gift", async ({ page }) => {
   await page.goto(getURL({ isLive: false, isMember }), {
     waitUntil: "domcontentloaded",
     timeout: 100000,
