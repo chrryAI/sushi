@@ -1,9 +1,7 @@
-import { resolve } from "node:path"
 import { config } from "dotenv"
 import { defineConfig } from "vitest/config"
 
-// Load root .env.local first (contains AUTH_SECRET), then local .env
-config({ path: resolve(__dirname, "../../.env.local") })
+config({ path: ".env.local" })
 config({ path: ".env" })
 
 export default defineConfig({
@@ -11,10 +9,23 @@ export default defineConfig({
     globals: true,
     environment: "node",
     include: ["src/__tests__/**/*.test.ts"],
-    exclude: ["src/tests/**/*", "node_modules", "dist"],
-    testTimeout: 30000,
+
+    // Effect.js + SSR fix
+    pool: "forks",
+    poolOptions: { forks: { singleFork: true } },
+
+    // SSR'ı kapat
+    transformMode: {
+      web: [/\.[jt]sx?$/],
+      ssr: [], // Boş = SSR kapalı
+    },
+
+    // Effect'i optimize etme
+    optimizeDeps: {
+      exclude: ["effect"],
+    },
   },
-  esbuild: {
-    target: "es2022",
+  define: {
+    global: "globalThis",
   },
 })

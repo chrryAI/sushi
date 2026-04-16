@@ -71,14 +71,22 @@ export function chunkText(
 // Generate embeddings using OpenAI API
 export async function generateEmbedding(
   text: string,
-  options: { user?: user; guest?: guest; app?: app | sushi } = {},
+  options: {
+    user?: user
+    guest?: guest
+    app?: app | sushi
+    source?: string
+  } = {},
 ): Promise<number[]> {
   try {
-    const { provider, modelId } = await getEmbeddingProvider(options)
-    if (!provider) return
+    const { textEmbeddingModel } = await getEmbeddingProvider({
+      ...options,
+      source: options.source ?? "rag/documentSummary",
+    })
+    if (!textEmbeddingModel) return
 
     const { embedding } = await embed({
-      model: provider.embedding(modelId),
+      model: textEmbeddingModel,
       value: text.substring(0, 8000),
     })
     return embedding
@@ -188,7 +196,11 @@ export async function processFileForRAG({
 }): Promise<void> {
   if (isE2E && member?.role !== "admin") return
 
-  const { provider } = await getEmbeddingProvider({ user: member, guest })
+  const { provider } = await getEmbeddingProvider({
+    user: member,
+    guest,
+    source: "rag/documentSummary",
+  })
   if (!provider) return
 
   console.log(

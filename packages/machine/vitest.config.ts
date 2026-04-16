@@ -4,12 +4,18 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    include: ["src/__tests__/**/*.test.ts"],
-    coverage: {
-      provider: "v8",
-      reporter: ["text", "json", "html"],
-      include: ["src/**/*.ts"],
-      exclude: ["src/__tests__/**", "src/**/*.d.ts"],
+    pool: "forks",
+
+    // Effect.js'i external bırak (SSR transform yok)
+    deps: {
+      optimizer: {
+        web: {
+          external: ["effect"],
+        },
+      },
     },
+
+    // Transform'ı sadece test dosyaları için
+    transform: ["**/*.test.ts"],
   },
 })

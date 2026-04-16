@@ -1,8 +1,8 @@
 name: CI
 on:
   # # will update to main when is ready
-  pull_request:
-    branches: [main]
+  push:
+    branches: [ramen]
 
 permissions:
   contents: read

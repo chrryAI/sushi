@@ -6177,6 +6177,7 @@ export const chopStick = async <T extends sushi>(
                 undefined,
               user: fullUser || undefined,
               guest: fullGuest || undefined,
+              source: "default",
             })
         : Promise.resolve(undefined),
     ),

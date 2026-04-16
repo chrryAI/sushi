@@ -1,6 +1,6 @@
 {
   "name": "@chrryai/waffles",
-  "version": "2.4.50",
+  "version": "2.4.53",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -10,6 +10,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./test-utils": {
+      "types": "./dist/test-utils.d.ts",
+      "import": "./dist/test-utils.js",
+      "require": "./dist/test-utils.cjs"
     }
   },
   "scripts": {
@@ -21,7 +26,9 @@
   "dependencies": {
     "effect": "^3.21.0",
     "react": "^19.2.4",
-    "react-dom": "^19.2.4"
+    "react-dom": "^19.2.4",
+    "vite-plugin-commonjs": "^0.10.4",
+    "vite-plugin-node": "^8.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
