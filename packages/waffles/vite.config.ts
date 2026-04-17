@@ -7,7 +7,7 @@ import commonjs from "vite-plugin-commonjs"
 import { VitePluginNode } from "vite-plugin-node"
 
 export default defineConfig({
-  server: { port: 3001 },
+  // server: { port: 3001 },
   build: { target: "esnext" },
   plugins: [
     react(),

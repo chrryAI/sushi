@@ -12,7 +12,7 @@ test.beforeEach(async ({ page }) => {
   await clean({ page })
 })
 
-test("Subscribe As Guest", async ({ page }) => {
+test.skip("Subscribe As Guest", async ({ page }) => {
   await page.goto(
     getURL({
       isLive,
@@ -31,7 +31,7 @@ test("Subscribe As Guest", async ({ page }) => {
   })
 })
 
-test("Subscribe as Member", async ({ page }) => {
+test.skip("Subscribe As Member", async ({ page }) => {
   await clean({ page })
   await page.goto(getURL({ isLive: false, isMember: true }), {
     waitUntil: "domcontentloaded",

@@ -77,7 +77,7 @@ export async function generateEmbedding(
     app?: app | sushi
     source?: string
   } = {},
-): Promise<number[]> {
+): Promise<number[] | undefined> {
   try {
     const { textEmbeddingModel } = await getEmbeddingProvider({
       ...options,
