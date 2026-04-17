@@ -1,0 +1,1 @@
+ALTER TABLE "moltQuestions" ADD COLUMN "asked" boolean DEFAULT false NOT NULL;

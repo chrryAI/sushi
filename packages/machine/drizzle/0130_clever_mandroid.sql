@@ -1,0 +1,2 @@
+ALTER TABLE "task" ADD COLUMN "threadId" uuid;--> statement-breakpoint
+ALTER TABLE "task" ADD CONSTRAINT "task_threadId_threads_id_fk" FOREIGN KEY ("threadId") REFERENCES "public"."threads"("id") ON DELETE cascade ON UPDATE no action;

@@ -8,11 +8,7 @@ export default defineConfig({
 
     // Effect.js'i external bırak (SSR transform yok)
     deps: {
-      optimizer: {
-        web: {
-          external: ["effect"],
-        },
-      },
+      external: ["effect"],
     },
 
     // Transform'ı sadece test dosyaları için

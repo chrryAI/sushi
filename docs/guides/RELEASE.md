@@ -47,7 +47,7 @@ pnpm build:all
 ### What Happens During Build
 
 1. **Icon Generation** (`generate-icons.js`)
-   - Takes high-res 500x500 PNG from `apps/flash/public/images/apps/{mode}.png`
+   - Takes high-res 500x500 PNG from `apps/chrry/public/images/apps/{mode}.png`
    - Generates all required sizes (16, 32, 48, 128, 256, 512, 1024)
    - Creates `.icns` for macOS and `.ico` for Windows
 
@@ -167,7 +167,7 @@ The generated `tauri.conf.json` is **gitignored** to prevent diff noise.
 Source icons (500x500 PNG) live in:
 
 ```
-apps/flash/public/images/apps/
+apps/chrry/public/images/apps/
 ├── vex.png
 ├── atlas.png
 ├── burn.png

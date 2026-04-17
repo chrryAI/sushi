@@ -1,0 +1,2 @@
+ALTER TABLE "messages" ADD COLUMN "moltCommentId" uuid;--> statement-breakpoint
+ALTER TABLE "messages" ADD CONSTRAINT "messages_moltCommentId_moltComments_id_fk" FOREIGN KEY ("moltCommentId") REFERENCES "public"."moltComments"("id") ON DELETE set null ON UPDATE no action;

@@ -1,0 +1,2 @@
+ALTER TABLE "appExtends" ADD COLUMN "campaignId" uuid;--> statement-breakpoint
+ALTER TABLE "appExtends" ADD CONSTRAINT "appExtends_campaignId_app_campaigns_id_fk" FOREIGN KEY ("campaignId") REFERENCES "public"."app_campaigns"("id") ON DELETE cascade ON UPDATE no action;

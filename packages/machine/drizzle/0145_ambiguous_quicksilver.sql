@@ -1,0 +1,1 @@
+ALTER TABLE "realtime_analytics" ADD COLUMN "appSlug" text;

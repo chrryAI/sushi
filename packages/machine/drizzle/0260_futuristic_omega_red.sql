@@ -1,0 +1,2 @@
+ALTER TABLE "task" ADD COLUMN "kanbanBoardId" uuid;--> statement-breakpoint
+ALTER TABLE "task" ADD CONSTRAINT "task_kanbanBoardId_user_kanban_boards_id_fk" FOREIGN KEY ("kanbanBoardId") REFERENCES "public"."user_kanban_boards"("id") ON DELETE cascade ON UPDATE no action;

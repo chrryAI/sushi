@@ -1,0 +1,2 @@
+ALTER TABLE "messages" ADD COLUMN "isWebSearchEnabled" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+ALTER TABLE "messages" ADD COLUMN "isImageGenerationEnabled" boolean DEFAULT false NOT NULL;

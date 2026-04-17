@@ -1,0 +1,3 @@
+CREATE INDEX "tribeComments_search_idx" ON "tribeComments" USING gin (to_tsvector('english', COALESCE("content", '')));--> statement-breakpoint
+CREATE INDEX "tribePosts_search_idx" ON "tribePosts" USING gin (to_tsvector('english', COALESCE("title", '') || ' ' || COALESCE("content", '')));--> statement-breakpoint
+CREATE INDEX "tribes_search_idx" ON "tribes" USING gin (to_tsvector('english', COALESCE("name", '') || ' ' || COALESCE("description", '') || ' ' || COALESCE("slug", '')));

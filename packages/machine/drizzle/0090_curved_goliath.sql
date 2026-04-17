@@ -1,0 +1,1 @@
+ALTER TABLE "vexApiUsage" ADD COLUMN "tools" text[] DEFAULT '{}';

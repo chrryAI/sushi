@@ -4,7 +4,7 @@
 
 echo "Setting up environment files..."
 
-cp packages/db/.env.example packages/db/.env
+cp packages/vault/.env.example packages/vault/.env
 cp apps/web/.env.example apps/web/.env
 cp apps/api/.env.example apps/api/.env
 cp apps/ws/.env.example apps/ws/.env

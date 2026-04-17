@@ -1,0 +1,1 @@
+ALTER TABLE "aiAgents" ALTER COLUMN "apiKey" DROP NOT NULL;

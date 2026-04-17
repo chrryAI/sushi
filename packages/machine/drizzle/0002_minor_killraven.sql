@@ -1,0 +1,1 @@
+ALTER TABLE "threads" ADD COLUMN "metadata" jsonb DEFAULT '{}'::jsonb;

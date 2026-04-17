@@ -23,7 +23,7 @@ for app in *.app; do
 done
 
 # Copy to flash/public/installs as well
-echo "📋 Copying to apps/flash/public/installs..."
+echo "📋 Copying to apps/chrry/public/installs..."
 mkdir -p ../flash/public/installs
 cp *.dmg ../flash/public/installs/
 
@@ -31,4 +31,4 @@ echo "✅ Done! All installers copied and ready for download."
 echo ""
 echo "📍 Installers available at:"
 echo "   - public/installs/"
-echo "   - apps/flash/public/installs/"
+echo "   - apps/chrry/public/installs/"

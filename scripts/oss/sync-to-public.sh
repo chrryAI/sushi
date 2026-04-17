@@ -37,7 +37,7 @@ rsync -a \
   --exclude='.next' \
   --exclude='*.log' \
   --exclude='playwright-report' \
-  --exclude='apps/flash/public/install/*.dmg' \
+  --exclude='apps/chrry/public/install/*.dmg' \
   --exclude='public/installs/*.dmg' \
   "$SOURCE_DIR/" "$TMP_DIR/"
 
@@ -47,12 +47,12 @@ cd "$TMP_DIR"
 echo "🗑️  Removing private apps..."
 rm -rf \
   apps/api \
-  apps/flash
+  apps/chrry
 
 # Remove private packages
 echo "🗑️  Removing private packages..."
 rm -rf \
-  packages/db \
+  packages/vault \
   packages/shared \
   packages/donut \
   packages/sushi \
@@ -184,9 +184,9 @@ junit.xml
 *.dmg
 *.app
 *.p8
-apps/flash/public/install/*.dmg
+apps/chrry/public/install/*.dmg
 public/installs/*.dmg
-apps/flash/public/installs/*.dmg
+apps/chrry/public/installs/*.dmg
 
 # Generated Tauri config
 apps/desktop/src-tauri/tauri.conf.json

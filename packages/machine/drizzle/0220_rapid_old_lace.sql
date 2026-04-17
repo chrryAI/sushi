@@ -1,0 +1,2 @@
+ALTER TABLE "app_campaigns" ADD COLUMN "rental_type" text DEFAULT 'app_to_store' NOT NULL;--> statement-breakpoint
+ALTER TABLE "slot_rentals" ADD COLUMN "rental_type" text DEFAULT 'app_to_store' NOT NULL;

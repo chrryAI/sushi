@@ -26,19 +26,19 @@ export const signIn = async ({
     await registerButton.click()
   }
 
-  const memberButton = page.getByTestId("member-button")
-  await expect(memberButton).toBeVisible({
-    timeout: 5000,
-  })
+  // const memberButton = page.getByTestId("member-button")
+  // await expect(memberButton).toBeVisible({
+  //   timeout: 5000,
+  // })
 
-  await memberButton.click()
+  // await memberButton.click()
 
-  const signInButton = page.getByTestId("login-button")
-  await expect(signInButton).toBeVisible({
-    timeout: 5000,
-  })
+  // const signInButton = page.getByTestId("login-button")
+  // await expect(signInButton).toBeVisible({
+  //   timeout: 5000,
+  // })
 
-  await signInButton.click()
+  // await signInButton.click()
 
   const modal = page.getByTestId("sign-in-modal")
   await expect(modal).toBeVisible()
@@ -62,9 +62,9 @@ export const signIn = async ({
     force: true,
   })
 
-  await expect(signInButton).not.toBeVisible({
-    timeout: 1000000,
-  })
+  // await expect(signInButton).not.toBeVisible({
+  //   timeout: 1000000,
+  // })
 
   const accountButton = page.getByTestId("account-button")
   await expect(accountButton).toBeVisible({

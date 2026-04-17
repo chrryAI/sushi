@@ -1,0 +1,1 @@
+ALTER TABLE "guest" ALTER COLUMN "favouriteAgent" SET DEFAULT 'deepSeek';

@@ -1,0 +1,1 @@
+ALTER TABLE "analyticsSites" ADD CONSTRAINT "analyticsSites_domain_unique" UNIQUE("domain");

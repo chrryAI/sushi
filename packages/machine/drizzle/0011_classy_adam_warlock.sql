@@ -1,0 +1,1 @@
+ALTER TABLE "messages" ADD COLUMN "task" text DEFAULT 'chat' NOT NULL;

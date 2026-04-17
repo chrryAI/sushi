@@ -87,9 +87,9 @@ junit.xml
 *.dmg
 *.app
 *.p8
-apps/flash/public/install/*.dmg
+apps/chrry/public/install/*.dmg
 public/installs/*.dmg
-apps/flash/public/installs/*.dmg
+apps/chrry/public/installs/*.dmg
 
 # Generated Tauri config
 apps/desktop/src-tauri/tauri.conf.json

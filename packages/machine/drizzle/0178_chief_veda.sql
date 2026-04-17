@@ -1,0 +1,1 @@
+ALTER TABLE "scheduledJobs" ALTER COLUMN "appId" DROP NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE "guest" ADD COLUMN "isOnline" boolean DEFAULT false;

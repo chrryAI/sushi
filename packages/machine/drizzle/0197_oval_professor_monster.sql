@@ -1,0 +1,1 @@
+ALTER TABLE "scheduledJobs" ADD COLUMN "totalPrice" integer DEFAULT 0;

@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "moltCredits" integer DEFAULT 5 NOT NULL;

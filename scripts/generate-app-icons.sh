@@ -11,7 +11,7 @@ sizes=(16 32 48 128)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Base directories
-input_dir="$SCRIPT_DIR/../apps/flash/public/images/apps"
+input_dir="$SCRIPT_DIR/../apps/chrry/public/images/apps"
 output_dir="$SCRIPT_DIR/../apps/extension/public/icons"
 
 # Create output directory if it doesn't exist

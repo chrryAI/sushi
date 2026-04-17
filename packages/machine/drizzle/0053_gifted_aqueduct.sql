@@ -1,0 +1,1 @@
+ALTER TABLE "guest" ADD COLUMN "favouriteAgent" text DEFAULT 'claude' NOT NULL;

@@ -16,7 +16,7 @@ export * as Layer from "effect/Layer"
 export * as Option from "effect/Option"
 
 // XState exports
-export { assign, createActor, createMachine, fromPromise } from "xstate"
+// export { assign, createActor, createMachine, fromPromise } from "xstate"
 
 // Package version
 export const VERSION = "0.1.0"

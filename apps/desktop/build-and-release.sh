@@ -30,8 +30,8 @@ build_and_deploy() {
     cp "$dmg_file" "../../public/installs/${app_name}.dmg"
     
     # Copy to flash
-    mkdir -p ../../apps/flash/public/installs
-    cp "$dmg_file" "../../apps/flash/public/installs/${app_name}.dmg"
+    mkdir -p ../../apps/chrry/public/installs
+    cp "$dmg_file" "../../apps/chrry/public/installs/${app_name}.dmg"
     
     echo "📋 Copied ${app_name}.dmg to public folders"
   else
@@ -42,7 +42,7 @@ build_and_deploy() {
 
 # Ensure directories exist
 mkdir -p ../../public/installs
-mkdir -p ../../apps/flash/public/installs
+mkdir -p ../../apps/chrry/public/installs
 
 # Build apps sequentially
 build_and_deploy "Sushi" "sushi"
@@ -65,6 +65,6 @@ echo "✅ Done! All installers ready for download."
 echo ""
 echo "📍 Installers available at:"
 echo "   - public/installs/"
-echo "   - apps/flash/public/installs/"
+echo "   - apps/chrry/public/installs/"
 echo ""
 echo "🎉 All apps are signed, notarized, and ready to ship!"

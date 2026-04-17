@@ -1,0 +1,2 @@
+ALTER TABLE "characterProfiles" ADD COLUMN "appId" uuid;--> statement-breakpoint
+ALTER TABLE "characterProfiles" ADD CONSTRAINT "characterProfiles_appId_app_id_fk" FOREIGN KEY ("appId") REFERENCES "public"."app"("id") ON DELETE cascade ON UPDATE no action;

@@ -355,7 +355,7 @@ WebSocket integration for:
 
 ```bash
 # 1. Run seed to create Focus app
-cd packages/db
+cd packages/vault
 npm run s
 
 # 2. Verify Focus app created

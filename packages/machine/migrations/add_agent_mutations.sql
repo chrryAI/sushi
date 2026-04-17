@@ -1,0 +1,17 @@
+-- -- Agent Evolution System - Pear Mutation Engine
+-- CREATE TABLE agent_mutations (
+--   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--   from_agent_id UUID REFERENCES "aiAgents"(id) ON DELETE CASCADE,
+--   to_agent_id UUID REFERENCES "aiAgents"(id) ON DELETE CASCADE,
+--   mutation_type TEXT NOT NULL,
+--   old_value JSONB,
+--   new_value JSONB NOT NULL,
+--   reason TEXT NOT NULL,
+--   status TEXT DEFAULT 'pending',
+--   auto_approved BOOLEAN DEFAULT false,
+--   created_on TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+--   applied_on TIMESTAMP WITH TIME ZONE
+-- );
+
+-- CREATE INDEX idx_mutations_status ON agent_mutations(status);
+-- CREATE INDEX idx_mutations_to_agent ON agent_mutations(to_agent_id);
