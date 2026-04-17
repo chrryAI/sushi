@@ -669,32 +669,26 @@ app.use((req, res, next) => {
 
   // Strict validation for development origins
   if (isDev && origin) {
-    try {
-      const url = new URL(origin)
-      const hostname = url.hostname
+    // Explicit allowlist for credentialed CORS in development.
+    // Use exact origin matches (scheme + host + optional port), never wildcard/reflection.
+    const allowedDevOrigins = new Set([
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:5173",
+    ])
 
-      // Allow only specific localhost and local network patterns
-      const isAllowed =
-        hostname === "localhost" ||
-        hostname === "127.0.0.1" ||
-        /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) || // Strict IP validation
-        /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) || // Private network
-        /^172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}$/.test(hostname) // Private network
-
-      if (isAllowed) {
-        res.setHeader("Access-Control-Allow-Origin", origin)
-        res.setHeader("Access-Control-Allow-Credentials", "true")
-        res.setHeader(
-          "Access-Control-Allow-Methods",
-          "GET, POST, PUT, DELETE, OPTIONS",
-        )
-        res.setHeader(
-          "Access-Control-Allow-Headers",
-          "Content-Type, Authorization",
-        )
-      }
-    } catch (_e) {
-      // Invalid origin URL, skip CORS headers
+    if (allowedDevOrigins.has(origin)) {
+      res.setHeader("Access-Control-Allow-Origin", origin)
+      res.setHeader("Access-Control-Allow-Credentials", "true")
+      res.setHeader(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS",
+      )
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        "Content-Type, Authorization",
+      )
     }
   }
 
