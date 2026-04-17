@@ -1,0 +1,1 @@
+ALTER TABLE "guest" ADD COLUMN "subscribedOn" timestamp with time zone;

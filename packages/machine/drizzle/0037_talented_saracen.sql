@@ -1,0 +1,1 @@
+ALTER TABLE "aiAgents" ALTER COLUMN "capabilities" SET DEFAULT '{"text":true,"image":false,"audio":false,"video":false,"webSearch":false,"pdf":false}'::jsonb;

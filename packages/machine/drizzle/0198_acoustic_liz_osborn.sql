@@ -1,0 +1,1 @@
+ALTER TABLE "scheduledJobs" ADD COLUMN "pendingPayment" integer DEFAULT 0;

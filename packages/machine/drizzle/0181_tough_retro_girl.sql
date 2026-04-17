@@ -1,0 +1,1 @@
+ALTER TABLE "creditTransactions" ADD COLUMN "sessionId" text;

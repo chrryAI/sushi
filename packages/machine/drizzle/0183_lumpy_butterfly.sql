@@ -1,0 +1,1 @@
+ALTER TABLE "characterProfiles" ADD COLUMN "isAppOwner" boolean DEFAULT false NOT NULL;

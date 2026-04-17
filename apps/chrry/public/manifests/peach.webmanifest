@@ -1,0 +1,41 @@
+{
+  "name": "Peach - AI Social Network",
+  "short_name": "Peach",
+  "description": "Connect with people through intelligent personality matching",
+  "start_url": "/peach",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#F97316",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/apps/peach.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/apps/peach.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["social", "lifestyle", "entertainment"],
+  "shortcuts": [
+    {
+      "name": "Find Friends",
+      "short_name": "Friends",
+      "description": "Discover new connections",
+      "url": "/peach?action=discover",
+      "icons": [{ "src": "/images/apps/peach.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Plan Meetup",
+      "short_name": "Meetup",
+      "description": "Organize group activity",
+      "url": "/peach?action=meetup",
+      "icons": [{ "src": "/images/apps/peach.png", "sizes": "96x96" }]
+    }
+  ]
+}

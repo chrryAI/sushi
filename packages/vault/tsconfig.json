@@ -1,0 +1,33 @@
+{
+  "extends": "../typescript-config/nextjs.json",
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../ui/globals.d.ts",
+    "../ui/scss-modules.d.ts",
+    "../donut/globals.d.ts",
+    "../donut/style.d.ts"
+  ],
+  "exclude": ["dist", "build", "node_modules", "src/ai"],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "module": "ESNext",
+    // "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022",
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "chrry/*": ["../ui/*"],
+      "./src/*": ["../machine/src/*"]
+    }
+  },
+  "ts-node": {
+    "esm": true
+  }
+}

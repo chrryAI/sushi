@@ -28,7 +28,7 @@ The repository is split across two GitHub remotes:
 | App | Framework | Runtime | Key Tech |
 |-----|-----------|---------|----------|
 | `apps/api` | Hono | Bun | Drizzle ORM, Auth.js, WebSockets, Stripe, BTCPay |
-| `apps/flash` | React 19 + Vite SSR | Node.js | Express SSR server, SCSS, white-label routing |
+| `apps/chrry` | React 19 + Vite SSR | Node.js | Express SSR server, SCSS, white-label routing |
 | `apps/extension` | React 19 + Vite | Browser | Chrome Extension Manifest V3, webextension-polyfill |
 | `apps/desktop` | Tauri v2 + React 19 | Rust + Node.js | White-label desktop builds (DMG) |
 | `apps/mobile` | Capacitor v8 + React 19 | iOS / Android | Firebase Auth, react-native-web |
@@ -45,7 +45,7 @@ The repository is split across two GitHub remotes:
 | `packages/machine` | `@chrryai/machine` | Effect.js + XState AI orchestration primitives |
 | `packages/calendar` | `@chrryai/calendar` | Calendar components for extensions (stub) |
 | `packages/focus` | `@chrryai/focus` | Pomodoro/focus components for extensions (stub) |
-| `packages/db` | `@repo/db` | Drizzle ORM schemas, migrations, AI vault, cache |
+| `packages/vault` | `@chrryai/machine` | Drizzle ORM schemas, migrations, AI vault, cache |
 | `packages/shared` | `@repo/shared` | Shared React contexts, hooks, platform adapters |
 | `packages/donut` | — | Internal UI playground / demo app |
 | `packages/sushi` | — | Legacy nested sub-workspace (not integrated) |
@@ -78,7 +78,7 @@ sushi/
 │   └── web/            # Legacy/minimal helpers
 ├── packages/
 │   ├── calendar/       # @chrryai/calendar
-│   ├── db/             # @repo/db — PRIVATE
+│   ├── db/             # @chrryai/machine — PRIVATE
 │   ├── donut/          # UI playground — PRIVATE
 │   ├── focus/          # @chrryai/focus
 │   ├── machine/        # @chrryai/machine
@@ -123,7 +123,7 @@ pnpm docker:start
 #    or: bash scripts/dev/start-local-stack.sh
 
 # 3. Initialize database
-cd packages/db
+cd packages/vault
 pnpm run generate   # Generate Drizzle artifacts
 pnpm run migrate    # Run migrations
 pnpm run seed       # Seed default data
@@ -158,7 +158,7 @@ pnpm run test:e2e   # Playwright E2E via waffles (Chromium)
 pnpm run e2e        # Full E2E flow: generate -> migrate -> seed -> e2e
 
 # Database
-cd packages/db
+cd packages/vault
 pnpm run generate   # drizzle-kit generate
 pnpm run migrate    # drizzle-kit migrate
 pnpm run seed       # Seed scripts via tsx
@@ -247,7 +247,7 @@ An AI-generated commit message hook runs automatically if the commit message is 
 ## 6. Testing Instructions
 
 ### Test Runners
-- **Vitest** — Primary unit/integration runner (apps/api, apps/flash, packages/ui, packages/db, packages/machine).
+- **Vitest** — Primary unit/integration runner (apps/api, apps/chrry, packages/ui, packages/vault, packages/machine).
 - **Playwright** — E2E and API contract testing (packages/waffles).
 
 ### Test Locations
@@ -255,10 +255,10 @@ An AI-generated commit message hook runs automatically if the commit message is 
 |---------------|---------------|--------|
 | `packages/waffles` | `src/__tests__/` (unit/integration), root `*.spec.ts` (Playwright E2E) | Vitest + Playwright |
 | `packages/ui` | `__tests__/*.test.tsx` | Vitest (happy-dom) |
-| `packages/db` | `__tests__/*.test.ts` | Vitest (v8 coverage) |
+| `packages/vault` | `__tests__/*.test.ts` | Vitest (v8 coverage) |
 | `packages/machine` | `src/__tests__/unit/`, `src/__tests__/integration/` | Vitest |
 | `apps/api` | `hono/routes/*.test.ts`, `lib/*.test.ts`, `test/*.test.ts` | Vitest |
-| `apps/flash` | `src/server-loader.test.ts` | Vitest |
+| `apps/chrry` | `src/server-loader.test.ts` | Vitest |
 
 ### Running Specific Test Suites
 ```bash
@@ -269,7 +269,7 @@ pnpm test
 cd packages/ui && pnpm test
 
 # DB logic tests
-cd packages/db && pnpm test
+cd packages/vault && pnpm test
 
 # Machine integration tests (real AI API calls, 60s timeout, 2 retries)
 cd packages/machine && pnpm test:integration
@@ -287,7 +287,7 @@ pnpm run e2e
 
 ### Testing Patterns
 - **API route tests** instantiate Hono apps directly and use `app.request(...)` without starting a real server.
-- **Mocking** is heavy in API/Flash tests: `vi.mock("@repo/db", ...)`, `vi.mock("../../lib/rateLimiting", ...)`.
+- **Mocking** is heavy in API/Flash tests: `vi.mock("@chrryai/machine", ...)`, `vi.mock("../../lib/rateLimiting", ...)`.
 - **UI tests** use `happy-dom` (not jsdom) with `globals: true` and a comprehensive mock context fixture at `packages/ui/__tests__/mocks/mockContexts.tsx`.
 - **Machine integration tests** hit real OpenRouter APIs and are skipped if `OPENROUTER_API_KEY` is missing.
 - **DB tests** hardcode `DB_URL` to `postgres://postgres:postgres@localhost:5432/postgres` in their Vitest configs — a running local Postgres is required.
@@ -296,9 +296,9 @@ pnpm run e2e
 | Package | Provider |
 |---------|----------|
 | `apps/api` | v8 |
-| `apps/flash` | v8 |
+| `apps/chrry` | v8 |
 | `packages/ui` | istanbul |
-| `packages/db` | v8 |
+| `packages/vault` | v8 |
 | `packages/machine` | v8 |
 
 ---
@@ -324,7 +324,7 @@ SKIP=gitleaks git commit -m "your message"
 
 ### API Keys
 - AI provider keys support a BYOK (Bring Your Own Key) model.
-- User-provided keys are encrypted at rest (`packages/db/encryption.ts`).
+- User-provided keys are encrypted at rest (`packages/vault/encryption.ts`).
 - Rate limiting is enforced in production.
 
 ### Database Security
@@ -378,11 +378,11 @@ Services started by `pnpm docker:start`:
 
 ## 9. Database Architecture
 
-`packages/db/` is the single source of truth for all data access.
+`packages/vault/` is the single source of truth for all data access.
 
 - **ORM:** Drizzle ORM with `postgres-js` driver
 - **Schema:** Monolithic `src/schema.ts` (~6,300 lines, 112 tables) plus `src/better-auth-schema.ts`
-- **Migrations:** 265+ Drizzle-generated SQL files in `packages/db/drizzle/`
+- **Migrations:** 265+ Drizzle-generated SQL files in `packages/vault/drizzle/`
 - **Key domains:** Auth, AI agents/messages/threads, app store, social (tribes), payments/credits, scheduling/jobs, analytics, recruitment, retro/PM, feedback, agent XP/RPG stats
 
 ### AI Vault (`src/ai/vault/`)
@@ -404,11 +404,11 @@ This monorepo is split across two GitHub remotes:
 
 **Public (synced to `chrryai`)**: `packages/donut`, `pepper`, `waffles`, `calendar`, `focus`, `machine`, `typescript-config`, plus `apps/extension`, `desktop`, `mobile`, `bridge`, `agent`.
 
-**Private (never leave this repo)**: `apps/api`, `apps/flash`, `packages/db`, `packages/shared`, `packages/donut`, `packages/sushi`, and everything under `infra/`.
+**Private (never leave this repo)**: `apps/api`, `apps/chrry`, `packages/vault`, `packages/shared`, `packages/donut`, `packages/sushi`, and everything under `infra/`.
 
 **License map:**
 - `@chrryai/*` packages: MIT (public)
-- Private platform code (`apps/api`, `apps/flash`, `packages/db`, etc.): Proprietary / All rights reserved
+- Private platform code (`apps/api`, `apps/chrry`, `packages/vault`, etc.): Proprietary / All rights reserved
 
 ---
 

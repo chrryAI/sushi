@@ -1,0 +1,1 @@
+ALTER TABLE "collaborations" ALTER COLUMN "threadId" SET NOT NULL;

@@ -37,7 +37,7 @@ GOOGLE_ADS_PURCHASE_LABEL=ghi789
 
 ### 3. Install Package
 
-Already created: `/packages/db/src/google-ads.ts`
+Already created: `/packages/vault/src/google-ads.ts`
 
 ---
 
@@ -47,8 +47,8 @@ Already created: `/packages/db/src/google-ads.ts`
 
 ```typescript
 // app/api/auth/signup/route.ts
-import { createUser } from "@repo/db";
-import { trackSignup } from "@repo/db/google-ads";
+import { createUser } from "@chrryai/machine";
+import { trackSignup } from "@chrryai/machine/google-ads";
 
 export async function POST(request: Request) {
   const { email, password } = await request.json();
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/api/webhooks/stripe/route.ts
-import { trackPurchase } from "@repo/db/google-ads"
+import { trackPurchase } from "@chrryai/machine/google-ads"
 
 export async function POST(request: Request) {
   const event = await stripe.webhooks.constructEvent(...)
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
 
 ```typescript
 // app/api/trial/start/route.ts
-import { trackTrialStart } from "@repo/db/google-ads";
+import { trackTrialStart } from "@chrryai/machine/google-ads";
 
 export async function POST(request: Request) {
   const { userId } = await request.json();
@@ -193,7 +193,7 @@ User Action → Your Server → Google Ads API → Track Conversion Only
 
 ```typescript
 // Test conversion tracking
-import { trackSignup } from "@repo/db/google-ads";
+import { trackSignup } from "@chrryai/machine/google-ads";
 
 const result = await trackSignup("test_user_123");
 console.log("Conversion tracked:", result);

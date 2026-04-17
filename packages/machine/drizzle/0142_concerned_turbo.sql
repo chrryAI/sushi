@@ -1,0 +1,1 @@
+ALTER TABLE "analyticsSites" ADD COLUMN "stats" jsonb;

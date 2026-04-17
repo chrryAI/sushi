@@ -260,7 +260,7 @@ type CachedGuestData = Awaited<ReturnType<typeof getGuest>>;
 ### Redis Client
 
 ```typescript
-// /packages/db/src/redis.ts
+// /packages/vault/src/redis.ts
 export const redis = new Redis({
   host: process.env.REDIS_HOST || "localhost",
   port: Number.parseInt(process.env.REDIS_PORT || "6379"),
@@ -272,7 +272,7 @@ export const redis = new Redis({
 ### Cache Helpers
 
 ```typescript
-// /packages/db/src/cache.ts
+// /packages/vault/src/cache.ts
 
 // Generic get/set
 export async function getCache<T>(key: string): Promise<T | null>;

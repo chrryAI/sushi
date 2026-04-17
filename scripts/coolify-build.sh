@@ -5,7 +5,7 @@
 # echo "Checking if build artifacts exist from CI..."
 
 # # Check if .next directories exist (from CI build)
-# if [ -d "apps/flash/.next" ] && [ -d "apps/api/.next" ]; then
+# if [ -d "apps/chrry/.next" ] && [ -d "apps/api/.next" ]; then
 #   echo "✅ Build artifacts found! Skipping build..."
 #   echo "Using cached build from GitHub Actions CI"
 #   exit 0
@@ -28,7 +28,7 @@
 #   pnpm install --frozen-lockfile
 
 #   # Build packages first
-#   pnpm turbo build --filter="@repo/db" --filter="@chrryai/donut" --filter="@chrryai/waffles" --filter="@chrryai/pepper"
+#   pnpm turbo build --filter="@chrryai/machine" --filter="@chrryai/donut" --filter="@chrryai/waffles" --filter="@chrryai/pepper"
 
 #   # Build apps
 #   NODE_OPTIONS='--max-old-space-size=8192' CI=true pnpm turbo build --filter="flash"

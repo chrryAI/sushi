@@ -1,0 +1,2 @@
+ALTER TABLE "messages" ADD COLUMN "jobId" uuid;--> statement-breakpoint
+ALTER TABLE "messages" ADD CONSTRAINT "messages_jobId_scheduledJobs_id_fk" FOREIGN KEY ("jobId") REFERENCES "public"."scheduledJobs"("id") ON DELETE set null ON UPDATE no action;

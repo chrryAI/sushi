@@ -1,0 +1,2 @@
+ALTER TABLE "creditTransactions" ADD COLUMN "scheduleId" uuid;--> statement-breakpoint
+ALTER TABLE "creditTransactions" ADD CONSTRAINT "creditTransactions_scheduleId_scheduledJobs_id_fk" FOREIGN KEY ("scheduleId") REFERENCES "public"."scheduledJobs"("id") ON DELETE set null ON UPDATE no action;

@@ -68,8 +68,8 @@ These packages are published under the `@chrryai` scope and synced to the public
 
 The following packages and apps contain proprietary business logic and **do not** leave this private monorepo:
 
-- `apps/api`, `apps/flash`
-- `packages/db`, `packages/shared`, `packages/donut`, `packages/sushi`
+- `apps/api`, `apps/chrry`
+- `packages/vault`, `packages/shared`, `packages/donut`, `packages/sushi`
 - `infra/docker/`, `infra/hetzner/`, `infra/vps/`
 
 ## 🤝 Contributing
@@ -81,6 +81,6 @@ For agents and automated tooling, see [AGENTS.md](AGENTS.md) for conventions and
 ## 🔑 License
 
 - **Public packages** (`@chrryai/*`): MIT
-- **Private platform code** (`apps/api`, `apps/flash`, `packages/db`, etc.): Proprietary / All rights reserved
+- **Private platform code** (`apps/api`, `apps/chrry`, `packages/vault`, etc.): Proprietary / All rights reserved
 
 See individual `package.json` files for package-level license details.

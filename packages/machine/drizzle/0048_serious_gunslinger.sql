@@ -1,0 +1,1 @@
+ALTER TABLE "device" ADD COLUMN "migratedToUser" boolean DEFAULT false NOT NULL;

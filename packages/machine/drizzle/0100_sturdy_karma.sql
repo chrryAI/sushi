@@ -1,0 +1,1 @@
+ALTER TABLE "app" ALTER COLUMN "themeColor" SET DEFAULT '#f87171';

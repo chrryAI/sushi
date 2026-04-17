@@ -1,0 +1,94 @@
+# =============================================================================
+# Local Optuna Setup - WorkSSD Edition
+# =============================================================================
+# Volumes: /Volumes/WorkSSD/docker-volumes/optuna/
+#
+# Kullanım:
+#   docker compose -f docker-compose.optuna.local.yml up -d
+#
+# Dashboard: http://localhost:8081
+# =============================================================================
+
+services:
+  # PostgreSQL
+  optuna-postgres:
+    image: postgres:16-alpine
+    platform: linux/arm64
+    container_name: optuna-postgres-local
+    environment:
+      POSTGRES_DB: optuna
+      POSTGRES_USER: optuna
+      POSTGRES_PASSWORD: ${OPTUNA_DB_PASS:-local_pass_123}
+    ports:
+      - "5433:5432"
+    volumes:
+      - /Volumes/WorkSSD/docker-volumes/optuna/postgres-data:/var/lib/postgresql/data
+    networks:
+      - optuna-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U optuna"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Optuna Dashboard
+  optuna-dashboard:
+    image: python:3.11-slim
+    platform: linux/arm64
+    container_name: optuna-dashboard-local
+    ports:
+      - "8081:8080"
+    environment:
+      OPTUNA_STORAGE: postgresql://optuna:${OPTUNA_DB_PASS:-local_pass_123}@optuna-postgres:5432/optuna
+    command: >
+      bash -c "pip install optuna-dashboard psycopg2-binary && optuna-dashboard $$OPTUNA_STORAGE --port 8080 --host 0.0.0.0"
+    networks:
+      - optuna-local
+    depends_on:
+      optuna-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Redis
+  optuna-redis-local:
+    image: redis:7.2-alpine
+    platform: linux/arm64
+    container_name: optuna-redis-local
+    ports:
+      - "6381:6379"
+    volumes:
+      - /Volumes/WorkSSD/docker-volumes/optuna/redis-data:/data
+    networks:
+      - optuna-local
+    restart: unless-stopped
+
+  # Local Trial Worker (Lightweight - no torch)
+  trial-worker-local:
+    build:
+      context: ./workers/trial-worker
+      dockerfile: Dockerfile.light
+      platforms:
+        - linux/arm64
+    container_name: optuna-worker-local
+    environment:
+      OPTUNA_STORAGE: postgresql://optuna:${OPTUNA_DB_PASS:-local_pass_123}@optuna-postgres:5432/optuna
+      STUDY_NAME: ${STUDY_NAME:-local-memory-optimizer}
+      WORKER_ID: local-1
+      VEX_DB_URL: ${VEX_DB_URL:-postgresql://postgres@host.docker.internal:5432/v}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      TRIAL_MODE: ${TRIAL_MODE:-mock}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - optuna-local
+    depends_on:
+      optuna-postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - worker
+
+networks:
+  optuna-local:
+    driver: bridge

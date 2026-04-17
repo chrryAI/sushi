@@ -1,0 +1,2 @@
+ALTER TABLE "messages" ADD COLUMN "appId" uuid;--> statement-breakpoint
+ALTER TABLE "messages" ADD CONSTRAINT "messages_appId_app_id_fk" FOREIGN KEY ("appId") REFERENCES "public"."app"("id") ON DELETE cascade ON UPDATE no action;

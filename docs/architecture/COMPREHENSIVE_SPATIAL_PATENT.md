@@ -178,7 +178,7 @@ Result: 12 apps × 5 platforms = 60+ unique builds from one codebase!
 **3. App Inheritance Chain**
 
 ```typescript
-// Database schema (packages/db/src/schema.ts)
+// Database schema (packages/vault/src/schema.ts)
 export const apps = pgTable("apps", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),
@@ -208,7 +208,7 @@ async function resolveInheritance(app: App): Promise<ResolvedApp> {
 **4. Store-App Installation Matrix**
 
 ```typescript
-// packages/db/src/schema.ts
+// packages/vault/src/schema.ts
 export const storeInstalls = pgTable("store_installs", {
   storeId: text("store_id").references(() => stores.id),
   appId: text("app_id").references(() => apps.id),
@@ -387,7 +387,7 @@ export default defineConfig({
 **B. Runtime App Context Resolution**
 
 ```typescript
-// apps/flash/src/entry-server.jsx (Vite SSR)
+// apps/chrry/src/entry-server.jsx (Vite SSR)
 export async function render(url: string, manifest: string) {
   const { hostname, pathname } = new URL(url)
 
@@ -469,7 +469,7 @@ export const App = ({ app, store }) => {
 
 // Platform-specific entry points just wrap the universal App:
 
-// apps/flash/src/entry-client.jsx (Web PWA)
+// apps/chrry/src/entry-client.jsx (Web PWA)
 hydrateRoot(document.getElementById("app"), <App {...props} />)
 
 // apps/extension/src/main.tsx (Chrome Extension)
@@ -1050,7 +1050,7 @@ pnpm build:mobile      # React Native (iOS/Android)
 ### 2. Database Schema Lock
 
 ```typescript
-// packages/db/src/schema.ts
+// packages/vault/src/schema.ts
 // Stores, apps, storeInstalls, inheritance chains
 // Without this schema, the system doesn't work
 // Schema is AGPL-3.0 (copyleft - share modifications)

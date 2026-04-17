@@ -10,8 +10,8 @@ import { chromium } from "@playwright/test"
 import {
   getAllAgents,
   recordAgentAction,
-} from "../../../packages/db/src/agent-actions.js"
-import { getAgentPermissions } from "../../../packages/db/src/agent-xp.js"
+} from "../../../packages/vault/src/agent-actions.js"
+import { getAgentPermissions } from "../../../packages/vault/src/agent-xp.js"
 
 /**
  * Generate AI proposal using your existing AI system

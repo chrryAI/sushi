@@ -1,0 +1,1 @@
+ALTER TABLE "messages" ADD COLUMN "pauseDebate" boolean DEFAULT false NOT NULL;

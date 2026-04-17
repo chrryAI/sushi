@@ -1,0 +1,41 @@
+{
+  "name": "Bloom - AI Health & Wellness Coach",
+  "short_name": "Bloom",
+  "description": "Track your wellness journey with AI-powered insights",
+  "start_url": "/bloom",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#EC4899",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/apps/bloom.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/apps/bloom.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Track Health",
+      "short_name": "Track",
+      "description": "Log health metrics",
+      "url": "/bloom?action=track",
+      "icons": [{ "src": "/images/apps/bloom.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Workout Plan",
+      "short_name": "Workout",
+      "description": "Get workout routine",
+      "url": "/bloom?action=workout",
+      "icons": [{ "src": "/images/apps/bloom.png", "sizes": "96x96" }]
+    }
+  ]
+}

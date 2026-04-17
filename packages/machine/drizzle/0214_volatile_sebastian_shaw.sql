@@ -1,0 +1,1 @@
+ALTER TABLE "aiAgents" ADD COLUMN "metadata" jsonb DEFAULT '{}'::jsonb;

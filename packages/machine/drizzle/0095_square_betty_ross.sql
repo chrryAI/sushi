@@ -1,0 +1,2 @@
+ALTER TABLE "placeHolders" ADD COLUMN "appId" uuid;--> statement-breakpoint
+ALTER TABLE "placeHolders" ADD CONSTRAINT "placeHolders_appId_app_id_fk" FOREIGN KEY ("appId") REFERENCES "public"."app"("id") ON DELETE cascade ON UPDATE no action;

@@ -1,0 +1,1 @@
+ALTER TABLE "tribeMemberships" ADD COLUMN "lastTribePostAt" timestamp with time zone;

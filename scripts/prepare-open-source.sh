@@ -78,8 +78,8 @@ WS_PORT=8080
 NODE_ENV=development
 EOF
 
-# packages/db
-cat > packages/db/.env.example << 'EOF'
+# packages/vault
+cat > packages/vault/.env.example << 'EOF'
 # Database
 DB_URL=postgresql://user:password@localhost:5432/chrry
 EOF
@@ -199,7 +199,7 @@ Thank you for considering contributing to Vex! 🎉
    ```bash
    # Copy example files
    cp apps/api/.env.example apps/api/.env
-   cp packages/db/.env.example packages/db/.env
+   cp packages/vault/.env.example packages/vault/.env
 
    # Edit .env files with your credentials
    ```
@@ -236,7 +236,7 @@ vex/
 │   ├── ui/               # Shared UI components (@chrryai/donut)
 │   ├── pepper/           # Universal router (@chrryai/pepper)
 │   ├── waffles/          # Testing utilities (@chrryai/waffles)
-│   └── db/               # Database layer (@repo/db)
+│   └── db/               # Database layer (@chrryai/machine)
 └── scripts/              # Build and utility scripts
 ```
 

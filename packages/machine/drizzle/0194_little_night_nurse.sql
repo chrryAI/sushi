@@ -1,0 +1,2 @@
+CREATE INDEX "creditTransactions_sessionId_idx" ON "creditTransactions" USING btree ("sessionId");--> statement-breakpoint
+CREATE INDEX "creditTransactions_scheduleId_idx" ON "creditTransactions" USING btree ("scheduleId");

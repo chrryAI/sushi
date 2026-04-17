@@ -40,7 +40,7 @@ APP_NAME_UPPER=$(echo "$APP_NAME" | tr '[:lower:]' '[:upper:]')
 APP_NAME_TITLE=$(echo "${APP_NAME:0:1}" | tr '[:lower:]' '[:upper:]')$(echo "${APP_NAME:1}" | tr '[:upper:]' '[:lower:]')
 
 # Paths
-SOURCE_ICON="apps/flash/public/images/apps/${APP_NAME_LOWER}.png"
+SOURCE_ICON="apps/chrry/public/images/apps/${APP_NAME_LOWER}.png"
 OUTPUT_DIR="apps/extension/store-assets/${APP_NAME_LOWER}"
 
 # Check if source icon exists

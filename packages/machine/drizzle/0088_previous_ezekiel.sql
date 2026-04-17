@@ -1,0 +1,1 @@
+ALTER TABLE "app" RENAME COLUMN "baseApps" TO "extends";

@@ -1,0 +1,41 @@
+{
+  "name": "Vault - AI Finance Assistant",
+  "short_name": "Vault",
+  "description": "Smart financial insights powered by AI",
+  "start_url": "/vault",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10B981",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/apps/vault.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/apps/vault.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Track Expenses",
+      "short_name": "Expenses",
+      "description": "Log spending",
+      "url": "/vault?action=expenses",
+      "icons": [{ "src": "/images/apps/vault.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Budget Plan",
+      "short_name": "Budget",
+      "description": "Create budget",
+      "url": "/vault?action=budget",
+      "icons": [{ "src": "/images/apps/vault.png", "sizes": "96x96" }]
+    }
+  ]
+}

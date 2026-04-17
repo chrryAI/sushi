@@ -1,0 +1,1 @@
+ALTER TABLE "hippo" ADD COLUMN "visibility" text DEFAULT 'private' NOT NULL;

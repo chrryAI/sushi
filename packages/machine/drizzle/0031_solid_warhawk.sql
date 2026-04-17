@@ -1,0 +1,1 @@
+ALTER TABLE "aiAgents" ADD COLUMN "maxPromptSize" integer DEFAULT 7000;

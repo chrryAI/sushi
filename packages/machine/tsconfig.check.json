@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "noEmit": true,
+    "lib": ["ES2022", "DOM"],
+    "jsx": "react-jsx"
+  },
+  "include": ["src/**/*", "*.ts", "*.d.ts", "../donut/**/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/__tests__",
+    "src/machines",
+    "vitest.config.ts"
+  ]
+}

@@ -1,0 +1,39 @@
+.backToBlog {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 5px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.article > h1 {
+  margin-top: 0;
+}
+
+.video {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.videoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  top: 10px;
+  font-size: 15px;
+}
+
+.backToBlogContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date {
+  font-size: 13px;
+}

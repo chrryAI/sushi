@@ -89,7 +89,7 @@ explained, so agents don't know whether to add new component demos there.
 
 No guidance on when to write `.module.scss` vs `.styles.ts`, how to run the
 converter, or what the converter supports/doesn't support. This affects every
-agent touching `packages/ui` or `apps/flash`.
+agent touching `packages/ui` or `apps/chrry`.
 
 ### M2 — Git branching model
 
@@ -137,7 +137,7 @@ warnings such as:
 - Do not run `pnpm install` directly (use `vp install`).
 - Do not import from `vitest` or `vite` directly.
 - Do not add a new Drizzle migration manually — always use `pnpm run generate`.
-- Do not edit `packages/db/src/schema.ts` without running `generate` + `migrate`.
+- Do not edit `packages/vault/src/schema.ts` without running `generate` + `migrate`.
 - Do not add a new route to `apps/api` without a corresponding `.test.ts`.
 
 ### M9 — Local setup one-command shortcut
@@ -221,7 +221,7 @@ Section 5.
 **Content to include:**
 
 - The SCSS-to-TypeScript conversion system: `.module.scss` → `.styles.ts`.
-- When to use each: `.module.scss` for web-only components in `apps/flash`;
+- When to use each: `.module.scss` for web-only components in `apps/chrry`;
   `.styles.ts` (generated or hand-written) for cross-platform components in
   `packages/ui`.
 - Commands: `pnpm s` (convert changed), `pnpm s:all` (convert all),
@@ -256,10 +256,10 @@ main      ← stable, production-deployed
 **New section:** 3a (after Workspace Structure).  
 **Content:**
 
-- Brand configs live in `apps/flash/src/config/` (one file per brand).
+- Brand configs live in `apps/chrry/src/config/` (one file per brand).
 - `scripts/validate-chrry-config.js` validates config shape — run it after
   editing any brand config.
-- Domain-based routing: `apps/flash` reads the request hostname at runtime and
+- Domain-based routing: `apps/chrry` reads the request hostname at runtime and
   selects the matching brand config. No env var needed in production.
 - When adding a feature that should be brand-gated, add a boolean flag to the
   brand config type and default it to `false` in all existing configs.
@@ -305,13 +305,13 @@ main      ← stable, production-deployed
 - Do not run `pnpm add` / `npm install` — use `vp add`.
 - Do not `import { test } from 'vitest'` — use `import { test } from 'vite-plus/test'`.
 - Do not create Drizzle migrations manually — always `pnpm run generate` in
-  `packages/db`, then commit the generated SQL.
-- Do not edit `packages/db/src/schema.ts` without running `generate` + `migrate`
+  `packages/vault`, then commit the generated SQL.
+- Do not edit `packages/vault/src/schema.ts` without running `generate` + `migrate`
   afterward.
 - Do not add a new Hono route without a corresponding `*.test.ts` file.
 - Do not implement custom rate limiting — Arcjet handles it in `apps/api`.
 - Do not add Sentry calls in `packages/*` — observability belongs in `apps/api`
-  and `apps/flash` only.
+  and `apps/chrry` only.
 - Do not create markdown files at the repo root — place them under `docs/`
   in the appropriate subdirectory (`architecture/`, `guides/`, `setup/`,
   `vision/`).

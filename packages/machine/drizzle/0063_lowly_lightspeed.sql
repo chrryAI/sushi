@@ -1,0 +1,3 @@
+ALTER TABLE "creditTransactions" ADD COLUMN "subscriptionId" uuid;--> statement-breakpoint
+ALTER TABLE "creditTransactions" ADD COLUMN "type" text DEFAULT 'purchase' NOT NULL;--> statement-breakpoint
+ALTER TABLE "creditTransactions" ADD CONSTRAINT "creditTransactions_subscriptionId_subscription_id_fk" FOREIGN KEY ("subscriptionId") REFERENCES "public"."subscription"("id") ON DELETE cascade ON UPDATE no action;

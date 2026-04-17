@@ -1,0 +1,99 @@
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat python3 make g++
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy package files
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/chrry/package.json apps/chrry/
+COPY packages/vault/package.json packages/vault/
+COPY packages/donut/package.json packages/donut/
+
+# Install ALL dependencies (including devDependencies needed for build)
+# Explicitly unset NODE_ENV to prevent production setting from skipping devDependencies
+RUN NODE_ENV= pnpm install --frozen-lockfile
+
+# Build the source code
+FROM base AS builder
+# Install build dependencies for native modules
+RUN apk add --no-cache libc6-compat python3 make g++
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Copy workspace configuration first
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY apps/chrry/package.json apps/chrry/
+COPY packages/vault/package.json packages/vault/
+COPY packages/donut/package.json packages/donut/
+
+# Copy node_modules from deps stage BEFORE source code
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy source code (this includes workspace packages)
+COPY . .
+
+# Remove node_modules to prevent pnpm from prompting for confirmation
+RUN rm -rf node_modules
+
+# Restore pnpm workspace links (install ALL dependencies including devDependencies for build)
+RUN NODE_ENV= pnpm install --frozen-lockfile
+
+# Build the Vite application (client + server)
+ENV NODE_OPTIONS='--max-old-space-size=8192'
+
+RUN pnpm --filter flash run build
+
+# Production image
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 viteuser
+
+# Install pnpm for production dependencies
+RUN npm install -g pnpm
+
+# Copy package files for production install with proper ownership
+COPY --chown=viteuser:nodejs package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --chown=viteuser:nodejs apps/chrry/package.json apps/chrry/
+COPY --chown=viteuser:nodejs packages/vault/package.json packages/vault/
+COPY --chown=viteuser:nodejs packages/donut/package.json packages/donut/
+
+# Install production dependencies only
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy built application with proper ownership
+COPY --chown=viteuser:nodejs --from=builder /app/apps/chrry/dist ./apps/chrry/dist
+COPY --chown=viteuser:nodejs --from=builder /app/apps/chrry/server.js ./apps/chrry/
+COPY --chown=viteuser:nodejs --from=builder /app/apps/chrry/public ./apps/chrry/public
+COPY --chown=viteuser:nodejs --from=builder /app/apps/chrry/index.html ./apps/chrry/
+COPY --chown=viteuser:nodejs --from=builder /app/apps/chrry/content ./apps/chrry/content
+
+# Copy workspace packages (needed for imports) with proper ownership
+COPY --chown=viteuser:nodejs --from=builder /app/packages ./packages
+
+# Ensure ALL directories are writable by viteuser (Vite needs to create .vite/deps_temp)
+# This must be done AFTER all COPY commands and BEFORE USER switch
+RUN chown -R viteuser:nodejs /app
+
+# Switch to non-root user
+USER viteuser
+
+EXPOSE 5173
+
+ENV PORT=5173
+ENV HOST="0.0.0.0"
+
+WORKDIR /app/apps/chrry
+
+CMD ["node", "server.js"]

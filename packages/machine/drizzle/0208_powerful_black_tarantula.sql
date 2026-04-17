@@ -1,0 +1,2 @@
+ALTER TABLE "placeHolders" ADD COLUMN "tribePostId" uuid;--> statement-breakpoint
+ALTER TABLE "placeHolders" ADD CONSTRAINT "placeHolders_tribePostId_tribePosts_id_fk" FOREIGN KEY ("tribePostId") REFERENCES "public"."tribePosts"("id") ON DELETE cascade ON UPDATE no action;

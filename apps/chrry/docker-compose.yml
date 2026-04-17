@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  flash:
+    build:
+      context: ../..
+      dockerfile: apps/chrry/Dockerfile
+    ports:
+      - 5173:5173
+    environment:
+      - NODE_ENV=production
+      - PORT=5173
+      - HOST=0.0.0.0
+      # API URL - point to your API server
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3001}
+      # Database connection (if needed)
+      - DB_URL=${DB_URL}
+      # Auth secrets
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+    restart: unless-stopped
+    networks:
+      - vex-network
+    depends_on:
+      - api
+    healthcheck:
+      test: [CMD, wget, --quiet, --tries=1, --spider, http://localhost:5173/]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  api:
+    # Assuming you have an API service
+    # Replace with your actual API docker-compose config
+    image: your-api-image:latest
+    ports:
+      - 3001:3001
+    environment:
+      - NODE_ENV=production
+      - DB_URL=${DB_URL}
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+    networks:
+      - vex-network
+
+networks:
+  vex-network:
+    driver: bridge

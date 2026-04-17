@@ -1,0 +1,2 @@
+# This file is now handled by app/robots.ts for dynamic subdomain support
+# Each subdomain will automatically get its own robots.txt with the correct sitemap
