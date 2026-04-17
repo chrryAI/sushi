@@ -67,8 +67,6 @@ export function repairJson(content: string, textFields?: string[]): string {
   repaired = repaired
     .replace(/：/g, ":")
     .replace(/，/g, ",")
-    .replace(/"/g, '"')
-    .replace(/"/g, '"')
 
   // Fix single quotes to double (simple cases)
   repaired = repaired.replace(/'([^']*)'(?=\s*[:,}\]])/g, '"$1"')
