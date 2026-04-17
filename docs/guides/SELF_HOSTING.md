@@ -38,7 +38,7 @@ This will:
 ### 3. Initialize Database
 
 ```bash
-cd packages/db
+cd packages/vault
 pnpm run generate  # Generate Drizzle artifacts
 pnpm run migrate   # Run migrations
 pnpm run seed      # Seed with default apps
@@ -173,7 +173,7 @@ docker-compose -f docker-compose.local.yml down -v
 
 # Start fresh
 bash scripts/start-local-stack.sh
-cd packages/db && pnpm run migrate && pnpm run seed
+cd packages/vault && pnpm run migrate && pnpm run seed
 ```
 
 ### Backup Data
@@ -308,7 +308,7 @@ cd apps/api && pnpm test
 ### Database Migrations
 
 ```bash
-cd packages/db
+cd packages/vault
 
 # Create new migration
 pnpm run generate

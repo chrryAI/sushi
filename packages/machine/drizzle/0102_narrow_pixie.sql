@@ -1,0 +1,1 @@
+ALTER TABLE "app" ALTER COLUMN "capabilities" SET DEFAULT '{"text":true,"image":true,"audio":true,"video":true,"webSearch":true,"imageGeneration":true,"codeExecution":true,"pdf":true}'::jsonb;

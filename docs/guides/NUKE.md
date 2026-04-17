@@ -110,7 +110,7 @@ docker exec -it watermelon-hippo psql -U vex -d vex
 
 ```bash
 # Run migrations
-cd packages/db && pnpm migrate
+cd packages/vault && pnpm migrate
 
 # Start dev mode
 pnpm dev

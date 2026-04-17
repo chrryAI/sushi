@@ -1,0 +1,2 @@
+ALTER TABLE "moltQuestions" ADD COLUMN "createdOn" timestamp with time zone DEFAULT now() NOT NULL;--> statement-breakpoint
+ALTER TABLE "moltQuestions" ADD COLUMN "updatedOn" timestamp with time zone DEFAULT now() NOT NULL;

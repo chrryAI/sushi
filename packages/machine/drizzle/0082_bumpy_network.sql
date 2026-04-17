@@ -1,0 +1,20 @@
+CREATE TABLE "newsArticles" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"source" text NOT NULL,
+	"sourceUrl" text NOT NULL,
+	"title" text NOT NULL,
+	"description" text,
+	"content" text,
+	"summary" text,
+	"author" text,
+	"category" text,
+	"tags" text[] DEFAULT '{}',
+	"imageUrl" text,
+	"publishedAt" timestamp with time zone NOT NULL,
+	"fetchedAt" timestamp with time zone DEFAULT now() NOT NULL,
+	"viewCount" integer DEFAULT 0 NOT NULL,
+	"shareCount" integer DEFAULT 0 NOT NULL,
+	"embedding" vector(1536),
+	"createdOn" timestamp with time zone DEFAULT now() NOT NULL,
+	"updatedOn" timestamp with time zone DEFAULT now() NOT NULL
+);

@@ -21,7 +21,7 @@
 
 ### 1. **Enhanced Gzip Compression** (F45 → A100)
 
-**File:** `apps/flash/server.js`
+**File:** `apps/chrry/server.js`
 
 ```javascript
 // Enhanced compression settings
@@ -44,7 +44,7 @@ app.use(
 
 ### 2. **Aggressive Cache Headers** (D67 → A100)
 
-**File:** `apps/flash/server.js`
+**File:** `apps/chrry/server.js`
 
 ```javascript
 // Cache static assets for 1 year
@@ -64,7 +64,7 @@ if (req.path.match(/\.(js|css|png|jpg|...)$/)) {
 
 ### 3. **Pre-Compressed Assets** (Build-time)
 
-**File:** `apps/flash/vite.config.ts`
+**File:** `apps/chrry/vite.config.ts`
 
 ```typescript
 // Generate .gz and .br files at build time
@@ -82,7 +82,7 @@ viteCompression({ algorithm: "brotliCompress", ext: ".br" });
 
 ### 4. **Optimized Chunk Splitting**
 
-**File:** `apps/flash/vite.config.ts`
+**File:** `apps/chrry/vite.config.ts`
 
 ```typescript
 manualChunks: (id) => {
@@ -103,7 +103,7 @@ manualChunks: (id) => {
 
 ### 5. **Production Minification**
 
-**File:** `apps/flash/vite.config.ts`
+**File:** `apps/chrry/vite.config.ts`
 
 ```typescript
 minify: 'terser',
@@ -140,7 +140,7 @@ terserOptions: {
 ### 1. **Build with Optimizations**
 
 ```bash
-cd apps/flash
+cd apps/chrry
 pnpm run build
 ```
 
@@ -246,9 +246,9 @@ Move static assets to CDN for:
 
 **Files Modified:**
 
-- ✅ `apps/flash/server.js` - Enhanced compression + cache headers
-- ✅ `apps/flash/vite.config.ts` - Pre-compression + chunk splitting
-- ✅ `apps/flash/package.json` - Added vite-plugin-compression
+- ✅ `apps/chrry/server.js` - Enhanced compression + cache headers
+- ✅ `apps/chrry/vite.config.ts` - Pre-compression + chunk splitting
+- ✅ `apps/chrry/package.json` - Added vite-plugin-compression
 
 **Expected Performance Gain:**
 

@@ -53,9 +53,9 @@ const files = [
   "packages/pepper/package.json",
   "packages/waffles/package.json",
   "packages/donut/utils/index.ts",
-  "packages/db/package.json",
+  "packages/vault/package.json",
   "packages/donut/context/providers/AuthProvider.tsx",
-  "apps/flash/server.js",
+  "apps/chrry/server.js",
 ].map((f) => path.resolve(__dirname, "..", f))
 
 function updatePackageJson(file, version) {

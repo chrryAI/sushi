@@ -115,7 +115,7 @@ done
 echo ""
 
 echo "🔟 Checking for .env.example files..."
-ENV_DIRS=("apps/api" "apps/web" "apps/ws" "apps/extension" "packages/db")
+ENV_DIRS=("apps/api" "apps/web" "apps/ws" "apps/extension" "packages/vault")
 for dir in "${ENV_DIRS[@]}"; do
     if [[ -f "$dir/.env.example" ]]; then
         report_success "$dir/.env.example exists"

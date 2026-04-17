@@ -1,0 +1,3 @@
+ALTER TABLE "instructions" ADD COLUMN "threadId" uuid;--> statement-breakpoint
+ALTER TABLE "instructions" ADD CONSTRAINT "instructions_threadId_threads_id_fk" FOREIGN KEY ("threadId") REFERENCES "public"."threads"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "instructions" ADD CONSTRAINT "instructions_threadId_messages_id_fk" FOREIGN KEY ("threadId") REFERENCES "public"."messages"("id") ON DELETE cascade ON UPDATE no action;

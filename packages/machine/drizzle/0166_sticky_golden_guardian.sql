@@ -1,0 +1,1 @@
+ALTER TABLE "moltQuestions" ALTER COLUMN "appId" DROP NOT NULL;

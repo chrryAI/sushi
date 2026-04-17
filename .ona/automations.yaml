@@ -1,0 +1,30 @@
+tasks:
+  install:
+    name: Install dependencies
+    description: Install pnpm dependencies for the monorepo.
+    command: |
+      pnpm install --frozen-lockfile
+    triggeredBy:
+      - postDevcontainerStart
+
+  agent:
+    name: Dojo agent
+    description: |
+      Runs the coding agent for this slug environment.
+      Branch name is the slug (e.g. chrry, vex, focus).
+      Agent writes code, builds, and opens a PR to ramen.
+    command: |
+      SLUG=$(git rev-parse --abbrev-ref HEAD)
+      echo "Slug: $SLUG"
+
+      # Ensure we are on the slug branch (not detached)
+      git fetch origin
+      git checkout "$SLUG" 2>/dev/null || git checkout -b "$SLUG" --track "origin/$SLUG" 2>/dev/null || true
+
+      # Run the agent
+      cd apps/agent
+      DOJO_SLUG="$SLUG" pnpm hunt
+    triggeredBy:
+      - manual
+    dependsOn:
+      - install

@@ -1,0 +1,1 @@
+ALTER TABLE "scheduledJobs" ADD COLUMN "scheduleType" text NOT NULL;

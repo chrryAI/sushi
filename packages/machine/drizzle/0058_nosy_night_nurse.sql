@@ -1,0 +1,2 @@
+ALTER TABLE "characterProfiles" ADD COLUMN "threadId" uuid NOT NULL;--> statement-breakpoint
+ALTER TABLE "characterProfiles" ADD CONSTRAINT "characterProfiles_threadId_threads_id_fk" FOREIGN KEY ("threadId") REFERENCES "public"."threads"("id") ON DELETE cascade ON UPDATE no action;

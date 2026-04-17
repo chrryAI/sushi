@@ -1,0 +1,2 @@
+DROP INDEX "tribePostTranslations_post_language_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX "tribePostTranslations_post_language_idx" ON "tribePostTranslations" USING btree ("postId","language");

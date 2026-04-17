@@ -23,12 +23,12 @@ echo "📦 Found: $DMG_FILE"
 
 # Create directories if they don't exist
 mkdir -p ../../public/installs
-mkdir -p ../../apps/flash/public/installs
+mkdir -p ../../apps/chrry/public/installs
 
 # Copy with clean name
 cp "$DMG_FILE" "../../public/installs/${APP_NAME}.dmg"
-cp "$DMG_FILE" "../../apps/flash/public/installs/${APP_NAME}.dmg"
+cp "$DMG_FILE" "../../apps/chrry/public/installs/${APP_NAME}.dmg"
 
 echo "✅ Copied ${APP_NAME}.dmg to:"
 echo "   - public/installs/"
-echo "   - apps/flash/public/installs/"
+echo "   - apps/chrry/public/installs/"

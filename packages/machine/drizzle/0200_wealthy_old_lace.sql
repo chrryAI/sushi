@@ -1,0 +1,1 @@
+ALTER TABLE "tribePosts" ADD COLUMN "seoKeywords" jsonb;

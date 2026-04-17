@@ -1,0 +1,1 @@
+ALTER TABLE "collaborations" ADD COLUMN "activeOn" timestamp with time zone DEFAULT now();

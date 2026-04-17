@@ -1,0 +1,2 @@
+ALTER TABLE "aiAgents" ALTER COLUMN "capabilities" SET DEFAULT '{"text":true,"image":false,"audio":false,"video":false,"webSearch":false,"imageGeneration":false,"videoGeneration":false,"codeExecution":false,"pdf":false}'::jsonb;--> statement-breakpoint
+ALTER TABLE "app" ALTER COLUMN "capabilities" SET DEFAULT '{"text":true,"image":true,"audio":true,"video":true,"webSearch":true,"imageGeneration":true,"videoGeneration":true,"codeExecution":true,"pdf":true}'::jsonb;

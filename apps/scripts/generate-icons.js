@@ -5,7 +5,7 @@
  *
  * Usage: MODE=blossom node scripts/generate-icons.js
  *
- * This script uses high-res 500x500 source icons from apps/flash/public/images/apps
+ * This script uses high-res 500x500 source icons from apps/chrry/public/images/apps
  * and generates all required sizes for Tauri (16, 32, 48, 128, 256, 512, 1024)
  */
 

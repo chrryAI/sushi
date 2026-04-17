@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "unique_provider_model" ON "aiModelPricing" USING btree ("provider","modelName");

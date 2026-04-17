@@ -1,0 +1,1 @@
+ALTER TABLE "tribeNews" ADD COLUMN "content" text;

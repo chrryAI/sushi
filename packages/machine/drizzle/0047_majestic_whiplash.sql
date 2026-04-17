@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN "migratedFromGuest" boolean DEFAULT false NOT NULL;

@@ -1,0 +1,2 @@
+ALTER TABLE "scheduledJobs" ADD COLUMN "guestId" uuid;--> statement-breakpoint
+ALTER TABLE "scheduledJobs" ADD CONSTRAINT "scheduledJobs_guestId_guest_id_fk" FOREIGN KEY ("guestId") REFERENCES "public"."guest"("id") ON DELETE cascade ON UPDATE no action;

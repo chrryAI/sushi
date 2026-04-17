@@ -1,0 +1,1 @@
+ALTER TABLE "messages" ADD COLUMN "isPear" boolean DEFAULT false NOT NULL;

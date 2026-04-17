@@ -1,0 +1,1 @@
+ALTER TABLE "creditUsage" ADD COLUMN "metadata" jsonb;

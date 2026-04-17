@@ -102,7 +102,7 @@ pnpm tauri build
 All apps share:
 
 - **@repo/ui**: Shared UI component library
-- **@repo/db**: Shared database layer & seed data
+- **@chrryai/machine**: Shared database layer & seed data
 - **React 18**: UI framework
 - **Tauri 2.0**: Desktop framework
 - **Vite**: Build tool
@@ -180,8 +180,8 @@ apps/bloom/seed.ts   → Seeds Bloom app independently
 
 ```typescript
 // apps/atlas/seed.ts
-import { getAtlasPayload } from "@repo/db/seed/apps/atlas"
-import { createOrUpdateApp, handleAppExtends } from "@repo/db"
+import { getAtlasPayload } from "@chrryai/machine/dna/apps/atlas"
+import { createOrUpdateApp, handleAppExtends } from "@chrryai/machine"
 
 export async function seedAtlas(params: {
   admin: user
@@ -205,7 +205,7 @@ export async function seedAtlas(params: {
 
 ### Shared Helpers
 
-Common seed logic extracted to `/packages/db/src/seed/helpers.ts`:
+Common seed logic extracted to `/packages/vault/src/dna/helpers.ts`:
 
 - `handleAppExtends()` - Setup app inheritance
 - `getOrCreateStore()` - Create/update stores
@@ -222,8 +222,8 @@ Common seed logic extracted to `/packages/db/src/seed/helpers.ts`:
 
 ## 🔗 Related Files
 
-- `/packages/db/src/seed/createStores.ts` - Database seeding (still monolithic)
-- `/packages/db/src/seed/apps/*.ts` - App payload definitions
+- `/packages/vault/src/dna/createStores.ts` - Database seeding (still monolithic)
+- `/packages/vault/src/dna/apps/*.ts` - App payload definitions
 - `/apps/desktop/` - Original monolithic desktop app (can be deprecated)
 
 ## 💡 Architecture Decision

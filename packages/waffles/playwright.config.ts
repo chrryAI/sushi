@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test"
 
 export default defineConfig({
   testDir: "./src",
-  testIgnore: "**/__tests__/**",
+  testIgnore: ["**/__tests__/**", "**/*.test.ts"],
   timeout: process.env.CI ? 1200000 : 500000,
   fullyParallel: true,
   forbidOnly: false,
@@ -37,7 +37,7 @@ export default defineConfig({
         "--no-sandbox",
       ],
     },
-    headless: true, // Always headless for ~15% less memory [web:21]
+    headless: !!process.env.CI, // Always headless for ~15% less memory [web:21]
     baseURL: !process.env.CI ? "http://localhost:5173" : "http://e2e.chrry.ai",
     trace: "on-first-retry",
     permissions: ["clipboard-read", "clipboard-write"],
