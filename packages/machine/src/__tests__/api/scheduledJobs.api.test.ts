@@ -69,12 +69,7 @@ describe("Scheduled Jobs API", () => {
     "GET /api/scheduledJobs - list jobs (requires auth)",
     async () => {
       console.log("📧 Using test email:", TEST_EMAIL)
-      console.log(
-        "🔑 Using secret length:",
-        AUTH_SECRET?.length,
-        "value:",
-        AUTH_SECRET,
-      )
+      console.log("🔑 AUTH_SECRET configured:", !!AUTH_SECRET)
 
       const response = await fetch(
         `${API_URL}/api/scheduledJobs?appId=${testAppId}`,
