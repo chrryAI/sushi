@@ -12,6 +12,7 @@ if (!crypto.hash) {
 
 import cookieParser from "cookie-parser"
 import express from "express"
+import rateLimit from "express-rate-limit"
 
 /// <reference types="chrome" />
 export const getEnv = () => {
@@ -1175,7 +1176,15 @@ app.get("/manifest.json", async (req, res) => {
 })
 
 // Serve HTML with rate limiting (catch-all route)
-app.use(async (req, res) => {
+const ssrRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 120, // limit each IP to 120 requests per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests" },
+})
+
+app.use(ssrRateLimiter, async (req, res) => {
   // Whitelist subdomains and localhost
   const host = req.get("host") || ""
   const hostname = host.split(":")[0] // Remove port if present
