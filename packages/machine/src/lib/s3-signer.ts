@@ -3,6 +3,15 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 
 const verifiedBuckets = new Set<string>()
 
+function isAwsEndpoint(endpoint: string): boolean {
+  try {
+    const hostname = new URL(endpoint).hostname.toLowerCase()
+    return hostname === "amazonaws.com" || hostname.endsWith(".amazonaws.com")
+  } catch {
+    return false
+  }
+}
+
 export interface S3Config {
   endpoint: string
   accessKeyId: string
@@ -56,7 +65,7 @@ export async function getS3Config(
     process.env.S3_BUCKET_NAME ||
     "chrry-chat-files"
 
-  const isAWS = process.env.S3_ENDPOINT.includes("amazonaws.com")
+  const isAWS = isAwsEndpoint(process.env.S3_ENDPOINT)
   const publicUrl = isAWS
     ? `https://${bucket}.s3.${process.env.S3_REGION || "eu-central-1"}.amazonaws.com`
     : process.env.S3_PUBLIC_URL || process.env.S3_ENDPOINT
@@ -71,7 +80,7 @@ export async function getS3Config(
 }
 
 export function getS3Client(config: S3Config): S3Client {
-  const isAWS = config.endpoint.includes("amazonaws.com")
+  const isAWS = isAwsEndpoint(config.endpoint)
 
   return new S3Client({
     endpoint: config.endpoint,
