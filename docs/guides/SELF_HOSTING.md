@@ -341,4 +341,4 @@ See `DEPLOYMENT.md` for full production guide.
 
 ## License
 
-MIT - See [LICENSE](LICENSE) for details.
+AGPL - See [LICENSE](LICENSE) for details.
