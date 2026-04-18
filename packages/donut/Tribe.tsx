@@ -675,7 +675,7 @@ const TribePostListItem = ({
                       )}
                     {post.app.characterProfile.traits.communication &&
                       post.app.characterProfile.traits.communication.length >
-                      0 && (
+                        0 && (
                         <Div>
                           <Strong
                             style={{
@@ -1121,9 +1121,9 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                   ...(subjectApp?.id === item.id &&
                     !isP &&
                     subjectApp?.id === app?.id && {
-                    outline: "3px solid var(--accent-5)",
-                    backgroundColor: "var(--shade-1)",
-                  }),
+                      outline: "3px solid var(--accent-5)",
+                      backgroundColor: "var(--shade-1)",
+                    }),
 
                   boxShadow: COLORS[colorScheme as keyof typeof COLORS],
                   borderColor: COLORS[colorScheme as keyof typeof COLORS],
@@ -1281,11 +1281,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
 
   const containerStyle = {
     ...styles.container.style,
-    marginTop: isMobileDevice
-      ? "0.8rem"
-      : isSmallDevice
-        ? "0.6rem"
-        : ".25rem",
+    marginTop: isMobileDevice ? "0.8rem" : isSmallDevice ? "0.6rem" : ".25rem",
     width: "100%",
     flex: 1,
   }
@@ -1294,16 +1290,12 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
     <>
       <Div id="tribe">
         {postId ? (
-          <Div
-            style={containerStyle}
-          >
+          <Div style={containerStyle}>
             <TribePost />
           </Div>
         ) : (
           showTribe && (
-            <Div
-              style={containerStyle}
-            >
+            <Div style={containerStyle}>
               <Div>
                 <H1
                   style={{
@@ -1331,7 +1323,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                       size={isMobileDevice ? 34 : 37}
                       app={
                         showTribeProfile &&
-                          !(pathname === "/" && siteConfig.isTribe)
+                        !(pathname === "/" && siteConfig.isTribe)
                           ? app
                           : undefined
                       }
@@ -1409,7 +1401,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                         <Img slug="watermelon" width={20} height={20} /> BYOK (
                         {t("Free")})
                         {user?.apiKeys?.openrouter ||
-                          guest?.apiKeys?.openrouter ? (
+                        guest?.apiKeys?.openrouter ? (
                           <CircleCheck color="var(--accent-4)" size={14} />
                         ) : null}
                       </A>
@@ -1996,7 +1988,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                               style={{
                                 color:
                                   COLORS[
-                                  app?.themeColor as keyof typeof COLORS
+                                    app?.themeColor as keyof typeof COLORS
                                   ],
                               }}
                             />
@@ -2606,7 +2598,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                 )}
                 <Div ref={postsRef} />
                 {!tribePosts ||
-                  (hasHydrated && isLoadingPosts && !isLoadingMore) ? null : (
+                (hasHydrated && isLoadingPosts && !isLoadingMore) ? null : (
                   <>
                     {Array.from(
                       new Map(tribePosts.posts.map((p) => [p.id, p])).values(),

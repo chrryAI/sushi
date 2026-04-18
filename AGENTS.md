@@ -11,7 +11,7 @@
 The repository is split across two GitHub remotes:
 
 - **`ibsukru/sushi`** — Private monorepo (this repo). Contains everything.
-- **`chrryai/vex`** — Public MIT repo. Contains only public packages and apps.
+- **`chrryai/vex`** — Public AGPL repo. Contains only public packages and apps.
 
 ---
 
@@ -435,7 +435,7 @@ The AI vault abstracts model selection, API-key resolution, and provider instant
 This monorepo is split across two GitHub remotes:
 
 - **`ibsukru/sushi`** — Private monorepo (this repo). Contains everything.
-- **`chrryai/vex`** — Public MIT repo. Contains only public packages and apps.
+- **`chrryai/vex`** — Public AGPL repo. Contains only public packages and apps.
 
 **Public (synced to `chrryai`)**: `packages/donut`, `pepper`, `waffles`, `calendar`, `focus`, `machine`, `typescript-config`, plus `apps/extension`, `desktop`, `mobile`, `bridge`, `agent`.
 
@@ -443,7 +443,7 @@ This monorepo is split across two GitHub remotes:
 
 **License map:**
 
-- `@chrryai/*` packages: MIT (public)
+- `@chrryai/*` packages: AGPL (public)
 - Private platform code (`apps/api`, `apps/chrry`, `packages/vault`, etc.): Proprietary / All rights reserved
 
 ---

@@ -25,7 +25,7 @@ sushi/
 │   ├── typescript-config/ # Shared tsconfig presets
 │   ├── vault/            # Drizzle schema & migrations — private
 │   ├── shared/        # Shared contexts & stores — private
-│   ├── donut/         # Internal app template — private
+│   ├── donut/         # UI
 │   └── sushi/         # Monorepo orchestration — private
 ├── infra/             # Docker, nginx, deployment scripts
 ├── scripts/           # DevOps, CI, and OSS sync scripts
@@ -52,15 +52,15 @@ See [docs/guides/SELF_HOSTING.md](docs/guides/SELF_HOSTING.md) for the full self
 
 ## 📦 Public Packages
 
-These packages are published under the `@chrryai` scope and synced to the public MIT repository.
+These packages are published under the `@chrryai` scope and synced to the public AGPL repository.
 
 | Package             | Description                                   | License |
 | ------------------- | --------------------------------------------- | ------- |
-| `@chrryai/donut`    | Cross-platform web, extension, and mobile     | MIT     |
-| `@chrryai/waffles`  | Playwright + Vitest testing primitives        | MIT     |
-| `@chrryai/machine`  | Effect.js + XState AI orchestration utilities | MIT     |
-| `@chrryai/calendar` | Calendar primitives for extensions            | MIT     |
-| `@chrryai/focus`    | Pomodoro / focus mode components              | MIT     |
+| `@chrryai/donut`    | Cross-platform web, extension, and mobile     | AGPL     |
+| `@chrryai/waffles`  | Playwright + Vitest testing primitives        | AGPL     |
+| `@chrryai/machine`  | Effect.js + XState AI orchestration utilities | AGPL     |
+| `@chrryai/calendar` | Calendar primitives for extensions            | AGPL     |
+| `@chrryai/focus`    | Pomodoro / focus mode components              | AGPL     |
 
 ## 🔒 Private Packages
 
@@ -78,7 +78,7 @@ For agents and automated tooling, see [AGENTS.md](AGENTS.md) for conventions and
 
 ## 🔑 License
 
-- **Public packages** (`@chrryai/*`): MIT
+- **Public packages** (`@chrryai/*`): AGPL
 - **Private platform code** (`apps/api`, `apps/chrry`, `packages/vault`, etc.): Proprietary / All rights reserved
 
 See individual `package.json` files for package-level license details.
