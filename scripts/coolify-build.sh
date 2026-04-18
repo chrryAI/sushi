@@ -31,7 +31,7 @@
 #   pnpm turbo build --filter="@chrryai/machine" --filter="@chrryai/donut" --filter="@chrryai/waffles" --filter="@chrryai/pepper"
 
 #   # Build apps
-#   NODE_OPTIONS='--max-old-space-size=8192' CI=true pnpm turbo build --filter="flash"
+#   NODE_OPTIONS='--max-old-space-size=8192' CI=true pnpm turbo build --filter="chrry"
 #   NODE_OPTIONS='--max-old-space-size=8192' CI=true pnpm turbo build --filter="api"
 
 #   echo "✅ Build complete!"

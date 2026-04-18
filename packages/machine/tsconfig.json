@@ -1,23 +1,22 @@
 {
+  "extends": "../typescript-config/nextjs.json",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["dist", "build", "node_modules", "src/__tests__"],
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext", // ← NodeNext yerine ESNext
-    "moduleResolution": "bundler", // ← NodeNext yerine bundler
-    "lib": ["ES2022"],
-    "strict": true,
     "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "module": "ESNext",
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "rootDir": "./src",
+    "strict": true,
+    "target": "ES2022",
     "paths": {
-      "@chrryai/machine/*": ["./src/*/index.ts"]
+      "@chrryai/machine/*": ["./src/*/index.ts"],
+      "@chrryai/donut": ["../donut/*"]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/__tests__"]
+  "ts-node": {
+    "esm": true
+  }
 }

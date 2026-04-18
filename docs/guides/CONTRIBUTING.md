@@ -52,7 +52,7 @@ Thank you for considering contributing! 🎉
 vex/
 ├── apps/
 │   ├── api/         # Core API (private)
-│   ├── flash/       # Main PWA (private)
+│   ├── chrry/       # Main PWA (private)
 │   ├── extension/   # Browser extension
 │   ├── desktop/     # Tauri desktop app
 │   ├── mobile/      # Capacitor mobile app

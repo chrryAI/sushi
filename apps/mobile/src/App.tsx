@@ -1,6 +1,5 @@
 import "@chrryai/donut/styles.scss"
 import Chrry from "@chrryai/donut/Chrry"
-import { HistoryRouterProvider } from "@chrryai/pepper"
 import { Component, type ReactNode, useEffect } from "react"
 import VConsole from "vconsole"
 
@@ -59,9 +58,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <HistoryRouterProvider>
-        <Chrry />
-      </HistoryRouterProvider>
+      <Chrry />
     </ErrorBoundary>
   )
 }

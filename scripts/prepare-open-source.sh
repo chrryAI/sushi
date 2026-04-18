@@ -79,7 +79,7 @@ NODE_ENV=development
 EOF
 
 # packages/vault
-cat > packages/vault/.env.example << 'EOF'
+cat > packages/machine/.env.example << 'EOF'
 # Database
 DB_URL=postgresql://user:password@localhost:5432/chrry
 EOF
@@ -199,7 +199,7 @@ Thank you for considering contributing to Vex! 🎉
    ```bash
    # Copy example files
    cp apps/api/.env.example apps/api/.env
-   cp packages/vault/.env.example packages/vault/.env
+   cp packages/machine/.env.example packages/machine/.env
 
    # Edit .env files with your credentials
    ```
@@ -234,9 +234,8 @@ vex/
 │   └── native/           # React Native app
 ├── packages/
 │   ├── ui/               # Shared UI components (@chrryai/donut)
-│   ├── pepper/           # Universal router (@chrryai/pepper)
 │   ├── waffles/          # Testing utilities (@chrryai/waffles)
-│   └── db/               # Database layer (@chrryai/machine)
+│   └── vault/               # Database layer (@chrryai/machine)
 └── scripts/              # Build and utility scripts
 ```
 

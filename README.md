@@ -10,7 +10,7 @@ Sushi is the codename for the internal monorepo that powers the **Chrry** ecosys
 sushi/
 ├── apps/
 │   ├── api/           # Core API (Hono + Bun) — private
-│   ├── flash/         # Main PWA / marketing web app — private
+│   ├── chrry/         # Main PWA / marketing web app — private
 │   ├── extension/     # Browser extension (Chrome/Firefox)
 │   ├── desktop/       # Tauri desktop app
 │   ├── mobile/        # Capacitor mobile app
@@ -18,13 +18,12 @@ sushi/
 │   └── agent/         # Autonomous AI agent
 ├── packages/
 │   ├── ui/            # @chrryai/donut — cross-platform UI library
-│   ├── pepper/        # @chrryai/pepper — universal router
 │   ├── waffles/       # @chrryai/waffles — testing utilities
 │   ├── machine/       # @chrryai/machine — AI state machines
 │   ├── calendar/      # @chrryai/calendar — calendar components
 │   ├── focus/         # @chrryai/focus — productivity components
 │   ├── typescript-config/ # Shared tsconfig presets
-│   ├── db/            # Drizzle schema & migrations — private
+│   ├── vault/            # Drizzle schema & migrations — private
 │   ├── shared/        # Shared contexts & stores — private
 │   ├── donut/         # Internal app template — private
 │   └── sushi/         # Monorepo orchestration — private
@@ -55,14 +54,13 @@ See [docs/guides/SELF_HOSTING.md](docs/guides/SELF_HOSTING.md) for the full self
 
 These packages are published under the `@chrryai` scope and synced to the public MIT repository.
 
-| Package | Description | License |
-|---------|-------------|---------|
-| `@chrryai/donut` | Cross-platform React / React Native UI library | MIT |
-| `@chrryai/pepper` | Universal router for web, extension, and mobile | MIT |
-| `@chrryai/waffles` | Playwright + Vitest testing primitives | MIT |
-| `@chrryai/machine` | Effect.js + XState AI orchestration utilities | MIT |
-| `@chrryai/calendar` | Calendar primitives for extensions | MIT |
-| `@chrryai/focus` | Pomodoro / focus mode components | MIT |
+| Package             | Description                                   | License |
+| ------------------- | --------------------------------------------- | ------- |
+| `@chrryai/donut`    | Cross-platform web, extension, and mobile     | MIT     |
+| `@chrryai/waffles`  | Playwright + Vitest testing primitives        | MIT     |
+| `@chrryai/machine`  | Effect.js + XState AI orchestration utilities | MIT     |
+| `@chrryai/calendar` | Calendar primitives for extensions            | MIT     |
+| `@chrryai/focus`    | Pomodoro / focus mode components              | MIT     |
 
 ## 🔒 Private Packages
 

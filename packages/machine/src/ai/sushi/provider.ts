@@ -60,7 +60,7 @@ function isFreeTier(app: { tier: string | nil } | nil) {
 
 const AGENT_DEFAULTS: Record<string, string> = {
   beles: "deepseek/deepseek-v3.2",
-  sushi: "deepseek/deepseek-v3.2",
+  sushi: "deepseek/deepseek-r1",
   deepSeek: "deepseek/deepseek-v3.2",
   peach: "deepseek/deepseek-v3.2",
   claude: "anthropic/claude-sonnet-4-6",
@@ -288,7 +288,9 @@ export async function getModelProvider({
     return {
       provider: createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY! })(
         primary,
-        { models: buildChain(fallbacks) },
+        {
+          models: buildChain(fallbacks),
+        },
       ),
       modelId: primary,
       agentName: agent.name,
@@ -431,7 +433,7 @@ export async function getEmbeddingProvider({
   const creditsLeft = user?.creditsLeft ?? guest?.creditsLeft ?? 1
 
   const provider =
-    creditsLeft === 0 || !orKey || isE2E
+    creditsLeft === 0 || !orKey
       ? undefined
       : createOpenRouter({ apiKey: orKey })
 

@@ -144,7 +144,7 @@ Package manager: pnpm workspaces + Turborepo. Linting: Biome.`,
 3. vault/index.ts is data-only (pricing, limits) — no runtime logic.
 4. streamLogs captures every stream for billing and replay.
 5. Conductor wraps every streamText call — never call streamText directly in routes.
-6. Database migrations live in packages/vault/drizzle/ — always generate, never hand-write SQL.`,
+6. Database migrations live in packages/machine/drizzle/ — always generate, never hand-write SQL.`,
         category: "instruction",
         importance: 10,
         tags: ["architecture", "principles", "cto"],
@@ -170,7 +170,7 @@ Watch for: N+1 DB queries in routes, circular imports between packages, uncaught
       },
       {
         title: "Deployment Process",
-        content: `Docker build: vp run build --filter flash. Deployed via Coolify on Hetzner.
+        content: `Docker build: vp run build --filter chrry. Deployed via Coolify on Hetzner.
 Flash app requires terser as devDependency for production minification.
 Never force-push to main. Branch naming: feature/, fix/, refactor/.
 All env vars in .env — never hardcoded. Turborepo caches builds.`,

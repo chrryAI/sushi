@@ -29,7 +29,7 @@ build_and_deploy() {
     # Copy to public/installs with clean name
     cp "$dmg_file" "../../public/installs/${app_name}.dmg"
     
-    # Copy to flash
+    # Copy to chrry
     mkdir -p ../../apps/chrry/public/installs
     cp "$dmg_file" "../../apps/chrry/public/installs/${app_name}.dmg"
     

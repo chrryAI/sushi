@@ -178,7 +178,7 @@ Result: 12 apps × 5 platforms = 60+ unique builds from one codebase!
 **3. App Inheritance Chain**
 
 ```typescript
-// Database schema (packages/vault/src/schema.ts)
+// Database schema (packages/machine/src/schema.ts)
 export const apps = pgTable("apps", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull().unique(),
@@ -208,7 +208,7 @@ async function resolveInheritance(app: App): Promise<ResolvedApp> {
 **4. Store-App Installation Matrix**
 
 ```typescript
-// packages/vault/src/schema.ts
+// packages/machine/src/schema.ts
 export const storeInstalls = pgTable("store_installs", {
   storeId: text("store_id").references(() => stores.id),
   appId: text("app_id").references(() => apps.id),
@@ -829,7 +829,7 @@ function handleAppClick(app: App, currentStore: Store) {
 │                                                              │
 │  ONE Repository (github.com/chrryai/vex)                     │
 │  ├─ apps/                                                    │
-│  │  ├─ flash/        (PWA - 12 apps)                        │
+│  │  ├─ chrry/        (PWA - 12 apps)                        │
 │  │  ├─ extension/    (Chrome - 12 apps × 1 = 12)            │
 │  │  ├─ browser/      (Tauri - 12 apps × 3 OS = 36)          │
 │  │  └─ mobile/       (Capacitor - 12 apps × 2 = 24)         │
@@ -1050,7 +1050,7 @@ pnpm build:mobile      # React Native (iOS/Android)
 ### 2. Database Schema Lock
 
 ```typescript
-// packages/vault/src/schema.ts
+// packages/machine/src/schema.ts
 // Stores, apps, storeInstalls, inheritance chains
 // Without this schema, the system doesn't work
 // Schema is AGPL-3.0 (copyleft - share modifications)

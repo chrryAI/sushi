@@ -7,7 +7,6 @@ import type {
   swarm,
 } from "@chrryai/donut/types"
 import { relations, sql } from "drizzle-orm"
-
 import {
   type AnyPgColumn,
   bigint,
@@ -28,6 +27,119 @@ import {
   vector,
 } from "drizzle-orm/pg-core"
 
+/**
+ * Better Auth Tables
+ *
+ * These tables are prefixed with `ba_` to run alongside existing NextAuth tables.
+ * The `user` table from schema.ts is reused - no duplication!
+ */
+
+// Better Auth Sessions
+export const baSessions = pgTable("ba_session", {
+  id: text("id").primaryKey(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  expiresAt: timestamp("expiresAt", {
+    mode: "date",
+    withTimezone: true,
+  }).notNull(),
+  ipAddress: text("ipAddress"),
+  userAgent: text("userAgent"),
+  createdAt: timestamp("createdAt", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updatedAt", {
+    mode: "date",
+    withTimezone: true,
+  })
+    .notNull()
+    .defaultNow(),
+})
+
+// Better Auth OAuth Accounts
+export const baAccounts = pgTable(
+  "ba_account",
+  {
+    id: text("id").primaryKey(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    accountId: text("accountId").notNull(), // Provider's user ID
+    providerId: text("providerId").notNull(), // "google", "apple", etc.
+    accessToken: text("accessToken"),
+    refreshToken: text("refreshToken"),
+    idToken: text("idToken"),
+    expiresAt: timestamp("expiresAt", {
+      mode: "date",
+      withTimezone: true,
+    }),
+    scope: text("scope"),
+    password: text("password"), // For credentials provider
+    createdAt: timestamp("createdAt", {
+      mode: "date",
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updatedAt", {
+      mode: "date",
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    {
+      // Unique constraint: one account per provider per user
+      providerAccountKey: primaryKey({
+        columns: [table.providerId, table.accountId],
+      }),
+    },
+  ],
+)
+
+// Better Auth Verification Tokens
+export const baVerifications = pgTable(
+  "ba_verification",
+  {
+    id: text("id").primaryKey(),
+    identifier: text("identifier").notNull(), // Email or phone
+    value: text("value").notNull(), // Token value
+    expiresAt: timestamp("expiresAt", {
+      mode: "date",
+      withTimezone: true,
+    }).notNull(),
+    createdAt: timestamp("createdAt", {
+      mode: "date",
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updatedAt", {
+      mode: "date",
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    {
+      // Unique constraint: one active token per identifier
+      identifierKey: primaryKey({
+        columns: [table.identifier, table.value],
+      }),
+    },
+  ],
+)
+
+// Export types
+export type BaSession = typeof baSessions.$inferSelect
+export type BaAccount = typeof baAccounts.$inferSelect
+export type BaVerification = typeof baVerifications.$inferSelect
 export const aiSources = {
   claudeSources: ["codebase", "ai/sushi/file"],
   belesSources: ["ai/content"],
@@ -1830,6 +1942,51 @@ export const tribeLikes = pgTable(
   }),
 )
 
+export const tribeLikesRelations = relations(tribeLikes, ({ one }) => ({
+  post: one(tribePosts, {
+    fields: [tribeLikes.postId],
+    references: [tribePosts.id],
+  }),
+  comment: one(tribeComments, {
+    fields: [tribeLikes.commentId],
+    references: [tribeComments.id],
+  }),
+  user: one(users, {
+    fields: [tribeLikes.userId],
+    references: [users.id],
+  }),
+  guest: one(guests, {
+    fields: [tribeLikes.guestId],
+    references: [guests.id],
+  }),
+}))
+
+export const tribeCommentsRelations = relations(
+  tribeComments,
+  ({ one, many }) => ({
+    post: one(tribePosts, {
+      fields: [tribeComments.postId],
+      references: [tribePosts.id],
+    }),
+    user: one(users, {
+      fields: [tribeComments.userId],
+      references: [users.id],
+    }),
+    guest: one(guests, {
+      fields: [tribeComments.guestId],
+      references: [guests.id],
+    }),
+    parentComment: one(tribeComments, {
+      fields: [tribeComments.parentCommentId],
+      references: [tribeComments.id],
+    }),
+    likes: many(tribeLikes),
+    reactions: many(tribeReactions),
+  }),
+)
+
+// (Relations moved below table definitions)
+
 export const tribeFollows = pgTable(
   "tribeFollows",
   {
@@ -2009,6 +2166,93 @@ export const tribeShares = pgTable("tribeShares", {
     .defaultNow()
     .notNull(),
 })
+
+export const tribeReactionsRelations = relations(tribeReactions, ({ one }) => ({
+  post: one(tribePosts, {
+    fields: [tribeReactions.postId],
+    references: [tribePosts.id],
+  }),
+  comment: one(tribeComments, {
+    fields: [tribeReactions.commentId],
+    references: [tribeComments.id],
+  }),
+  user: one(users, {
+    fields: [tribeReactions.userId],
+    references: [users.id],
+  }),
+  guest: one(guests, {
+    fields: [tribeReactions.guestId],
+    references: [guests.id],
+  }),
+}))
+
+export const tribeSharesRelations = relations(tribeShares, ({ one }) => ({
+  post: one(tribePosts, {
+    fields: [tribeShares.postId],
+    references: [tribePosts.id],
+  }),
+  user: one(users, {
+    fields: [tribeShares.userId],
+    references: [users.id],
+  }),
+  guest: one(guests, {
+    fields: [tribeShares.guestId],
+    references: [guests.id],
+  }),
+}))
+
+export const tribeFollowsRelations = relations(tribeFollows, ({ one }) => ({
+  follower: one(users, {
+    fields: [tribeFollows.followerId],
+    references: [users.id],
+  }),
+  followingApp: one(apps, {
+    fields: [tribeFollows.followingAppId],
+    references: [apps.id],
+  }),
+}))
+
+export const tribeBlocksRelations = relations(tribeBlocks, ({ one }) => ({
+  blocker: one(users, {
+    fields: [tribeBlocks.blockerId],
+    references: [users.id],
+  }),
+  blockerGuest: one(guests, {
+    fields: [tribeBlocks.blockerGuestId],
+    references: [guests.id],
+  }),
+  blockedUser: one(users, {
+    fields: [tribeBlocks.blockedUserId],
+    references: [users.id],
+  }),
+  blockedApp: one(apps, {
+    fields: [tribeBlocks.blockedAppId],
+    references: [apps.id],
+  }),
+}))
+
+export const tribeMembershipsRelations = relations(
+  tribeMemberships,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [tribeMemberships.userId],
+      references: [users.id],
+    }),
+    tribe: one(tribes, {
+      fields: [tribeMemberships.tribeId],
+      references: [tribes.id],
+    }),
+  }),
+)
+
+export const tribesRelations = relations(tribes, ({ one, many }) => ({
+  app: one(apps, {
+    fields: [tribes.appId],
+    references: [apps.id],
+  }),
+  posts: many(tribePosts),
+  memberships: many(tribeMemberships),
+}))
 
 // ============================================
 // TRIBE NEWS: Cached news articles for agent context
@@ -3724,25 +3968,26 @@ export const appOrders = pgTable(
       .notNull(),
   },
   (table) => [
-    {
-      // Unique constraint: one app can only have one order per store+user/guest
-      appStoreUserUnique: uniqueIndex("app_order_app_store_user_unique").on(
-        table.appId,
-        table.storeId,
-        table.userId,
-      ),
-      appStoreGuestUnique: uniqueIndex("app_order_app_store_guest_unique").on(
-        table.appId,
-        table.storeId,
-        table.guestId,
-      ),
-      // Index for fast lookups by store
-      storeIdIndex: index("app_order_store_id_idx").on(table.storeId),
-      // Index for fast lookups by user
-      userIdIndex: index("app_order_user_id_idx").on(table.userId),
-      // Index for fast lookups by guest
-      guestIdIndex: index("app_order_guest_id_idx").on(table.guestId),
-    },
+    primaryKey({
+      columns: [table.appId, table.storeId, table.userId, table.guestId],
+    }),
+    // Unique constraint: one app can only have one order per store+user/guest
+    uniqueIndex("app_order_app_store_user_unique").on(
+      table.appId,
+      table.storeId,
+      table.userId,
+    ),
+    uniqueIndex("app_order_app_store_guest_unique").on(
+      table.appId,
+      table.storeId,
+      table.guestId,
+    ),
+    // Index for fast lookups by store
+    index("app_order_store_id_idx").on(table.storeId),
+    // Index for fast lookups by user
+    index("app_order_user_id_idx").on(table.userId),
+    // Index for fast lookups by guest
+    index("app_order_guest_id_idx").on(table.guestId),
   ],
 )
 
@@ -3772,12 +4017,8 @@ export const appExtends = pgTable(
       .notNull(),
   },
   (table) => [
-    {
-      appIdToIdUnique: uniqueIndex("app_extends_app_id_to_id_unique").on(
-        table.appId,
-        table.toId,
-      ),
-    },
+    primaryKey({ columns: [table.appId, table.toId] }),
+    uniqueIndex("app_extends_app_id_to_id_unique").on(table.appId, table.toId),
   ],
 )
 

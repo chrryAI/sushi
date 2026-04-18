@@ -4,11 +4,11 @@
  * Only runs in production/server environments
  *
  * Usage:
- *   NODE_ENV=production pnpm tsx packages/vault/src/scripts/invalidate-translations.ts [locale]
+ *   NODE_ENV=production pnpm tsx packages/machine/src/scripts/invalidate-translations.ts [locale]
  *
  * Examples:
- *   NODE_ENV=production pnpm tsx packages/vault/src/scripts/invalidate-translations.ts      # Invalidate all locales
- *   NODE_ENV=production pnpm tsx packages/vault/src/scripts/invalidate-translations.ts en   # Invalidate only English
+ *   NODE_ENV=production pnpm tsx packages/machine/src/scripts/invalidate-translations.ts      # Invalidate all locales
+ *   NODE_ENV=production pnpm tsx packages/machine/src/scripts/invalidate-translations.ts en   # Invalidate only English
  */
 
 import { invalidateTranslations } from "../cache"

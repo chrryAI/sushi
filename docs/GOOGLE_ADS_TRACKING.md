@@ -37,7 +37,7 @@ GOOGLE_ADS_PURCHASE_LABEL=ghi789
 
 ### 3. Install Package
 
-Already created: `/packages/vault/src/google-ads.ts`
+Already created: `/packages/machine/src/google-ads.ts`
 
 ---
 

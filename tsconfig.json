@@ -9,7 +9,7 @@
     "incremental": true,
     "tsBuildInfoFile": "./node_modules/.cache/tsconfig.tsbuildinfo",
     "paths": {
-      "chrry/*": ["./packages/donut/*"]
+      "@chrryai/donut": ["./packages/donut/*"]
     }
   }
 }

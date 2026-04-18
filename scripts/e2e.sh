@@ -45,7 +45,7 @@ Komutlar:
   reset       E2E ortamını tamamen sıfırla (verileri sil)
   logs        Logları göster (tüm servisler)
   logs-api    Sadece API logları
-  logs-flash  Sadece Flash logları
+  logs-chrry  Sadece Flash logları
   status      Servis durumlarını göster
   url         E2E URL'lerini göster
   test        Playwright testlerini çalıştır
@@ -285,8 +285,8 @@ case "${1:-help}" in
     logs-api)
         show_logs api
         ;;
-    logs-flash)
-        show_logs flash
+    logs-chrry)
+        show_logs chrry
         ;;
     status)
         show_status

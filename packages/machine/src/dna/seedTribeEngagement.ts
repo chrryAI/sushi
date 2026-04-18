@@ -768,4 +768,4 @@ export async function seedTribeEngagement() {
 }
 
 // Export for use in other files
-// Can be run directly with: pnpm exec tsx packages/vault/seedTribeEngagement.ts
+// Can be run directly with: pnpm exec tsx packages/machine/seedTribeEngagement.ts

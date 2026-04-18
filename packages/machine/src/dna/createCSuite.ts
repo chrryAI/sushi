@@ -8,7 +8,7 @@
 //     (semantic RAG — no flat MD files needed)
 //
 // Usage:
-//   pnpm tsx packages/vault/src/dna/createCSuite.ts
+//   pnpm tsx packages/machine/src/dna/createCSuite.ts
 //   or call createCSuite({ userId }) from seed.ts
 // ─────────────────────────────────────────────────────────────────
 
