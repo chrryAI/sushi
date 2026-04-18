@@ -73,7 +73,7 @@ describe("Scheduled Jobs API", () => {
         "🔑 Using secret length:",
         AUTH_SECRET?.length,
         "value:",
-        AUTH_SECRET,
+        AUTH_SECRET ? "[REDACTED]" : undefined,
       )
 
       const response = await fetch(

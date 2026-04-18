@@ -34,6 +34,8 @@ jobs:
   detect:
     name: Detect slug
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       slug: ${{ steps.resolve.outputs.slug }}
       mode: ${{ steps.resolve.outputs.mode }}
@@ -104,6 +106,8 @@ jobs:
 # ─────────────────────────────────────────────────────────────
   install:
     name: Install dependencies
+    permissions:
+      contents: read
     needs: detect
     if: needs.detect.outputs.is_dojo_branch == 'true'
     runs-on: ubuntu-latest
@@ -143,6 +147,8 @@ jobs:
 # ─────────────────────────────────────────────────────────────
   chrry:
     name: Flash build (${{ needs.detect.outputs.slug }})
+    permissions:
+      contents: read
     needs: [detect, install]
     if: needs.detect.outputs.is_dojo_branch == 'true'
     runs-on: ubuntu-latest
@@ -185,6 +191,9 @@ jobs:
 # ─────────────────────────────────────────────────────────────
   extension:
     name: Extension build (${{ needs.detect.outputs.slug }})
+    permissions:
+      contents: read
+      actions: write
     needs: [detect, install]
     if: |
       needs.detect.outputs.is_dojo_branch == 'true' &&
@@ -235,6 +244,8 @@ jobs:
   dojo-ok:
     name: Dojo OK
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: [detect, chrry, extension]
     if: always() && needs.detect.outputs.is_dojo_branch == 'true'
     steps:

@@ -67,8 +67,7 @@ export function repairJson(content: string, textFields?: string[]): string {
   repaired = repaired
     .replace(/：/g, ":")
     .replace(/，/g, ",")
-    .replace(/"/g, '"')
-    .replace(/"/g, '"')
+    .replace(/[\u201C\u201D]/g, '"')
 
   // Fix single quotes to double (simple cases)
   repaired = repaired.replace(/'([^']*)'(?=\s*[:,}\]])/g, '"$1"')
@@ -270,7 +269,12 @@ export function parseAIArray<T = string>(
   }
 
   // Try to extract array from content
-  const arrayMatch = content.match(/\[[\s\S]*\]/)
+  let arrayMatch: [string] | null = null
+  const start = content.indexOf("[")
+  const end = content.lastIndexOf("]")
+  if (start !== -1 && end !== -1 && end > start) {
+    arrayMatch = [content.slice(start, end + 1)]
+  }
   if (arrayMatch) {
     try {
       return JSON.parse(arrayMatch[0]) as T[]
