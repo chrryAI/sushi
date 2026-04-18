@@ -2,13 +2,13 @@
 
 ## ✅ Completed Migration
 
-Successfully migrated hardcoded app seeding logic from the monolithic `createStores.ts` (9356 lines) to individual app files in `packages/vault/src/dna/apps/`.
+Successfully migrated hardcoded app seeding logic from the monolithic `createStores.ts` (9356 lines) to individual app files in `packages/machine/src/dna/apps/`.
 
 ## 📦 Migrated Apps
 
 ### 1. **Atlas** 🌍 - Travel Companion
 
-- **File**: `packages/vault/src/dna/apps/atlas.ts`
+- **File**: `packages/machine/src/dna/apps/atlas.ts`
 - **Function**: `seedAtlas()`
 - **Creates**: Compass store + Atlas app
 - **Extends**: Chrry
@@ -16,7 +16,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 
 ### 2. **Vault** 💰 - Finance Assistant
 
-- **File**: `packages/vault/src/dna/apps/vault.ts`
+- **File**: `packages/machine/src/dna/apps/vault.ts`
 - **Function**: `seedVault()`
 - **Creates**: Wine store + Vault app
 - **Extends**: Chrry, Vex (optional), Focus (optional)
@@ -24,7 +24,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 
 ### 3. **Bloom** 🌸 - Wellness Coach
 
-- **File**: `packages/vault/src/dna/apps/bloom.ts`
+- **File**: `packages/machine/src/dna/apps/bloom.ts`
 - **Function**: `seedBloom()`
 - **Uses**: Existing LifeOS store
 - **Extends**: Chrry, Vex (optional), Focus (optional)
@@ -32,7 +32,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 
 ### 4. **Peach** 🍑 - Social Assistant
 
-- **File**: `packages/vault/src/dna/apps/peach.ts`
+- **File**: `packages/machine/src/dna/apps/peach.ts`
 - **Function**: `seedPeach()`
 - **Uses**: Existing LifeOS store
 - **Extends**: Chrry, Vex (optional), Focus (optional)
@@ -40,7 +40,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 
 ### 5. **Focus** ⏱️ - Productivity Assistant
 
-- **File**: `packages/vault/src/dna/apps/focus.ts`
+- **File**: `packages/machine/src/dna/apps/focus.ts`
 - **Function**: `seedFocus()`
 - **Uses**: Existing Blossom store
 - **Extends**: None (base app)
@@ -50,7 +50,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 
 ### Helper Functions
 
-**File**: `packages/vault/src/dna/helpers.ts`
+**File**: `packages/machine/src/dna/helpers.ts`
 
 ```typescript
 export async function handleAppExtends(appId: string, extendsIds: string[], storeId?: string);
@@ -82,7 +82,7 @@ export const createStores = async ({ user, isProd }) => {
 ### After (Modular) ✅
 
 ```typescript
-// packages/vault/src/dna/apps/atlas.ts
+// packages/machine/src/dna/apps/atlas.ts
 export async function seedAtlas(params) {
   const compass = await getOrCreateStore({ slug: "compass", ... })
   const atlas = await createOrUpdateApp({ app: atlasPayload })
@@ -90,7 +90,7 @@ export async function seedAtlas(params) {
   return { atlas, compass }
 }
 
-// packages/vault/src/dna/apps/vault.ts
+// packages/machine/src/dna/apps/vault.ts
 export async function seedVault(params) {
   const wine = await getOrCreateStore({ slug: "wine", ... })
   const vault = await createOrUpdateApp({ app: vaultPayload })
@@ -172,7 +172,7 @@ Original logic preserved in `createStores.ts` - can rollback if needed.
 ## 📁 File Structure
 
 ```
-packages/vault/src/dna/
+packages/machine/src/dna/
 ├── apps/
 │   ├── atlas.ts       ✅ seedAtlas()
 │   ├── vault.ts       ✅ seedVault()

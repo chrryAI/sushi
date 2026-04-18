@@ -2,7 +2,6 @@ import { type locale, locales } from "@chrryai/donut/locales"
 import type {
   aiAgent,
   cherry,
-  chopstick,
   store as chrryStore,
   guest,
   guestWithRelations,
@@ -13,7 +12,6 @@ import type {
   user,
   userWithRelations,
 } from "@chrryai/donut/types"
-
 import * as bcrypt from "bcrypt"
 import * as dotenv from "dotenv"
 import {
@@ -49,7 +47,6 @@ import langdetect from "langdetect"
 import pLimit from "p-limit"
 import postgres from "postgres"
 import { v4 as uuidv4 } from "uuid"
-import { decrypt } from "./encryption"
 import {
   buildPromptSections,
   resolveJoinWeights,
@@ -61,7 +58,8 @@ import {
   getModelProvider,
 } from "./src/ai/sushi/provider"
 import { MODEL_LIMITS, type ModelProviderResult } from "./src/ai/vault"
-import { getDNAThreadArtifacts } from "./src/appRAG"
+import { decrypt } from "./src/encryption"
+import { deleteFalkorUser } from "./src/falkorSync"
 // Better Auth tables
 
 import {
@@ -203,6 +201,7 @@ export {
   getEmbeddingProvider,
   getMediaAPIKeys,
   getModelProvider,
+  guests,
   kanbanCards,
   kanbanColumns,
   type locale,
@@ -294,7 +293,7 @@ export const DB_URL =
 
 export const isCI = process.env.CI
 
-export const isWaffles = DB_URL?.includes("waffles")
+export const isWaffles = isDevelopment
 
 export const isSeedSafe = isWaffles
 
@@ -302,11 +301,11 @@ export const isSeedSafe = isWaffles
 
 export const isProd = NODE_ENV === "production"
 
-export const isVex = DB_URL?.includes("localhost") && DB_URL?.includes("/vex")
+export const isVex = !isWaffles
 
-export { decrypt, encrypt, generateEncryptionKey } from "./encryption"
 // Export cache functions and redis instance for external use
 export * from "./src/cache"
+export { decrypt, encrypt, generateEncryptionKey } from "./src/encryption"
 
 import { MEMBER_CREDITS_PER_MONTH } from "@chrryai/donut/utils"
 import { seedScheduledTribeJobs } from "./src/dna/seedScheduledTribeJobs"
@@ -673,8 +672,17 @@ const disableSSL = process.env.DISABLE_DB_SSL === "true"
 const client = postgres(
   DB_URL,
   isDevelopment
-    ? undefined
+    ? {
+        max: 50,
+        prepare: false,
+        idle_timeout: 20,
+        connect_timeout: 10,
+      }
     : {
+        max: 50,
+        prepare: false,
+        idle_timeout: 20,
+        connect_timeout: 10,
         ssl:
           isRemoteDB && !disableSSL
             ? {
@@ -1385,14 +1393,6 @@ export const getUser = async (payload: {
       )
   ).at(0)
 
-  const googleAccount = result
-    ? await getAccount({ userId: result.user.id, provider: "google" })
-    : undefined
-
-  const appleAccount = result
-    ? await getAccount({ userId: result.user.id, provider: "apple" })
-    : undefined
-
   const now = new Date()
   const oneHourAgo = new Date(
     Date.UTC(
@@ -1405,52 +1405,79 @@ export const getUser = async (payload: {
     ),
   )
 
-  const memoriesCount = result
-    ? await getMemories({
-        userId: result.user.id,
-      }).then((res) => res.totalCount)
-    : undefined
+  const [
+    googleAccount,
+    appleAccount,
+    memoriesResult,
+    lastMessageInfo,
+    lastTribeInfo,
+    lastMoltInfo,
+    subscription,
+    creditsLeft,
+  ] = result
+    ? await Promise.all([
+        getAccount({ userId: result.user.id, provider: "google" }),
+        getAccount({ userId: result.user.id, provider: "apple" }),
+        getMemories({ userId: result.user.id }),
+        getMessages({ userId: result.user.id, pageSize: 1 }),
+        getMessages({ userId: result.user.id, pageSize: 1, isTribe: true }),
+        getMessages({ userId: result.user.id, pageSize: 1, isMolt: true }),
+        getSubscription({ userId: result.user.id }),
+        getUserCreditsLeft({ userId: result.user.id, threadId }),
+      ])
+    : [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ]
 
-  const lastMessageInfo = result
-    ? await getMessages({
-        userId: result.user.id,
-        pageSize: 1,
-      })
-    : undefined
-
+  const memoriesCount = memoriesResult?.totalCount
   const lastMessage = lastMessageInfo?.messages.at(0)?.message
+  const lastTribe = lastTribeInfo?.messages.at(0)?.message
+  const lastMolt = lastMoltInfo?.messages.at(0)?.message
 
-  const lastTribe = result
-    ? (
-        await getMessages({
+  const [
+    messagesLastHourResult,
+    instructionsResult,
+    placeHolderResult,
+    characterProfilesResult,
+    pendingThreadsResult,
+    activeThreadsResult,
+  ] = result
+    ? await Promise.all([
+        getMessages({
+          userId: result.user.id,
+          createdAfter: oneHourAgo,
+          aiAgent: true,
+          isPear: false,
+          pageSize: 1,
+        }),
+        app
+          ? getInstructions({
+              appId: app?.id,
+              userId: result.user.id,
+              pageSize: 7,
+            })
+          : Promise.resolve([]),
+        getPlaceHolder({ userId: result.user.id }),
+        getCharacterProfiles({ userId: result.user.id, pinned: true }),
+        getThreads({
+          userId: result.user.id,
+          myPendingCollaborations: true,
+          pageSize: 1,
+        }),
+        getThreads({
           userId: result.user.id,
           pageSize: 1,
-          isTribe: true,
-        })
-      )?.messages.at(0)?.message
-    : undefined
-
-  const lastMolt = result
-    ? (
-        await getMessages({
-          userId: result.user.id,
-          pageSize: 1,
-          isMolt: true,
-        })
-      )?.messages.at(0)?.message
-    : undefined
-
-  const subscription = result
-    ? await getSubscription({ userId: result.user.id })
-    : undefined
-
-  // Calculate credits spent
-  const creditsLeft = result
-    ? await getUserCreditsLeft({
-        userId: result.user.id,
-        threadId,
-      })
-    : 0
+          collaborationStatus: ["active"],
+        }),
+      ])
+    : [undefined, undefined, undefined, undefined, undefined, undefined]
 
   const userData = result
     ? {
@@ -1460,30 +1487,12 @@ export const getUser = async (payload: {
         hasCalendarScope:
           googleAccount?.scope?.includes("calendar.events") ?? false,
         hasRefreshToken: !!googleAccount?.refresh_token,
-        messagesLastHour: await getMessages({
-          userId: result.user.id,
-          createdAfter: oneHourAgo,
-          aiAgent: true,
-          isPear: false,
-          pageSize: 1,
-        }).then((res) => res.totalCount),
+        messagesLastHour: messagesLastHourResult?.totalCount,
         creditsLeft,
-        instructions: app
-          ? await getInstructions({
-              appId: app?.id,
-              userId: result.user.id,
-              pageSize: 7, // 7 instructions per app
-              // perApp: true, // Get 7 per app (Atlas, Bloom, Peach, Vault, General) = 35 total
-            })
-          : [],
-        placeHolder: await getPlaceHolder({
-          userId: result.user.id,
-        }),
+        instructions: instructionsResult || [],
+        placeHolder: placeHolderResult,
         memoriesCount,
-        characterProfiles: await getCharacterProfiles({
-          userId: result.user.id,
-          pinned: true,
-        }),
+        characterProfiles: characterProfilesResult,
         apiKeys: skipMasking
           ? result.user.apiKeys
           : result.user.apiKeys
@@ -1521,17 +1530,9 @@ export const getUser = async (payload: {
           : lastTribe,
         messageCount: lastMessageInfo?.totalCount,
 
-        pendingCollaborationThreadsCount: await getThreads({
-          userId: result.user.id,
-          myPendingCollaborations: true,
-          pageSize: 1,
-        }).then((res) => res.totalCount),
+        pendingCollaborationThreadsCount: pendingThreadsResult?.totalCount,
 
-        activeCollaborationThreadsCount: await getThreads({
-          userId: result.user.id,
-          pageSize: 1,
-          collaborationStatus: ["active"],
-        }).then((res) => res.totalCount),
+        activeCollaborationThreadsCount: activeThreadsResult?.totalCount,
 
         roles: result?.user?.roles?.includes(result.user.role)
           ? result.user.roles
@@ -1777,7 +1778,6 @@ export const deleteUser = async (id: string) => {
     )
 
     // FalkorDB cleanup (safe - won't crash if fails)
-    const { deleteFalkorUser } = await import("./falkorSync")
     await deleteFalkorUser(deleted.id)
   }
 
@@ -1948,7 +1948,7 @@ export const deleteMessage = async ({ id }: { id: string }) => {
 
   // FalkorDB cleanup (safe - won't crash if fails)
   if (deleted) {
-    const { deleteFalkorMessage } = await import("./falkorSync")
+    const { deleteFalkorMessage } = await import("./src/falkorSync")
     await deleteFalkorMessage(deleted.id)
   }
 
@@ -2918,28 +2918,64 @@ export const getGuest = async (payload: {
       now.getUTCSeconds(),
     ),
   )
-  const memoriesCount = result
-    ? await getMemories({
-        guestId: result.id,
-      }).then((res) => res.totalCount)
-    : undefined
+  const [memoriesResult, lastMessage, app, creditsLeft] = result
+    ? await Promise.all([
+        getMemories({ guestId: result.id }),
+        getMessages({ guestId: result.id, pageSize: 1 }),
+        appId ? getPureApp({ id: appId }) : Promise.resolve(undefined),
+        getGuestCreditsLeft({ guestId: result.id, threadId }),
+      ])
+    : [undefined, undefined, undefined, undefined]
 
-  const lastMessage = result
-    ? await getMessages({
-        guestId: result.id,
-        pageSize: 1,
-      })
-    : undefined
+  const memoriesCount = memoriesResult?.totalCount
 
-  const app = appId ? await getPureApp({ id: appId }) : undefined
-
-  // Calculate credits left
-  const creditsLeft = result
-    ? await getGuestCreditsLeft({
-        guestId: result.id,
-        threadId,
-      })
-    : 0
+  const [
+    messagesLastHourResult,
+    instructionsResult,
+    placeHolderResult,
+    characterProfilesResult,
+    pendingThreadsResult,
+    activeThreadsResult,
+    subscription,
+  ] = result
+    ? await Promise.all([
+        getMessages({
+          guestId: result.id,
+          createdAfter: oneHourAgo,
+          aiAgent: true,
+          isPear: false,
+          pageSize: 1,
+        }),
+        appId
+          ? getInstructions({
+              appId,
+              guestId: result.id,
+              pageSize: 7,
+            })
+          : Promise.resolve([]),
+        getPlaceHolder({ guestId: result.id }),
+        getCharacterProfiles({ guestId: result.id, pinned: true }),
+        getThreads({
+          guestId: result.id,
+          myPendingCollaborations: true,
+          pageSize: 1,
+        }),
+        getThreads({
+          guestId: result.id,
+          collaborationStatus: ["active"],
+          pageSize: 1,
+        }),
+        getSubscription({ guestId: result.id }),
+      ])
+    : [
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+      ]
 
   const guestData = result
     ? {
@@ -2947,21 +2983,9 @@ export const getGuest = async (payload: {
         memoriesCount,
         city: result.city,
         country: result.country,
-        messagesLastHour: await getMessages({
-          guestId: result.id,
-          createdAfter: oneHourAgo,
-          aiAgent: true,
-          isPear: false,
-          pageSize: 1,
-        }).then((res) => res.totalCount),
+        messagesLastHour: messagesLastHourResult?.totalCount,
         creditsLeft,
-        instructions: appId
-          ? await getInstructions({
-              appId,
-              guestId: result.id,
-              pageSize: 7,
-            })
-          : [],
+        instructions: instructionsResult || [],
         apiKeys: skipMasking
           ? result.apiKeys
           : result.apiKeys
@@ -2978,26 +3002,13 @@ export const getGuest = async (payload: {
               }, {} as apiKeys)
             : null,
 
-        placeHolder: await getPlaceHolder({
-          guestId: result.id,
-        }),
-        characterProfiles: await getCharacterProfiles({
-          guestId: result.id,
-          pinned: true,
-        }),
-        pendingCollaborationThreadsCount: await getThreads({
-          guestId: result.id,
-          myPendingCollaborations: true,
-          pageSize: 1,
-        }).then((res) => res.totalCount),
-        activeCollaborationThreadsCount: await getThreads({
-          guestId: result.id,
-          collaborationStatus: ["active"],
-          pageSize: 1,
-        }).then((res) => res.totalCount),
+        placeHolder: placeHolderResult,
+        characterProfiles: characterProfilesResult,
+        pendingCollaborationThreadsCount: pendingThreadsResult?.totalCount,
+        activeCollaborationThreadsCount: activeThreadsResult?.totalCount,
         lastMessage: lastMessage?.messages.at(0)?.message,
         messageCount: lastMessage?.totalCount,
-        subscription: await getSubscription({ guestId: result.id }),
+        subscription,
       }
     : null
 
@@ -3267,8 +3278,35 @@ export const getThread = async ({
         )
     : undefined
 
+  // Resolve presigned URLs for hippo files
+  const resolvedHippo = hippo
+    ? await Promise.all(
+        hippo.map(async (h) => {
+          if (!h.files?.length) return h
+          const resolvedFiles = await Promise.all(
+            h.files.map(async (file) => {
+              const s3Key =
+                file.s3Key ||
+                file.url?.replace(/^.*\/(thread|user|chat|apps)\//, "$1/")
+              if (!s3Key) return file
+              let context: "thread" | "user" | "chat" | "apps" = "chat"
+              if (s3Key.startsWith("thread/")) context = "thread"
+              else if (s3Key.startsWith("user/")) context = "user"
+              else if (s3Key.startsWith("apps/")) context = "apps"
+              const presignedUrl = await getSignedS3Url(s3Key, context)
+              if (presignedUrl) {
+                return { ...file, url: presignedUrl }
+              }
+              return file
+            }),
+          )
+          return { ...h, files: resolvedFiles }
+        }),
+      )
+    : undefined
+
   const app = result?.threads?.appId
-    ? await chopStick({
+    ? await getPureApp({
         id: result.threads.appId,
       })
     : undefined
@@ -3306,7 +3344,7 @@ export const getThread = async ({
           threadId: result.threads.id,
         }),
         creditsLeft,
-        hippo,
+        hippo: resolvedHippo,
         pearApp,
         characterProfile: await getCharacterProfile({
           threadId: result.threads.id,
@@ -3887,7 +3925,7 @@ export const deleteThread = async ({ id }: { id: string }) => {
 
   // FalkorDB cleanup (safe - won't crash if fails)
   if (deleted) {
-    const { deleteFalkorThread } = await import("./falkorSync")
+    const { deleteFalkorThread } = await import("./src/falkorSync")
     await deleteFalkorThread(deleted.id)
   }
 
@@ -5982,7 +6020,7 @@ export const deleteApp = async ({ id }: { id: string }) => {
     await invalidateApp(deleted.id, deleted.slug)
 
     // FalkorDB cleanup (safe - won't crash if fails)
-    const { deleteFalkorApp } = await import("./falkorSync")
+    const { deleteFalkorApp } = await import("./src/falkorSync")
     await deleteFalkorApp(deleted.id)
   }
 
@@ -6172,11 +6210,303 @@ export const getStoreApps = async (payload: {
   return result
 }
 
+/**
+ * Predefined knowledge bases for branded agents
+ *
+ * For demo purposes, we hardcode the brand knowledge here.
+ * In production, this would be uploaded documents processed through RAG.
+ */
+const BRAND_KNOWLEDGE_BASES: Record<string, string> = {
+  cnn: `
+# CNN Editorial Guidelines & Knowledge Base
+
+## Editorial Standards
+- **Accuracy First**: Every fact must be verified through multiple sources
+- **Source Attribution**: Always cite sources clearly and prominently
+- **Balanced Reporting**: Present multiple perspectives on controversial topics
+- **Fact-Checking**: All claims must be fact-checked before publication
+- **Corrections**: Errors must be corrected promptly and transparently
+
+## CNN Writing Style
+- **Clear Headlines**: Use active voice, present tense when possible
+- **Inverted Pyramid**: Most important information first
+- **Concise Language**: Avoid jargon, explain complex topics simply
+- **Active Voice**: Prefer active over passive voice
+- **Attribution**: "according to CNN" or "CNN reports"
+
+## CNN's Mission
+Founded in 1980, CNN pioneered 24-hour television news coverage. Our mission is to inform, 
+engage and empower the world through trusted, award-winning journalism.
+
+## Coverage Areas
+- Breaking News & Live Events
+- Politics & Government
+- Business & Economy
+- Technology & Innovation
+- Health & Wellness
+- Entertainment & Culture
+- World News
+
+## How to Cite CNN
+- "According to CNN..."
+- "CNN reports that..."
+- "A CNN investigation found..."
+- Always link to original CNN articles when referencing them
+`,
+
+  bloomberg: `
+# Bloomberg Terminal & Financial Knowledge Base
+
+## Bloomberg's Mission
+Bloomberg delivers business and financial information, news and insight around the world.
+Founded by Michael Bloomberg in 1981, we are the global leader in business and financial data.
+
+## Financial Terminology
+- **Bull Market**: Market condition where prices are rising
+- **Bear Market**: Market condition where prices are falling
+- **IPO**: Initial Public Offering - when a company goes public
+- **Market Cap**: Total market value of a company's outstanding shares
+- **P/E Ratio**: Price-to-Earnings ratio - valuation metric
+- **Dividend Yield**: Annual dividend per share divided by stock price
+- **Blue Chip**: Stock of a well-established, financially sound company
+
+## Market Analysis Approach
+1. **Data-Driven**: Base analysis on Bloomberg Terminal data
+2. **Real-Time**: Focus on current market conditions
+3. **Global Perspective**: Consider international markets
+4. **Risk Assessment**: Always mention potential risks
+5. **Professional Tone**: Maintain authoritative, analytical voice
+
+## Bloomberg Writing Style
+- **Precision**: Use exact numbers and data points
+- **Professional**: Maintain formal, authoritative tone
+- **Analytical**: Provide insights, not just facts
+- **Timely**: Focus on recent market movements
+- **Sourced**: "Bloomberg data shows..." or "According to Bloomberg..."
+
+## Coverage Areas
+- Stock Markets & Equities
+- Fixed Income & Bonds
+- Commodities & Futures
+- Foreign Exchange (FX)
+- Cryptocurrencies
+- Economic Indicators
+- Corporate Finance
+- Mergers & Acquisitions
+`,
+
+  nyt: `
+# New York Times Editorial Standards & Knowledge Base
+
+## The Times' Mission
+"To seek the truth and help people understand the world."
+Founded in 1851, The New York Times is committed to independent journalism of the highest quality.
+
+## Editorial Standards
+- **Independence**: Free from political and commercial bias
+- **Fairness**: Present all sides of a story
+- **Accuracy**: Verify every fact
+- **Transparency**: Explain our reporting methods
+- **Accountability**: Correct errors promptly
+
+## NYT Writing Style
+- **Clarity**: Write for a general audience
+- **Elegance**: Craft well-structured, engaging prose
+- **Depth**: Provide context and background
+- **Attribution**: Use "The Times" or "The New York Times"
+- **AP Style**: Follow Associated Press style guide
+
+## Coverage Excellence
+- 132 Pulitzer Prizes (most of any news organization)
+- Investigative journalism
+- In-depth analysis
+- International reporting
+- Cultural criticism
+
+## How to Reference NYT
+- "The New York Times reports..."
+- "According to Times reporting..."
+- "A Times investigation revealed..."
+- "Times analysis shows..."
+`,
+
+  techcrunch: `
+# TechCrunch Startup & Technology Knowledge Base
+
+## TechCrunch's Mission
+Founded in 2005, TechCrunch is the leading technology media property, dedicated to 
+obsessively profiling startups, reviewing new Internet products, and breaking tech news.
+
+## Coverage Focus
+- **Startups**: Early-stage to unicorns
+- **Venture Capital**: Funding rounds, investors
+- **Product Launches**: New tech products and services
+- **Industry Trends**: AI, crypto, SaaS, etc.
+- **Tech Events**: Disrupt, conferences
+
+## Writing Style
+- **Conversational**: Accessible, engaging tone
+- **Fast-Paced**: Quick, punchy writing
+- **Insider Knowledge**: Industry insights
+- **Data-Focused**: Funding amounts, valuations, metrics
+- **Forward-Looking**: What's next in tech
+
+## Key Metrics to Track
+- Funding rounds (Seed, Series A, B, C, etc.)
+- Valuations (especially unicorns $1B+)
+- User growth metrics
+- Revenue multiples
+- Exit strategies (IPO, acquisition)
+
+## How to Cite
+- "TechCrunch reports..."
+- "According to TechCrunch..."
+- "TechCrunch has learned..."
+`,
+}
+
+/**
+ * Get dynamic RAG context from uploaded documents
+ *
+ * TODO: Implement full RAG integration with vector search
+ * For now, use the app's knowledgeBase field if available
+ */
+export async function getAppRAGContext(
+  app: Partial<sushi> | null,
+  userMessage: string,
+): Promise<string> {
+  if (!app?.ragEnabled) {
+    return ""
+  }
+
+  // Use simple knowledgeBase field for now
+  if (app.knowledgeBase) {
+    return `\n\n## ${app.name} Knowledge Base:\n${app.knowledgeBase}\n\nIMPORTANT: Use this knowledge base to inform your responses. Follow the guidelines and style described above.`
+  }
+
+  // TODO: Implement vector search when RAG documents are uploaded
+  // const ragContext = await buildEnhancedRAGContext(userMessage, threadId)
+
+  return ""
+}
+
+/**
+ * Get brand-specific knowledge base (hardcoded fallback for demos)
+ */
+export function getBrandKnowledgeBase(appName?: string | null): string {
+  if (!appName) return ""
+
+  const appLower = appName.toLowerCase()
+  const knowledge = BRAND_KNOWLEDGE_BASES[appLower]
+
+  if (!knowledge) return ""
+
+  return `\n\n## ${appName} Knowledge Base & Guidelines:\n${knowledge}\n\nIMPORTANT: Follow ${appName}'s editorial standards and writing style in all responses. Always cite ${appName} as the source when referencing their content.`
+}
+
+/**
+ * Get DNA Thread artifacts (public RAG content)
+ *
+ * Extracts uploaded files from the app's main thread.
+ * These become public knowledge accessible to all users.
+ */
+export async function getDNAThreadArtifacts(
+  app?: Partial<sushi> | null,
+): Promise<string> {
+  if (!app?.mainThreadId) {
+    return ""
+  }
+
+  try {
+    const mainThread = await getThread({
+      id: app.mainThreadId,
+      userId: app.userId || undefined,
+      guestId: app.guestId || undefined,
+    })
+
+    if (!mainThread?.artifacts || mainThread.artifacts.length === 0) {
+      return ""
+    }
+
+    // Format artifacts as RAG context
+    let context = `\n\n## ${app.name} DNA Thread Knowledge:\n\n`
+    context += `The following files have been uploaded to the DNA Thread and are part of this app's public knowledge base:\n\n`
+
+    for (const artifact of mainThread.artifacts) {
+      context += `### ${artifact.name}\n`
+      if (artifact.data) {
+        // If we have the content, include it
+        context += `${artifact.data}\n\n`
+      } else if (artifact.url) {
+        // If we only have a URL, mention it
+        context += `File available at: ${artifact.url}\n\n`
+      }
+    }
+
+    context += `\nIMPORTANT: Use this DNA Thread knowledge to inform your responses. This is verified, public knowledge for this app.\n`
+
+    return context
+  } catch (error) {
+    console.error("Error fetching DNA Thread artifacts:", error)
+    return ""
+  }
+}
+
+/**
+ * Get complete app knowledge (dynamic RAG + hardcoded fallback)
+ */
+export async function getAppKnowledge(
+  app: Partial<sushi> | null,
+  appName: string | null,
+  userMessage: string,
+): Promise<string> {
+  // Try DNA Thread artifacts first (public RAG content)
+  const dnaArtifacts = await getDNAThreadArtifacts(app || undefined)
+
+  if (dnaArtifacts) {
+    return dnaArtifacts
+  }
+
+  // Try dynamic RAG second
+  const dynamicRAG = await getAppRAGContext(app, userMessage)
+
+  if (dynamicRAG) {
+    return dynamicRAG
+  }
+
+  // Fallback to hardcoded knowledge for demos
+  return getBrandKnowledgeBase(appName)
+}
+
+/**
+ * Get combined context for an app (news + knowledge base)
+ */
+export function getAppContext(
+  appName?: string | null,
+  newsContext?: string,
+): string {
+  const knowledgeBase = getBrandKnowledgeBase(appName)
+
+  if (!newsContext && !knowledgeBase) return ""
+
+  let context = ""
+
+  if (newsContext) {
+    context += newsContext
+  }
+
+  if (knowledgeBase) {
+    context += knowledgeBase
+  }
+
+  return context
+}
+
 export const chopStick = async <T extends sushi>(
   payload: ramen,
 ): Promise<sushi | undefined> => {
   // Build app identification conditions
-  const llm = payload.llm
+  const llm = payload?.llm
   const appConditions = []
 
   const {
@@ -6381,7 +6711,7 @@ export const chopStick = async <T extends sushi>(
   const canDNA = hasDNA && isCharacterProfileEnabled
 
   // Phase 2: All independent queries in parallel (concurrency limited to 5)
-  const limit = pLimit(5)
+  const limit = pLimit(10)
   const [
     /*1*/ userMemories,
     /*2*/ userCharacterProfiles,
@@ -8323,7 +8653,7 @@ export async function deleteStore({ id }: { id: string }) {
     )
 
     // FalkorDB cleanup (safe - won't crash if fails)
-    const { deleteFalkorStore } = await import("./falkorSync")
+    const { deleteFalkorStore } = await import("./src/falkorSync")
     await deleteFalkorStore(deleted.id)
   }
 
@@ -8693,7 +9023,7 @@ export const deleteTask = async ({ id }: { id: string }) => {
 
   // FalkorDB cleanup (safe - won't crash if fails)
   if (deleted) {
-    const { deleteFalkorTask } = await import("./falkorSync")
+    const { deleteFalkorTask } = await import("./src/falkorSync")
     await deleteFalkorTask(deleted.id)
   }
 
@@ -9621,6 +9951,32 @@ export const getTribePosts = async ({
               .from(hippos)
               .where(and(eq(hippos.tribePostId, row?.post?.id)))
           : []
+
+        // Resolve presigned URLs for hippo files
+        const resolvedHippo = await Promise.all(
+          (hippo || []).map(async (h) => {
+            if (!h.files?.length) return h
+            const resolvedFiles = await Promise.all(
+              h.files.map(async (file) => {
+                const s3Key =
+                  file.s3Key ||
+                  file.url?.replace(/^.*\/(thread|user|chat|apps)\//, "$1/")
+                if (!s3Key) return file
+                let context: "thread" | "user" | "chat" | "apps" = "chat"
+                if (s3Key.startsWith("thread/")) context = "thread"
+                else if (s3Key.startsWith("user/")) context = "user"
+                else if (s3Key.startsWith("apps/")) context = "apps"
+                const presignedUrl = await getSignedS3Url(s3Key, context)
+                if (presignedUrl) {
+                  return { ...file, url: presignedUrl }
+                }
+                return file
+              }),
+            )
+            return { ...h, files: resolvedFiles }
+          }),
+        )
+
         return {
           id: row.post.id,
           title: row.post.title,
@@ -9630,7 +9986,7 @@ export const getTribePosts = async ({
           commentsCount: row.post.commentsCount,
           images: row.post.images,
           videos: row.post.videos,
-          hippo,
+          hippo: resolvedHippo,
           // audios: row.post.audios,
           sharesCount: row.post.sharesCount,
           createdOn: row.post.createdOn,

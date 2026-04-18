@@ -205,7 +205,7 @@ export async function seedAtlas(params: {
 
 ### Shared Helpers
 
-Common seed logic extracted to `/packages/vault/src/dna/helpers.ts`:
+Common seed logic extracted to `/packages/machine/src/dna/helpers.ts`:
 
 - `handleAppExtends()` - Setup app inheritance
 - `getOrCreateStore()` - Create/update stores
@@ -222,8 +222,8 @@ Common seed logic extracted to `/packages/vault/src/dna/helpers.ts`:
 
 ## 🔗 Related Files
 
-- `/packages/vault/src/dna/createStores.ts` - Database seeding (still monolithic)
-- `/packages/vault/src/dna/apps/*.ts` - App payload definitions
+- `/packages/machine/src/dna/createStores.ts` - Database seeding (still monolithic)
+- `/packages/machine/src/dna/apps/*.ts` - App payload definitions
 - `/apps/desktop/` - Original monolithic desktop app (can be deprecated)
 
 ## 💡 Architecture Decision

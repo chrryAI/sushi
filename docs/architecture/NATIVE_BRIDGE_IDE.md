@@ -260,7 +260,7 @@ User: "What are my uncommitted changes?"
 
 2. Agent → User: "You have 3 unstaged files:
    - apps/web/App.tsx
-   - packages/vault/schema.ts
+   - packages/machine/schema.ts
    - README.md"
 ```
 

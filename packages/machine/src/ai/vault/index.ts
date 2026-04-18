@@ -2,7 +2,7 @@
 // vault/index.ts — Pricing data, model limits, capabilities, API key helpers
 //
 // Model routing logic (getModelProvider, getEmbeddingProvider) has moved
-// to packages/vault/src/ai/sushi/provider.ts
+// to packages/machine/src/ai/sushi/provider.ts
 // ─────────────────────────────────────────────────────────────────
 
 import type { nil } from "@chrryai/donut/types"

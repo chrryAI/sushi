@@ -35,7 +35,7 @@
 
 ```tsx
 // apps/web/app/layout.tsx (Web)
-import { PlatformProvider } from "chrry/platform";
+import { PlatformProvider } from "@chrryai/donut/platform";
 
 export default function RootLayout({ children }) {
   return (
@@ -50,7 +50,7 @@ export default function RootLayout({ children }) {
 
 ```tsx
 // apps/native/App.tsx (Native)
-import { PlatformProvider } from "chrry/platform";
+import { PlatformProvider } from "@chrryai/donut/platform";
 
 export default function App() {
   return (
@@ -65,7 +65,7 @@ export default function App() {
 
 ```tsx
 // packages/donut/Weather.tsx
-import { Box, Text, usePlatform } from "chrry/platform";
+import { Box, Text, usePlatform } from "@chrryai/donut/platform";
 
 export function Weather() {
   const { isWeb, isNative, select } = usePlatform();
@@ -149,7 +149,7 @@ const {
 ### Basic Platform Detection
 
 ```tsx
-import { usePlatform, Box, Text } from "chrry/platform";
+import { usePlatform, Box, Text } from "@chrryai/donut/platform";
 
 function MyComponent() {
   const { isWeb, isNative } = usePlatform();
@@ -165,7 +165,7 @@ function MyComponent() {
 ### Platform-Specific Values
 
 ```tsx
-import { usePlatform } from "chrry/platform";
+import { usePlatform } from "@chrryai/donut/platform";
 
 function MyComponent() {
   const { select } = usePlatform();
@@ -190,7 +190,7 @@ function MyComponent() {
 ### Adaptive Styles
 
 ```tsx
-import { useAdaptiveStyles } from "chrry/platform";
+import { useAdaptiveStyles } from "@chrryai/donut/platform";
 import { WeatherStyles } from "./Weather.styles";
 
 function Weather() {
@@ -217,7 +217,7 @@ function Weather() {
 ### Conditional Rendering
 
 ```tsx
-import { PlatformSwitch, WebOnly, NativeOnly } from "chrry/platform";
+import { PlatformSwitch, WebOnly, NativeOnly } from "@chrryai/donut/platform";
 
 function MyComponent() {
   return (
@@ -246,7 +246,7 @@ function MyComponent() {
 ### Responsive Styles
 
 ```tsx
-import { useResponsiveStyles } from "chrry/platform";
+import { useResponsiveStyles } from "@chrryai/donut/platform";
 
 function MyComponent() {
   const styles = useResponsiveStyles({
@@ -265,7 +265,7 @@ function MyComponent() {
 ### Complete Example: Weather Component
 
 ```tsx
-import { Box, Text, usePlatform, useAdaptiveStyles } from "chrry/platform";
+import { Box, Text, usePlatform, useAdaptiveStyles } from "@chrryai/donut/platform";
 import { WeatherStyles } from "./Weather.styles";
 
 interface WeatherProps {

@@ -89,7 +89,7 @@ explained, so agents don't know whether to add new component demos there.
 
 No guidance on when to write `.module.scss` vs `.styles.ts`, how to run the
 converter, or what the converter supports/doesn't support. This affects every
-agent touching `packages/ui` or `apps/chrry`.
+agent touching `packages/donut` or `apps/chrry`.
 
 ### M2 — Git branching model
 
@@ -137,7 +137,7 @@ warnings such as:
 - Do not run `pnpm install` directly (use `vp install`).
 - Do not import from `vitest` or `vite` directly.
 - Do not add a new Drizzle migration manually — always use `pnpm run generate`.
-- Do not edit `packages/vault/src/schema.ts` without running `generate` + `migrate`.
+- Do not edit `packages/machine/src/schema.ts` without running `generate` + `migrate`.
 - Do not add a new route to `apps/api` without a corresponding `.test.ts`.
 
 ### M9 — Local setup one-command shortcut
@@ -223,7 +223,7 @@ Section 5.
 - The SCSS-to-TypeScript conversion system: `.module.scss` → `.styles.ts`.
 - When to use each: `.module.scss` for web-only components in `apps/chrry`;
   `.styles.ts` (generated or hand-written) for cross-platform components in
-  `packages/ui`.
+  `packages/donut`.
 - Commands: `pnpm s` (convert changed), `pnpm s:all` (convert all),
   `pnpm s:w` (watch mode), `pnpm s:changed` (changed files only).
 - Rule: after editing any `.module.scss`, run `pnpm s` before committing.
@@ -306,7 +306,7 @@ main      ← stable, production-deployed
 - Do not `import { test } from 'vitest'` — use `import { test } from 'vite-plus/test'`.
 - Do not create Drizzle migrations manually — always `pnpm run generate` in
   `packages/vault`, then commit the generated SQL.
-- Do not edit `packages/vault/src/schema.ts` without running `generate` + `migrate`
+- Do not edit `packages/machine/src/schema.ts` without running `generate` + `migrate`
   afterward.
 - Do not add a new Hono route without a corresponding `*.test.ts` file.
 - Do not implement custom rate limiting — Arcjet handles it in `apps/api`.

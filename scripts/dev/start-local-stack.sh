@@ -70,9 +70,21 @@ echo "   MinIO UI:    http://localhost:9001 (user: vex, pass: vex_minio_local_pa
 echo "   FalkorDB:    localhost:6380"
 echo "   Mailhog UI:  http://localhost:8025"
 echo ""
-echo "🔧 Next steps:"
-echo "   1. Run database migrations: cd packages/vault && pnpm run migrate"
-echo "   2. Seed database: cd packages/vault && pnpm run seed"
-echo "   3. Start API: pnpm run dev"
+
+# Auto-run database setup (create DB, extensions, migrations, seed)
+echo "🔧 Auto-setting up database..."
+cd "$(dirname "$0")/../.."
+if pnpm ensure-db --seed; then
+    echo ""
+    echo "✅ Database is ready!"
+else
+    echo ""
+    echo "⚠️  Database setup failed. You can retry manually:"
+    echo "   pnpm ensure-db --seed"
+fi
+
+echo ""
+echo "🚀 Start development:"
+echo "   pnpm dev"
 echo ""
 echo "🛑 To stop all services: docker-compose -f infra/docker/docker-compose.local.yml down"

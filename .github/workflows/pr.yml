@@ -152,7 +152,7 @@ jobs:
   #         echo "LOCAL_VERSION=$LOCAL_VERSION" >> $GITHUB_ENV
   #         echo "local_version=$LOCAL_VERSION" >> $GITHUB_OUTPUT
   #         # Check API
-  #         LIVE_API_VERSION=$(curl -s -A "Chrry-Health-Check" -H "X-Internal-Request: flash-server" --compressed --connect-timeout 5 --max-time 10 "$STAGING_API_URL/api/health" | jq -r '.version' 2>/dev/null || echo "unknown")
+  #         LIVE_API_VERSION=$(curl -s -A "Chrry-Health-Check" -H "X-Internal-Request: chrry-server" --compressed --connect-timeout 5 --max-time 10 "$STAGING_API_URL/api/health" | jq -r '.version' 2>/dev/null || echo "unknown")
   #         echo "live_api_version=$LIVE_API_VERSION" >> $GITHUB_OUTPUT
   #         if [ "$LOCAL_VERSION" != "$LIVE_API_VERSION" ]; then
   #           echo "deploy_api=true" >> $GITHUB_OUTPUT
@@ -193,7 +193,7 @@ jobs:
 
   #           # Use a temporary file for the response body
   #           RESPONSE_FILE=$(mktemp)
-  #           HTTP_STATUS=$(curl -s -A "Chrry-Health-Check" -H "X-Internal-Request: flash-server" -o "$RESPONSE_FILE" -w "%{http_code}" --compressed --connect-timeout 5 "$STAGING_API_URL/api/health")
+  #           HTTP_STATUS=$(curl -s -A "Chrry-Health-Check" -H "X-Internal-Request: chrry-server" -o "$RESPONSE_FILE" -w "%{http_code}" --compressed --connect-timeout 5 "$STAGING_API_URL/api/health")
 
   #           if [ "$HTTP_STATUS" -eq 200 ]; then
   #             API_VERSION=$(cat "$RESPONSE_FILE" | jq -r '.version' 2>/dev/null || echo "unknown")

@@ -120,7 +120,7 @@ const renderedChildren =
 ### **Basic Usage**
 
 ```tsx
-import { Box, Text, Button, Input } from "chrry/platform";
+import { Box, Text, Button, Input } from "@chrryai/donut/platform";
 
 function MyComponent() {
   return (
@@ -136,7 +136,7 @@ function MyComponent() {
 ### **With Platform Detection**
 
 ```tsx
-import { usePlatform, Box, Text } from "chrry/platform";
+import { usePlatform, Box, Text } from "@chrryai/donut/platform";
 
 function MyComponent() {
   const { isWeb, isNative } = usePlatform();
@@ -152,7 +152,7 @@ function MyComponent() {
 ### **With Adaptive Styles**
 
 ```tsx
-import { useAdaptiveStyles, Box } from "chrry/platform";
+import { useAdaptiveStyles, Box } from "@chrryai/donut/platform";
 import { MyStyles } from "./My.styles";
 
 function MyComponent() {

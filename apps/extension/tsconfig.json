@@ -20,11 +20,8 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Paths */
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "chrry": ["../../packages/donut"],
-      "chrry/*": ["../../packages/donut/*"]
+      "@chrryai/donut": ["../../packages/donut/*"]
     }
   },
   "include": ["src/**/*"],

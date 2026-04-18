@@ -27,7 +27,7 @@ import { AppStyles } from "./App.styles";
 ### 3. Use className as normal
 
 ```tsx
-import { Div } from "chrry/platform";
+import { Div } from "@chrryai/donut/platform";
 import { AppStyles } from "./App.styles";
 import clsx from "clsx";
 
@@ -74,7 +74,7 @@ Supported utilities:
 
 ```tsx
 // App.tsx
-import { Div, Text } from "chrry/platform";
+import { Div, Text } from "@chrryai/donut/platform";
 import { AppStyles } from "./App.styles";
 
 export function App() {

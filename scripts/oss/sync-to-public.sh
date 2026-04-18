@@ -54,7 +54,6 @@ echo "🗑️  Removing private packages..."
 rm -rf \
   packages/vault \
   packages/shared \
-  packages/donut \
   packages/sushi \
   packages/cache
 

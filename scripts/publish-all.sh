@@ -9,13 +9,13 @@ echo "🚀 Publishing all @chrryai packages..."
 echo ""
 
 # Build and publish Pepper
-echo "🌶️  Publishing Pepper..."
-cd packages/pepper
-npm run build
-npm publish --access public
-cd ../..
-echo "✅ Pepper published!"
-echo ""
+# echo "🌶️  Publishing Pepper..."
+# cd packages/pepper
+# npm run build
+# npm publish --access public
+# cd ../..
+# echo "✅ Pepper published!"
+# echo ""
 
 # Build and publish Chrry
 echo "🍒 Publishing Chrry..."

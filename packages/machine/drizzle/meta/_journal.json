@@ -1842,6 +1842,13 @@
       "when": 1776467830693,
       "tag": "0262_third_toad_men",
       "breakpoints": true
+    },
+    {
+      "idx": 263,
+      "version": "7",
+      "when": 1776476733225,
+      "tag": "0263_slimy_sentinels",
+      "breakpoints": true
     }
   ]
 }

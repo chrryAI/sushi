@@ -1,4 +1,4 @@
-// packages/vault/src/ai/vault/provider.ts
+// packages/machine/src/ai/vault/provider.ts
 
 import type { guest, nil, sushi, user } from "@chrryai/donut/types"
 import * as AiEmbeddingModel from "@effect/ai/EmbeddingModel"

@@ -22,10 +22,10 @@ for app in *.app; do
   fi
 done
 
-# Copy to flash/public/installs as well
+# Copy to chrry/public/installs as well
 echo "📋 Copying to apps/chrry/public/installs..."
-mkdir -p ../flash/public/installs
-cp *.dmg ../flash/public/installs/
+mkdir -p ../chrry/public/installs
+cp *.dmg ../chrry/public/installs/
 
 echo "✅ Done! All installers copied and ready for download."
 echo ""
