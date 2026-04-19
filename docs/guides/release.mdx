@@ -5,7 +5,7 @@ description: "How to build, distribute, and publish desktop applications for the
 
 This document describes how to build and distribute desktop applications for the Vex ecosystem.
 
-## Building Desktop Apps
+## Building desktop apps
 
 ### Prerequisites
 
@@ -28,7 +28,7 @@ This document describes how to build and distribute desktop applications for the
    cargo install tauri-cli
    ```
 
-### Build Process
+### Build process
 
 Each app mode has its own build script:
 
@@ -47,7 +47,7 @@ pnpm build:zarathustra # Zarathustra 🔮
 pnpm build:all
 ```
 
-### What Happens During Build
+### What happens during build
 
 1. **Icon Generation** (`generate-icons.js`)
    - Takes high-res 500x500 PNG from `apps/chrry/public/images/apps/{mode}.png`
@@ -69,14 +69,14 @@ pnpm build:all
 
 ## Distribution
 
-### Build Artifacts
+### Build artifacts
 
 After building, you'll find:
 
 - **macOS**: `apps/desktop/src-tauri/target/release/bundle/macos/{App Name}.app`
 - **DMG**: `apps/desktop/src-tauri/target/release/bundle/dmg/{App Name}_0.1.0_aarch64.dmg`
 
-### Publishing to GitHub Releases
+### Publishing to GitHub releases
 
 **DO NOT** commit binary files to git. Instead:
 
@@ -99,7 +99,7 @@ After building, you'll find:
    - Reference GitHub Release URLs in your app
    - Example: `https://github.com/your-org/vex/releases/download/v1.8.47/Vex_0.1.0_aarch64.dmg`
 
-### Alternative: CDN Distribution
+### Alternative: CDN distribution
 
 For faster downloads, upload to a CDN:
 
@@ -114,9 +114,9 @@ For faster downloads, upload to a CDN:
 
 3. **Update app to reference CDN URLs**
 
-## CI/CD Integration
+## CI/CD integration
 
-### GitHub Actions Example
+### GitHub Actions example
 
 ```yaml
 name: Build Desktop Apps
@@ -152,9 +152,9 @@ jobs:
           files: apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
 ```
 
-## Architecture Notes
+## Architecture notes
 
-### Template System
+### Template system
 
 The `tauri.conf.template.json` is the **source of truth** for Tauri configuration. It uses placeholders:
 
@@ -165,11 +165,11 @@ The `tauri.conf.template.json` is the **source of truth** for Tauri configuratio
 
 The generated `tauri.conf.json` is **gitignored** to prevent diff noise.
 
-### Icon Management
+### Icon management
 
 Source icons (500x500 PNG) live in:
 
-```
+```text
 apps/chrry/public/images/apps/
 ├── vex.png
 ├── atlas.png

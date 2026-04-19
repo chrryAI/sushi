@@ -3,14 +3,14 @@ title: "Performance optimization"
 description: "Summary of performance optimizations including gzip compression, cache headers, pre-compressed assets, and chunk splitting."
 ---
 
-## 🎯 Pingdom Test Results (Before)
+## Pingdom test results (before)
 
 - **Performance Grade:** B90
 - **Load Time:** 3.29s
 - **Page Size:** 1.5 MB
 - **Requests:** 14
 
-## ❌ Issues Found
+## Issues found
 
 | Grade   | Issue                         | Impact                       |
 | ------- | ----------------------------- | ---------------------------- |
@@ -20,7 +20,7 @@ description: "Summary of performance optimizations including gzip compression, c
 
 ---
 
-## ✅ Optimizations Applied
+## Optimizations applied
 
 ### 1. **Enhanced Gzip Compression** (F45 → A100)
 
@@ -126,7 +126,7 @@ terserOptions: {
 
 ---
 
-## 📊 Expected Results (After)
+## Expected results (after)
 
 | Metric                | Before | After   | Improvement |
 | --------------------- | ------ | ------- | ----------- |
@@ -138,7 +138,7 @@ terserOptions: {
 
 ---
 
-## 🚀 Deployment Steps
+## Deployment steps
 
 ### 1. **Build with Optimizations**
 
@@ -171,7 +171,7 @@ Coolify will automatically:
 
 After deployment, re-run Pingdom test:
 
-```
+```text
 http://tools.pingdom.com
 URL: https://chrry.ai
 ```
@@ -184,7 +184,7 @@ Expected improvements:
 
 ---
 
-## 🔍 Monitoring
+## Monitoring
 
 ### Check Compression
 
@@ -209,7 +209,7 @@ curl -I https://chrry.ai/assets/index-*.js
 
 ---
 
-## 📝 Additional Recommendations
+## Additional recommendations
 
 ### 1. **Fix URL Redirects** (C80)
 
@@ -245,7 +245,7 @@ Move static assets to CDN for:
 
 ---
 
-## 🎉 Summary
+## Summary
 
 **Files Modified:**
 

@@ -9,13 +9,13 @@ Since SonarCloud webhooks require a **Team or Enterprise plan** ($32+/month), we
 
 ## What's Implemented
 
-### 1. **Cron Endpoint** ✅
+### 1. Cron endpoint
 
 - **URL**: `GET /api/cron/syncSonarCloud`
 - **Auth**: Requires `CRON_SECRET` in Authorization header
 - **Frequency**: Can be called manually or scheduled (e.g., every 6 hours)
 
-### 2. **Sync Function** ✅
+### 2. Sync function
 
 Located in `apps/api/lib/cron/sonarSync.ts`:
 
@@ -25,7 +25,7 @@ Located in `apps/api/lib/cron/sonarSync.ts`:
   - `sonar_issues` - Current and historical issues
   - `sonar_metrics` - Metrics snapshots over time
 
-### 3. **Webhook Endpoint** ✅ (Ready for future upgrade)
+### 3. Webhook endpoint (ready for future upgrade)
 
 - **URL**: `POST /api/sonarWebhook`
 - **Features**:

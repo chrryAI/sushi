@@ -3,14 +3,14 @@ title: "SonarCloud graph integration"
 description: "Syncing SonarCloud code quality data into FalkorDB graph database for RAG-powered insights, hotspot analysis, and topic-based search."
 ---
 
-## Amaç
+## Purpose
 
-SonarCloud kod kalitesi verilerini **FalkorDB graph database**'e senkronize ederek:
+Synchronize SonarCloud code quality data into the **FalkorDB graph database** to:
 
-- RAG sisteminin kod kalitesi hakkında bilgi vermesini sağlamak
-- Kod dosyaları ile issue'ları ilişkilendirmek
-- Topic-based arama yapmak (security, performance, code-smell, etc.)
-- Hotspot analizi yapmak (en çok issue olan dosyalar)
+- Enable the RAG system to provide insights on code quality
+- Associate code files with their issues
+- Perform topic-based searches (security, performance, code-smell, etc.)
+- Run hotspot analysis (files with the most issues)
 
 ## Graph Schema
 
@@ -98,7 +98,7 @@ ORDER BY m.measuredAt DESC
 
 **RAG Response:**
 
-```
+```text
 Based on the latest SonarCloud analysis:
 
 🔴 High Priority Issues:
@@ -121,7 +121,7 @@ Based on the latest SonarCloud analysis:
 
 **RAG Response:**
 
-```
+```text
 Yes, I found 3 unresolved security issues:
 
 🔒 CRITICAL - SQL Injection Risk

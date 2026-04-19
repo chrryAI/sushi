@@ -9,11 +9,11 @@ Consolidated from multiple servers to **one server** that automatically detects 
 
 ---
 
-## ✅ What Changed
+## What changed
 
 ### **Before: Multi-Server Setup**
 
-```
+```text
 Server 1: chrry.ai (VITE_API_URL=https://chrry.ai/api)
 Server 2: vex.chrry.ai (VITE_API_URL=https://vex.chrry.ai/api)
 Server 3: focus.chrry.ai (needs new env vars)
@@ -21,7 +21,7 @@ Server 3: focus.chrry.ai (needs new env vars)
 
 ### **After: Single Server**
 
-```
+```text
 One Server: Detects domain automatically
 ├─ chrry.ai → chrryAI mode
 ├─ focus.chrry.ai → chrryAI mode ✅
@@ -33,7 +33,7 @@ One Server: Detects domain automatically
 
 ---
 
-## 🔧 Implementation
+## Implementation
 
 ### **1. Domain Detection Function**
 
@@ -113,7 +113,7 @@ export function getSiteConfig(hostnameOrMode?: string): SiteConfig {
 
 ---
 
-## 🎯 Usage in SSR (Server-Side Rendering)
+## Usage in SSR (server-side rendering)
 
 ### **Client-Side** (Automatic)
 
@@ -145,7 +145,7 @@ export default async function Page() {
 
 ---
 
-## 📍 Updated Files
+## Updated files
 
 ### **1. packages/donut/utils/siteConfig.ts**
 
@@ -167,11 +167,11 @@ export default async function Page() {
 
 ---
 
-## 🚀 Benefits
+## Benefits
 
 ### **1. Automatic Subdomain Support**
 
-```
+```text
 ✅ focus.chrry.ai - Works automatically
 ✅ bloom.chrry.ai - Works automatically
 ✅ vault.chrry.ai - Works automatically
@@ -180,7 +180,7 @@ export default async function Page() {
 
 ### **2. No Environment Variables Needed**
 
-```
+```text
 Before:
 - VITE_SITE_MODE=chrryAI
 - VITE_API_URL=https://chrry.ai/api
@@ -191,7 +191,7 @@ After:
 
 ### **3. Single Deployment**
 
-```
+```text
 One build → Deploy once → Works everywhere
 - chrry.ai ✅
 - focus.chrry.ai ✅
@@ -201,7 +201,7 @@ One build → Deploy once → Works everywhere
 
 ### **4. Simplified Infrastructure**
 
-```
+```text
 Before: 3+ servers
 After: 1 server
 
@@ -212,7 +212,7 @@ Complexity: 66% reduction
 
 ---
 
-## 🔮 Domain Routing Logic
+## Domain routing logic
 
 ### **Production Domains**
 
@@ -236,7 +236,7 @@ localhost:3000          → vex        → Default (development)
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### **Test Domain Detection**
 
@@ -275,11 +275,11 @@ console.log(config3.mode); // Depends on current domain
 
 ---
 
-## 🎨 App-Specific Routing
+## App-specific routing
 
 Each app can have its own subdomain:
 
-```
+```text
 focus.chrry.ai
 ├─ Detects as "chrryAI" mode
 ├─ Loads Focus app from store
@@ -301,7 +301,7 @@ vault.chrry.ai
 
 ---
 
-## 🔐 Security Considerations
+## Security considerations
 
 ### **1. Hostname Validation**
 
@@ -327,7 +327,7 @@ const allowedOrigins = [
 
 ### **3. SSL/TLS**
 
-```
+```text
 All domains must use HTTPS in production
 - chrry.ai → HTTPS ✅
 - *.chrry.ai → HTTPS ✅ (wildcard cert)
@@ -336,11 +336,11 @@ All domains must use HTTPS in production
 
 ---
 
-## 📊 Performance
+## Performance
 
 ### **Before: Multi-Server**
 
-```
+```text
 Request → DNS → Load Balancer → Server 1 (chrry.ai)
 Request → DNS → Load Balancer → Server 2 (vex.chrry.ai)
 Request → DNS → Load Balancer → Server 3 (focus.chrry.ai)
@@ -350,7 +350,7 @@ Total: 3 servers, 3 deployments, 3x maintenance
 
 ### **After: Single Server**
 
-```
+```text
 Request → DNS → Load Balancer → Single Server
                                  ├─ Detect domain
                                  ├─ Route to correct mode
@@ -368,7 +368,7 @@ Total: 1 server, 1 deployment, 1x maintenance
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 ### **1. Build Once**
 
@@ -387,7 +387,7 @@ npm run deploy
 
 ### **3. Configure DNS**
 
-```
+```text
 chrry.ai → Server IP
 *.chrry.ai → Server IP (wildcard)
 vex.chrry.ai → Server IP
@@ -405,7 +405,7 @@ curl https://chrry.dev
 
 ---
 
-## 🎉 Summary
+## Summary
 
 ### **What We Achieved**
 

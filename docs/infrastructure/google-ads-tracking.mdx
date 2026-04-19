@@ -113,15 +113,15 @@ export async function POST(request: Request) {
 
 ## How It Works
 
-### Traditional (Client-Side) - ❌ Not Privacy Compliant
+### Traditional (client-side) - not privacy compliant
 
-```
+```text
 Browser → Google Tag → Cookie → Track Everything
 ```
 
-### Server-Side (Our Approach) - ✅ Privacy Compliant
+### Server-side (our approach) - privacy compliant
 
-```
+```text
 User Action → Your Server → Google Ads API → Track Conversion Only
 ```
 
@@ -222,7 +222,7 @@ After 24-48 hours:
 
 ### Before (No Tracking)
 
-```
+```text
 Clicks: 1000
 Conversions: Unknown
 CPA: Unknown
@@ -232,7 +232,7 @@ Optimization: Random
 
 ### After (Server-Side Tracking)
 
-```
+```text
 Clicks: 1000
 Conversions: 50 (tracked)
 CPA: $20 (calculated)
@@ -244,20 +244,20 @@ Optimization: Data-driven
 
 ## Privacy Compliance
 
-### GDPR ✅
+### GDPR
 
 - No personal data collected
 - No cookies
 - No consent needed
 - Server-side only
 
-### CCPA ✅
+### CCPA
 
 - No tracking of California residents
 - No sale of personal data
 - No behavioral tracking
 
-### Your Zero-Tracker Policy ✅
+### Your zero-tracker policy
 
 - No client-side tracking
 - No JavaScript tags

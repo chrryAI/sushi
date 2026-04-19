@@ -5,7 +5,7 @@ description: "Checklist of tasks to complete before publishing Vex to the public
 
 This document tracks what needs to be done before pushing to the public `chrryai/vex` repository.
 
-## ✅ Completed
+## Completed
 
 ### Security
 
@@ -25,16 +25,16 @@ This document tracks what needs to be done before pushing to the public `chrryai
 - [x] README.md created/updated
 - [x] Preparation script created (`scripts/prepare-open-source.sh`)
 
-### Code Quality
+### Code quality
 
 - [x] Custom AI model implementation complete
 - [x] Self-sustaining architecture (user-funded models)
 - [x] All AI operations use user's selected models
 - [x] Monorepo build scripts fixed
 
-## ⚠️ Review Before Publishing
+## Review before publishing
 
-### 1. Test Environment Variables
+### 1. Test environment variables
 
 Run through setup with only `.env.example` files:
 
@@ -49,7 +49,7 @@ cp apps/api/.env.example apps/api/.env
 pnpm run dev
 ```
 
-### 2. Email Addresses in Code
+### 2. Email addresses in code
 
 Review these files for email addresses:
 
@@ -60,7 +60,7 @@ Review these files for email addresses:
 
 **Action**: These are test/example emails, but verify they're appropriate for public repo.
 
-### 3. Update Extension Config
+### 3. Update extension config
 
 File: `apps/extension/vite.config.ts`
 
@@ -68,7 +68,7 @@ File: `apps/extension/vite.config.ts`
 id: "vex@yourdomain.com",  // Change to: "vex@chrry.ai"
 ```
 
-### 4. Test Emails in Environment Variables
+### 4. Test emails in environment variables
 
 You mentioned moving test emails to env vars. Verify:
 
@@ -76,32 +76,32 @@ You mentioned moving test emails to env vars. Verify:
 - `TEST_GUEST_FINGERPRINTS` uses `process.env.TEST_GUEST_FINGERPRINTS`
 - `.env.example` has these documented
 
-### 5. Review Personal Info
+### 5. Review personal info
 
 - Author emails in package.json files (your business email is OK)
 - Any personal comments in code
 - Any internal URLs or staging environments
 
-## 📋 Publishing Steps
+## Publishing steps
 
-### Step 1: Final Security Check
+### Step 1: Final security check
 
 ```bash
 ./scripts/check-sensitive-data.sh
 ```
 
-### Step 2: Create GitHub Repository
+### Step 2: Create GitHub repository
 
 1. Go to https://github.com/chrryai
 2. Create new repository: `vex`
 3. Make it **public**
 4. Don't initialize with README (we have one)
 
-### Step 3: Set Up Automated Sync (Recommended)
+### Step 3: Set up automated sync (recommended)
 
 **Option A: Automated Sync with GitHub Actions** (Recommended)
 
-Follow the guide: [.github/SYNC_SETUP.md](.github/SYNC_SETUP.md)
+Follow the guide: [.github/SYNC_SETUP.md](https://github.com/chrryai/sushi/blob/main/.github/SYNC_SETUP.md)
 
 Quick steps:
 
@@ -125,7 +125,7 @@ git push public --tags
 
 Note: With Option B, you'll need to manually push each time. Option A is recommended for continuous sync.
 
-### Step 4: Configure GitHub Repository
+### Step 4: Configure GitHub repository
 
 #### Settings
 
@@ -146,7 +146,7 @@ Note: With Option B, you'll need to manually push each time. Option A is recomme
 
 Don't add any! Users should use their own API keys.
 
-### Step 5: Set Up CI/CD (Optional)
+### Step 5: Set up CI/CD (optional)
 
 Create `.github/workflows/ci.yml` for:
 
@@ -162,7 +162,7 @@ Create `.github/workflows/ci.yml` for:
 - [ ] Update chrry.ai website
 - [ ] Add badge to README: `![License](https://img.shields.io/badge/license-MIT-blue.svg)`
 
-## 🚀 Post-Publication
+## Post-publication
 
 ### Monitor
 
@@ -184,7 +184,7 @@ Create `.github/workflows/ci.yml` for:
 - [ ] Add code of conduct
 - [ ] Set up automated welcome bot
 
-## 🎉 Success Metrics
+## Success metrics
 
 Track these after open sourcing:
 

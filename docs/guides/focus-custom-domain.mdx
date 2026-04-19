@@ -9,7 +9,7 @@ Focus now has its own **separate site mode** with custom domain support, indepen
 
 ---
 
-## ✅ What Was Added
+## What was added
 
 ### **1. New siteMode: "focus"**
 
@@ -21,7 +21,7 @@ Focus is now a first-class site mode alongside Chrry, Vex, and others.
 
 ---
 
-## 🌐 Domain Configuration
+## Domain configuration
 
 ### **Supported Domains**
 
@@ -60,7 +60,7 @@ export function detectsiteModeDomain(hostname?: string): siteMode {
 
 ---
 
-## 🎨 Focus Site Configuration
+## Focus site configuration
 
 ### **Metadata**
 
@@ -145,7 +145,7 @@ features: [
 
 ---
 
-## 🌍 Translations (All Languages)
+## Translations (all languages)
 
 Focus has dedicated translations in **10 languages**:
 
@@ -166,7 +166,7 @@ focus: {
 
 ---
 
-## 🔧 Usage
+## Usage
 
 ### **Automatic Detection**
 
@@ -195,11 +195,11 @@ console.log(config.logo); // "⏱️"
 
 ---
 
-## 🎯 How It Works
+## How it works
 
 ### **Request Flow**
 
-```
+```text
 1. User visits focus.chrry.ai
    ↓
 2. detectsiteModeDomain("focus.chrry.ai")
@@ -217,7 +217,7 @@ console.log(config.logo); // "⏱️"
 
 ### **Domain Priority**
 
-```typescript
+```text
 Priority Order:
 1. chrry.dev → chrryDev
 2. focus.chrry.ai / getfocus.ai → focus ⭐
@@ -229,7 +229,7 @@ Priority Order:
 
 ---
 
-## 🚀 Adding Custom Domains
+## Adding custom domains
 
 ### **Step 1: Update Domain Detection**
 
@@ -247,7 +247,7 @@ if (
 
 ### **Step 2: Configure DNS**
 
-```
+```text
 yourfocus.com → Server IP (A record)
 www.yourfocus.com → yourfocus.com (CNAME)
 ```
@@ -270,7 +270,7 @@ curl https://yourfocus.com
 
 ---
 
-## 📊 Comparison: Focus vs Chrry AI
+## Comparison: Focus vs Chrry AI
 
 ### **Focus Mode** (focus.chrry.ai)
 
@@ -320,7 +320,7 @@ curl https://yourfocus.com
 
 ---
 
-## 🎨 Branding Differences
+## Branding differences
 
 ### **Focus**
 
@@ -338,7 +338,7 @@ curl https://yourfocus.com
 
 ---
 
-## 🔐 SEO & Metadata
+## SEO & metadata
 
 ### **Focus-Specific Meta Tags**
 
@@ -366,7 +366,7 @@ curl https://yourfocus.com
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### **Test Domain Detection**
 
@@ -399,7 +399,7 @@ console.log(config.features.length); // 8
 
 ---
 
-## 📝 Environment Variable Fallback
+## Environment variable fallback
 
 If domain detection fails, you can still use env vars:
 
@@ -415,7 +415,7 @@ detectsiteMode(); // → "focus"
 
 ---
 
-## 🚢 Deployment Checklist
+## Deployment checklist
 
 ### **Before Launch**
 
@@ -451,7 +451,7 @@ detectsiteMode(); // → "focus"
 
 ---
 
-## 🎉 Summary
+## Summary
 
 ### **What We Built**
 
@@ -479,7 +479,7 @@ const config = getSiteConfig("focus");
 
 ### **Domains**
 
-```
+```text
 focus.chrry.ai → Focus app ✅
 getfocus.ai → Focus app ✅ (add custom domain)
 yourfocus.com → Focus app ✅ (add to detection)

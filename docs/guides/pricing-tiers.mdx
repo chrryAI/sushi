@@ -5,7 +5,7 @@ description: "Pricing tiers and onboarding flow for the Vex Watermelon plan and 
 
 This document outlines the pricing tiers for the Watermelon onboarding flow.
 
-## 🍉 Watermelon (FREE)
+## Watermelon (FREE)
 
 **100% Local, 100% Free**
 
@@ -33,7 +33,7 @@ pnpm local:setup
 
 ---
 
-## 🍒 Chrry (FREE)
+## Chrry (FREE)
 
 **Cloud Sync, Still Free**
 
@@ -57,7 +57,7 @@ pnpm local:setup
 
 ---
 
-## 💼 Agency ($1000/month)
+## Agency ($1000/month)
 
 **For Teams & Agencies**
 
@@ -84,7 +84,7 @@ pnpm local:setup
 
 ---
 
-## 👑 Sovereign (Custom Pricing)
+## Sovereign (custom pricing)
 
 **Self-Hosted Enterprise**
 
@@ -112,7 +112,7 @@ pnpm local:setup
 
 ---
 
-## Comparison Table
+## Comparison table
 
 | Feature                | Watermelon | Chrry | Agency   | Sovereign |
 | ---------------------- | ---------- | ----- | -------- | --------- |
@@ -130,13 +130,13 @@ pnpm local:setup
 
 ---
 
-## Implementation Notes for Watermelon.tsx
+## Implementation notes for Watermelon.tsx
 
-### UI Flow
+### UI flow
 
 1. **Welcome Screen**
 
-   ```
+   ```text
    "Choose Your Weapon 🍉"
    ```
 
@@ -155,7 +155,7 @@ pnpm local:setup
    - **Agency**: Redirect to `https://chrry.ai/agency`
    - **Sovereign**: Redirect to `https://chrry.ai/sovereign`
 
-### State Management
+### State management
 
 ```typescript
 type PricingTier = "watermelon" | "chrry" | "agency" | "sovereign";
@@ -167,7 +167,7 @@ interface OnboardingState {
 }
 ```
 
-### Environment Variables
+### Environment variables
 
 ```bash
 # Set by Watermelon onboarding
@@ -175,7 +175,7 @@ CLOUD_SYNC_ENABLED=false  # Watermelon
 CLOUD_SYNC_ENABLED=true   # Chrry/Agency/Sovereign
 ```
 
-### No Provider Dependencies
+### No provider dependencies
 
 The Watermelon.tsx component should:
 
@@ -188,27 +188,27 @@ The Watermelon.tsx component should:
 
 ---
 
-## Revenue Model
+## Revenue model
 
-### Free Tiers (Watermelon + Chrry)
+### Free tiers (Watermelon + Chrry)
 
 - **Revenue**: $0
 - **Cost**: Minimal (user provides API keys)
 - **Goal**: User acquisition, community growth
 
-### Agency Tier
+### Agency tier
 
 - **Revenue**: $1000/month per team
 - **Target**: 100 teams = $100k MRR
 - **Features**: Team collaboration, priority support
 
-### Sovereign Tier
+### Sovereign tier
 
 - **Revenue**: Custom (starting $10k/month)
 - **Target**: 10 enterprises = $100k+ MRR
 - **Features**: Full white-label, on-premise
 
-### Total Addressable Market
+### Total addressable market
 
 - **Watermelon**: Unlimited (free tier)
 - **Chrry**: Unlimited (free tier)
@@ -217,7 +217,7 @@ The Watermelon.tsx component should:
 
 ---
 
-## Next Steps
+## Next steps
 
 1. ✅ Backend infrastructure ready (Docker stack)
 2. ⏳ UI: Create Watermelon.tsx onboarding
