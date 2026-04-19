@@ -133,7 +133,8 @@ const FREE_NO_TOOLS: string[] = ["openai/gpt-oss-120b:free", "openrouter/free"]
 
 const CHEAP_PAID: string[] = ["deepseek/deepseek-v3.2"]
 
-const MID_PAID: string[] = ["minimax/minimax-m2.7", "minimax/minimax-m2.5"]
+const MID_PAID: string[] = ["deepseek/deepseek-r1"]
+// ["minimax/minimax-m2.7", "minimax/minimax-m2.5"]
 
 const CHEAP_ANALYZERS: string[] = [
   "google/gemini-3.1-pro-preview",
