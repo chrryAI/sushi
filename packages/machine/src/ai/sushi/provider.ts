@@ -5,6 +5,7 @@
 // a data/types layer (prizes, limits, capabilities, API key helpers).
 // ─────────────────────────────────────────────────────────────────
 
+import { createDeepSeek } from "@ai-sdk/deepseek"
 import { createOpenAI } from "@ai-sdk/openai"
 import type {
   aiAgent,
@@ -26,6 +27,8 @@ import {
 export const OLLAMA_MODEL_MAP: Record<string, string> = {
   "deepseek/deepseek-v3.2": "deepseek-v3.2:cloud",
   "deepseek/deepseek-r1": "kimi-k2.5:cloud",
+  "deepseek/deepseek-chat": "deepseek-v3.2:cloud",
+  "deepseek-chat": "deepseek-v3.2:cloud",
   "minimax/minimax-m2.7": "kimi-k2.5:cloud",
   "minimax/minimax-m2.5": "kimi-k2.5:cloud",
   "nvidia/nemotron-3-super-120b-a12b": "nemotron-3-super:cloud",
@@ -33,8 +36,15 @@ export const OLLAMA_MODEL_MAP: Record<string, string> = {
   "x-ai/grok-4.1-fast": "kimi-k2.5:cloud",
 }
 
-function toOllamaModel(orModelId: string): string | undefined {
+export function toOllamaModel(orModelId: string): string | undefined {
   return OLLAMA_MODEL_MAP[orModelId.replace(":free", "")]
+}
+
+export function createOllamaClient() {
+  return createOpenAI({
+    baseURL: process.env.OLLAMA_BASE_URL || "https://ollama.com/v1",
+    apiKey: process.env.OLLAMA_API_KEY || "ollama",
+  }) as any
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -384,21 +394,13 @@ export async function getModelProvider({
   const fallbackModels = buildChain(routeResult.fallbacks)
 
   const ollamaModel = toOllamaModel(modelId)
-  const ollamaWithThinking = createOpenAI({
-    baseURL: "https://ollama.com/v1",
-    apiKey: process.env.OLLAMA_API_KEY!,
-  }) as any
-
-  // const ollama = createOpenAI({
-  //   baseURL: "https://ollama.com/v1",
-  //   apiKey: process.env.OLLAMA_API_KEY!,
-  // });
+  const ollamaWithThinking = createOllamaClient()
 
   const orProvider = createOpenRouter({ apiKey: orKey })(modelId, {
     models: fallbackModels,
   })
 
-  if (ollamaModel && !isBYOK) {
+  if (ollamaModel && !isBYOK && user?.role === "admin") {
     return {
       provider: ollamaWithThinking(ollamaModel, {
         reasoning_effort: "high",
@@ -414,8 +416,21 @@ export async function getModelProvider({
     }
   }
 
+  // DeepSeek API uses different model IDs than OpenRouter
+  const DEEPSEEK_API_MODEL_MAP: Record<string, string> = {
+    "deepseek/deepseek-chat": "deepseek-chat",
+    "deepseek/deepseek-r1": "deepseek-reasoner",
+    "deepseek/deepseek-v3.2": "deepseek-chat",
+  }
+
+  const deepseekApiModelId = DEEPSEEK_API_MODEL_MAP[modelId] ?? modelId
+
   return {
-    provider: orProvider,
+    provider: modelId.startsWith("deepseek")
+      ? createDeepSeek({ apiKey: process.env.DEEPSEEK_API_KEY! })(
+          deepseekApiModelId,
+        )
+      : orProvider,
     modelId,
     agentName: agent.name,
     lastKey: "openrouter",

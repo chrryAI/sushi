@@ -9,6 +9,7 @@ export const modelCapabilities: Record<
   "anthropic/claude-sonnet-4-5": { tools: true, canAnalyze: true },
   "google/gemini-3.1-pro-preview": { tools: true, canAnalyze: true },
   "deepseek/deepseek-chat": { tools: true },
+  "deepseek/deepseek-r1": { tools: false },
   "deepseek/deepseek-v3.2": { tools: true },
   "deepseek/deepseek-v3.2-thinking": { tools: true },
   "minimax/minimax-m2.5": { tools: true },
