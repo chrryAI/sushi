@@ -1,7 +1,5 @@
 # NATIVE_BRIDGE_API.md
 
-> **Deprecated**: The `apps/bridge` package was removed in v2.4.92. The proxy functionality previously provided by the bridge has been moved to `packages/chopstick` (see `chopstick proxy` subcommand). This document is kept for historical reference.
-
 ## Vex Native Bridge Protocol Definition
 
 This document defines the communication contract for the **Vex Native Bridge**, a local server component that grants the Vex Browser Extension (Client) secure, user-scoped access to the local file system and CLI environment. This enables the "Browser-First IDE" functionality, allowing AI agents to perform complex development tasks.

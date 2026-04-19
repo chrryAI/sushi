@@ -7300,54 +7300,6 @@ export const getPureApp = async ({
   ) as app
 }
 
-const toSafeCharacterProfile = ({
-  characterProfile,
-  userId,
-  guestId,
-  dna = false,
-}: {
-  characterProfile: Partial<characterProfile>
-  userId?: string
-  guestId?: string
-  dna?: boolean
-}) => {
-  if (!characterProfile) return undefined
-  return (characterProfile && characterProfile.visibility === "public") ||
-    (!characterProfile.userId && !characterProfile.guestId) ||
-    (characterProfile && dna) ||
-    isOwner(characterProfile, { userId, guestId })
-    ? ({
-        id: characterProfile.id,
-        agentId: characterProfile.agentId,
-        userId: characterProfile.userId,
-        guestId: characterProfile.guestId,
-        visibility: characterProfile.visibility,
-        name: characterProfile.name,
-        personality: characterProfile.personality,
-        pinned: characterProfile.pinned,
-        traits: {
-          communication: characterProfile.traits?.communication,
-          expertise: characterProfile.traits?.expertise,
-          behavior: characterProfile.traits?.behavior,
-          preferences: characterProfile.traits?.preferences,
-        },
-        threadId: characterProfile.threadId,
-        tags: characterProfile.tags,
-        lastUsedAt: isOwner(characterProfile, { userId, guestId })
-          ? characterProfile.lastUsedAt
-          : undefined,
-        userRelationship: isOwner(characterProfile, { userId, guestId })
-          ? characterProfile.userRelationship
-          : undefined,
-        conversationStyle: characterProfile.conversationStyle,
-        createdOn: characterProfile.createdOn,
-        updatedOn: characterProfile.updatedOn,
-        embedding: null,
-        metadata: null,
-      } as Partial<characterProfile>)
-    : undefined
-}
-
 const toSafeApp = ({
   app,
   userId,
