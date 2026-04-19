@@ -120,11 +120,11 @@
   --border-transition: border-color 0.4s ease-in-out;
   --radius: 1.25rem;
   --font-sans:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-    "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   --font-mono:
-    Menlo, "Roboto Mono", Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
-    Bitstream Vera Sans Mono, Courier New, monospace;
+    Menlo, "Roboto Mono", Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono,
+    Courier New, monospace;
 }
 
 @media print {
@@ -240,17 +240,17 @@ body {
   }
 }
 
-@font-face {
-  font-family: "Noto Color Emoji";
-  src: url("/nato/NotoColorEmoji.ttf") format("truetype");
-  font-display: swap;
-}
+// @font-face {
+//   font-family: "Noto Color Emoji";
+//   src: url("/nato/NotoColorEmoji.ttf") format("truetype");
+//   font-display: swap;
+// }
 
-@font-face {
-  font-family: "Noto Variable Emoji";
-  src: url("/nato/NotoEmoji-VariableFont_wght.ttf") format("truetype");
-  font-display: swap;
-}
+// @font-face {
+//   font-family: "Noto Variable Emoji";
+//   src: url("/nato/NotoEmoji-VariableFont_wght.ttf") format("truetype");
+//   font-display: swap;
+// }
 
 body {
   color: var(--foreground);

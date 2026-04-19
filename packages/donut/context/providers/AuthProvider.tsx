@@ -529,7 +529,10 @@ export function AuthProvider({
   thread?: { thread: thread; messages: paginatedMessages }
 }) {
   const [wasGifted, setWasGifted] = useState<boolean>(false)
-  const [session, setSession] = useState<session | undefined>(props.session)
+  const [session, setSession] = useLocalStorage<session | undefined>(
+    "session",
+    props.session,
+  )
 
   const {
     searchParams: sp,
@@ -1411,9 +1414,9 @@ export function AuthProvider({
     [pathname, baseApp],
   )
 
-  const [app, setAppInternal] = useState<
+  const [app, setAppInternal] = useLocalStorage<
     (sushi & { image?: string }) | undefined
-  >(props.app || session?.app || baseApp)
+  >("app", props.app || session?.app || baseApp)
 
   const advanceDailySection = useCallback(() => {
     // Determine context based on current app

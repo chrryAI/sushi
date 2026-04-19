@@ -5,6 +5,7 @@
 // a data/types layer (prizes, limits, capabilities, API key helpers).
 // ─────────────────────────────────────────────────────────────────
 
+import { createOpenAI } from "@ai-sdk/openai"
 import type {
   aiAgent,
   guest,
@@ -14,14 +15,27 @@ import type {
 } from "@chrryai/donut/types"
 import { isE2E } from "@chrryai/donut/utils"
 import { createOpenRouter } from "@openrouter/ai-sdk-provider"
-
 import { decrypt, getAiAgents, isDevelopment } from "../../../index"
 import {
   type JobWithModelConfig,
   type ModelProviderResult,
   modelCapabilities,
-  type RouteTier,
+  type routeTier,
 } from "../vault"
+
+export const OLLAMA_MODEL_MAP: Record<string, string> = {
+  "deepseek/deepseek-v3.2": "deepseek-v3.2:cloud",
+  "deepseek/deepseek-r1": "kimi-k2.5:cloud",
+  "minimax/minimax-m2.7": "kimi-k2.5:cloud",
+  "minimax/minimax-m2.5": "kimi-k2.5:cloud",
+  "nvidia/nemotron-3-super-120b-a12b": "nemotron-3-super:cloud",
+  "google/gemini-3.1-pro-preview": "gemini-3-flash-preview:cloud",
+  "x-ai/grok-4.1-fast": "kimi-k2.5:cloud",
+}
+
+function toOllamaModel(orModelId: string): string | undefined {
+  return OLLAMA_MODEL_MAP[orModelId.replace(":free", "")]
+}
 
 // ─────────────────────────────────────────────────────────────────
 // Internal helpers
@@ -118,7 +132,7 @@ const CHEAP_ANALYZERS: string[] = [
 
 // ─── Source → Tier mapping ────────────────────────────────────────
 
-const SOURCE_TIERS: Record<string, { tier: RouteTier; model?: string }> = {
+const SOURCE_TIERS: Record<string, { tier: routeTier; model?: string }> = {
   "moltbook/commentFilter": { tier: "cheap" },
   "moltbook/engagement": { tier: "cheap" },
   "ai/title": { tier: "cheap" },
@@ -146,7 +160,7 @@ const SOURCE_TIERS: Record<string, { tier: RouteTier; model?: string }> = {
   "ai/sushi/webSearch": { tier: "premium", model: "perplexity/sonar-pro" },
 }
 
-const SCHEDULE_TIERS: Record<string, { tier: RouteTier; model?: string }> = {
+const SCHEDULE_TIERS: Record<string, { tier: routeTier; model?: string }> = {
   swarm: { tier: "mid" },
   post: { tier: "mid" },
   engagement: { tier: "free" },
@@ -158,19 +172,19 @@ const SCHEDULE_TIERS: Record<string, { tier: RouteTier; model?: string }> = {
 // Route function
 // ─────────────────────────────────────────────────────────────────
 
-interface RouteResult {
+interface routeResult {
   primary: string
   fallbacks: string[]
 }
 
 function route(
-  tier: RouteTier,
+  tier: routeTier,
   opts: {
     needsTools?: boolean
     needsAnalyze?: boolean
     preferModel?: string
   } = {},
-): RouteResult {
+): routeResult {
   if (opts.preferModel && !opts.preferModel.endsWith(":free")) {
     return {
       primary: opts.preferModel,
@@ -337,7 +351,7 @@ export async function getModelProvider({
       ? "deepseek/deepseek-v3.2"
       : explicitModel
 
-  let routeResult: RouteResult
+  let routeResult: routeResult
 
   if (safeExplicitModel && !safeExplicitModel.endsWith(":free")) {
     routeResult = route("cheap", { preferModel: safeExplicitModel })
@@ -369,10 +383,39 @@ export async function getModelProvider({
   const modelId = routeResult.primary
   const fallbackModels = buildChain(routeResult.fallbacks)
 
+  const ollamaModel = toOllamaModel(modelId)
+  const ollamaWithThinking = createOpenAI({
+    baseURL: "https://ollama.com/v1",
+    apiKey: process.env.OLLAMA_API_KEY!,
+  }) as any
+
+  // const ollama = createOpenAI({
+  //   baseURL: "https://ollama.com/v1",
+  //   apiKey: process.env.OLLAMA_API_KEY!,
+  // });
+
+  const orProvider = createOpenRouter({ apiKey: orKey })(modelId, {
+    models: fallbackModels,
+  })
+
+  if (ollamaModel && !isBYOK) {
+    return {
+      provider: ollamaWithThinking(ollamaModel, {
+        reasoning_effort: "high",
+      }) as unknown as typeof orProvider,
+      modelId,
+      agentName: agent.name,
+      lastKey: "ollama",
+      supportsTools: true,
+      canAnalyze: false,
+      isBYOK: false,
+      isBELES: resolvedName === "beleş",
+      isFree: false,
+    }
+  }
+
   return {
-    provider: createOpenRouter({ apiKey: orKey })(modelId, {
-      models: fallbackModels,
-    }),
+    provider: orProvider,
     modelId,
     agentName: agent.name,
     lastKey: "openrouter",

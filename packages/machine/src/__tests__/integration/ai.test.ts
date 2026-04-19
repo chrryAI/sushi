@@ -44,7 +44,9 @@ describe("AI Integration Tests", () => {
           const model = makeLanguageModel(config)
           const response = yield* model.generate(
             "Say 'Hello from Chrry AI' and nothing else.",
-            { maxTokens: 50 },
+            {
+              maxTokens: 50,
+            },
           )
 
           return response
@@ -71,7 +73,9 @@ describe("AI Integration Tests", () => {
           const model = makeLanguageModel(config)
           const response = yield* model.generate(
             "What is 2+2? Answer with just the number.",
-            { maxTokens: 10 },
+            {
+              maxTokens: 10,
+            },
           )
 
           return response

@@ -4,6 +4,7 @@
  * Centralized exports for all context providers and hooks
  */
 
+export { ZeroProvider } from "@chrryai/jules"
 export { PlatformProvider } from "../../platform"
 export { AppProvider, type TabType, useApp } from "./AppProvider"
 export { AuthProvider, useAuth } from "./AuthProvider"
@@ -34,6 +35,7 @@ const pLimitMiddleware: Middleware =
     return useSWRNext(key, wrappedFetcher, config)
   }
 
+import { ZeroProvider } from "@chrryai/jules"
 import { Hey } from "../../Hey"
 import getCacheProvider from "../../lib/swrCacheProvider"
 import type { locale } from "../../locales"
@@ -106,6 +108,7 @@ export interface AppProvidersProps {
   donut?: boolean
   tribePosts?: paginatedTribePosts
   tribePost?: tribePostWithDetails
+  zeroServer?: string
 }
 
 /**
@@ -139,6 +142,7 @@ export default function AppProviders({
   testConfig,
   isBot,
   deviceId,
+  zeroServer,
 }: AppProvidersProps) {
   const [error, setError] = useState("")
 
@@ -198,6 +202,11 @@ export default function AppProviders({
 
   return (
     <SWRConfig value={swrConfig}>
+      {/* <ZeroProvider
+        server={zeroServer || "http://localhost:4848"}
+        userID={session?.user?.id || session?.guest?.fingerprint || "anon"}
+        token={session?.user?.token}
+      > */}
       <PlatformProvider
         viewPortWidth={viewPortWidth}
         viewPortHeight={viewPortHeight}
@@ -252,6 +261,7 @@ export default function AppProviders({
           </AuthProvider>
         </ErrorProvider>
       </PlatformProvider>
+      {/* </ZeroProvider> */}
     </SWRConfig>
   )
 }

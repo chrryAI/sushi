@@ -4,9 +4,7 @@
   "entryPoints": [
     "packages/shared/src/index.ts",
     "packages/donut/index.ts",
-    "packages/calendar/src/index.ts",
-    "packages/waffles/src/index.ts",
-    "packages/focus/src/index.ts"
+    "packages/waffles/src/index.ts"
   ],
   "out": "docs/api",
   "tsconfig": "./tsconfig.json",
