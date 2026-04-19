@@ -56,15 +56,14 @@ vex/
 │   ├── extension/   # Browser extension
 │   ├── desktop/     # Tauri desktop app
 │   ├── mobile/      # Capacitor mobile app
-│   ├── bridge/      # Native messaging bridge
 │   └── agent/       # Autonomous AI agent
 ├── packages/
 │   ├── ui/          # @chrryai/donut — UI library
 │   ├── pepper/      # @chrryai/pepper — universal router
 │   ├── waffles/     # @chrryai/waffles — testing utilities
 │   ├── machine/     # @chrryai/machine — AI state machines
-│   ├── calendar/    # @chrryai/calendar
-│   ├── focus/       # @chrryai/focus
+│   ├── jules/       # @chrryai/jules — Zero sync & offline-first state
+│   ├── chopstick/   # @chrryai/chopstick — CLI, MCP, and proxy tools
 │   ├── db/          # Drizzle schema (private)
 │   └── shared/      # Shared contexts (private)
 ├── infra/           # Docker, nginx, deployment
