@@ -40,7 +40,7 @@ The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE t
 
 ## Architecture Overview
 
-```
+```text
 ┌─────────────────────────────────────┐
 │   Vex Browser Extension (Client)   │
 │   - AI Chat Interface               │
@@ -221,7 +221,7 @@ POST /git/diff
 
 ### Example 1: Implement Feature
 
-```
+```text
 User: "Agent, create a new feature component in apps/web"
 
 1. Agent → Bridge: POST /fs/write
@@ -236,7 +236,7 @@ User: "Agent, create a new feature component in apps/web"
 
 ### Example 2: Fix Bug
 
-```
+```text
 User: "Agent, there's a bug in App.tsx line 42"
 
 1. Agent → Bridge: POST /fs/read
@@ -256,7 +256,7 @@ User: "Agent, there's a bug in App.tsx line 42"
 
 ### Example 3: Check Status
 
-```
+```text
 User: "What are my uncommitted changes?"
 
 1. Agent → Bridge: POST /git/status

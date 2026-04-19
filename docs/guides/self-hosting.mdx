@@ -13,9 +13,9 @@ Run Vex entirely on your local machine with Docker containers. No cloud dependen
 - **8GB+ RAM** recommended
 - **10GB+ free disk space**
 
-## Quick Start
+## Quick start
 
-### 1. Clone & Install
+### 1. Clone & install
 
 ```bash
 git clone https://github.com/chrryai/vex.git
@@ -23,7 +23,7 @@ cd vex
 pnpm install
 ```
 
-### 2. Start Local Infrastructure
+### 2. Start local infrastructure
 
 ```bash
 # Start all Docker containers (PostgreSQL, Redis, MinIO, FalkorDB, Mailhog)
@@ -38,7 +38,7 @@ This will:
 - ✅ Create MinIO buckets
 - ✅ Wait for all services to be healthy
 
-### 3. Initialize Database
+### 3. Initialize database
 
 ```bash
 cd packages/vault
@@ -48,7 +48,7 @@ pnpm run seed      # Seed with default apps
 cd ../..
 ```
 
-### 4. Add Your API Keys
+### 4. Add your API keys
 
 Edit `.env.local` and add your API keys:
 
@@ -61,7 +61,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 DEEPSEEK_API_KEY=...
 ```
 
-### 5. Start Development Server
+### 5. Start development server
 
 ```bash
 pnpm run dev:all
@@ -85,9 +85,9 @@ Once running, access these services:
 
 ## Architecture
 
-### Local Stack (Docker Compose)
+### Local stack (Docker Compose)
 
-```
+```text
 vex-postgres    → PostgreSQL 16 + pgvector
 vex-redis       → Redis 7.2 (cache + sessions)
 vex-minio       → MinIO (S3-compatible storage)
@@ -102,7 +102,7 @@ All data is stored in Docker volumes:
 - `minio_data`
 - `falkordb_data`
 
-### Data Location
+### Data location
 
 Docker volumes are typically stored at:
 
@@ -112,7 +112,7 @@ Docker volumes are typically stored at:
 
 ## Configuration
 
-### Environment Variables
+### Environment variables
 
 The `.env.local` file contains all configuration. Key sections:
 
@@ -141,15 +141,15 @@ PERPLEXITY_API_KEY=
 CLOUD_SYNC_ENABLED=false  # Set to true for premium features
 ```
 
-## Common Tasks
+## Common tasks
 
-### Stop All Services
+### Stop all services
 
 ```bash
 docker-compose -f docker-compose.local.yml down
 ```
 
-### View Logs
+### View logs
 
 ```bash
 # All services
@@ -161,14 +161,14 @@ docker logs -f vex-redis
 docker logs -f vex-minio
 ```
 
-### Restart a Service
+### Restart a service
 
 ```bash
 docker restart vex-postgres
 docker restart vex-redis
 ```
 
-### Reset Database
+### Reset database
 
 ```bash
 # Stop containers
@@ -179,7 +179,7 @@ bash scripts/start-local-stack.sh
 cd packages/vault && pnpm run migrate && pnpm run seed
 ```
 
-### Backup Data
+### Backup data
 
 ```bash
 # PostgreSQL backup
@@ -189,7 +189,7 @@ docker exec vex-postgres pg_dump -U vex vex > backup.sql
 docker exec -i vex-postgres psql -U vex vex < backup.sql
 ```
 
-### Access MinIO Files
+### Access MinIO files
 
 MinIO Console: http://localhost:9001
 
@@ -211,17 +211,17 @@ mc ls local/chrry-chat-files
 
 ## Troubleshooting
 
-### Docker Not Running
+### Docker not running
 
-```
+```text
 ❌ Docker is not running. Please start Docker Desktop or Orbstack.
 ```
 
 **Solution**: Start Docker Desktop or Orbstack, then retry.
 
-### Port Already in Use
+### Port already in use
 
-```
+```text
 Error: bind: address already in use
 ```
 
@@ -236,7 +236,7 @@ lsof -i :9000  # MinIO
 # Kill the process or change ports in docker-compose.local.yml
 ```
 
-### Service Not Healthy
+### Service not healthy
 
 ```bash
 # Check service status
@@ -246,7 +246,7 @@ docker-compose -f docker-compose.local.yml ps
 docker logs vex-postgres
 ```
 
-### Out of Disk Space
+### Out of disk space
 
 ```bash
 # Clean up Docker
@@ -256,9 +256,9 @@ docker system prune -a --volumes
 bash scripts/start-local-stack.sh
 ```
 
-### Database Connection Failed
+### Database connection failed
 
-```
+```text
 Error: connect ECONNREFUSED 127.0.0.1:5432
 ```
 
@@ -268,7 +268,7 @@ Error: connect ECONNREFUSED 127.0.0.1:5432
 2. Check logs: `docker logs vex-postgres`
 3. Verify `.env.local` has correct `DATABASE_URL`
 
-## Hybrid Mode (Local + Cloud)
+## Hybrid mode (local + cloud)
 
 You can run locally but sync to cloud for premium features:
 
@@ -287,9 +287,9 @@ This enables:
 - ✅ Cloud backup
 - ✅ Team collaboration
 
-## Development Tips
+## Development tips
 
-### Hot Reload
+### Hot reload
 
 All services support hot reload:
 
@@ -308,7 +308,7 @@ cd packages/donut && pnpm test
 cd apps/api && pnpm test
 ```
 
-### Database Migrations
+### Database migrations
 
 ```bash
 cd packages/vault
@@ -323,7 +323,7 @@ pnpm run migrate
 pnpm run seed
 ```
 
-## Production Deployment
+## Production deployment
 
 For production self-hosting:
 
@@ -344,4 +344,4 @@ See `DEPLOYMENT.md` for full production guide.
 
 ## License
 
-MIT - See [LICENSE](LICENSE) for details.
+MIT - See [LICENSE](https://github.com/chrryai/sushi/blob/main/LICENSE) for details.

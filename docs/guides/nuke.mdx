@@ -7,7 +7,7 @@ Complete container environment for Dokploy deployment.
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    🖥️ MACHINE (Main App)                    │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
@@ -35,7 +35,7 @@ Complete container environment for Dokploy deployment.
 └────────┘    └────────┘    └────────┘
 ```
 
-## Quick Start
+## Quick start
 
 ```bash
 # Deploy to Dokploy
@@ -57,7 +57,7 @@ pnpm nuke
 | 🔷 | **vex** | 6379 | FalkorDB Graph | Cache |
 | 📧 | **mailhog** | 8025 | Email Testing | Utils |
 
-## 📊 Machine Dashboard - Web UI
+## Machine dashboard - web UI
 
 Access the web UI at `http://localhost:3000` (or Dokploy URL)
 
@@ -67,7 +67,7 @@ Features:
 - 🔌 Connection URL display
 - ⚡ Quick actions
 
-## Database URLs (Internal)
+## Database URLs (internal)
 
 ```bash
 # 🦛 Hippo (Main DB)
@@ -102,7 +102,7 @@ docker exec -it watermelon-machine sh
 docker exec -it watermelon-hippo psql -U vex -d vex
 ```
 
-## Dokploy Deployment
+## Dokploy deployment
 
 1. Add `docker-compose.nuke.yml` to Dokploy
 2. Set environment variables in Dokploy dashboard

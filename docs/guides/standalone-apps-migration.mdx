@@ -3,13 +3,13 @@ title: "Standalone apps migration"
 description: "Migration guide for packaging each app as a standalone Tauri desktop application."
 ---
 
-## 📋 Overview
+## Overview
 
-Her app'i ayrı standalone Tauri desktop app olarak paketlemek için migration yapıldı. Bu sayede her app kendi desktop installer'ına sahip olacak.
+Each app has been migrated to a standalone Tauri desktop application. This allows every app to have its own desktop installer.
 
-## ✅ Completed Apps
+## Completed apps
 
-### 1. **Atlas** 🌍 - AI Travel Companion
+### 1. **Atlas** - AI travel companion
 
 - **Location**: `/apps/atlas/`
 - **Port**: 5173
@@ -17,7 +17,7 @@ Her app'i ayrı standalone Tauri desktop app olarak paketlemek için migration y
 - **Features**: Travel planning, itineraries, local insights, weather integration
 - **Status**: ✅ Package structure created
 
-### 2. **Vault** 💰 - AI Finance Assistant
+### 2. **Vault** - AI finance assistant
 
 - **Location**: `/apps/vault/`
 - **Port**: 5174
@@ -25,11 +25,11 @@ Her app'i ayrı standalone Tauri desktop app olarak paketlemek için migration y
 - **Features**: Expense tracking, budgets, investment insights, goal planning
 - **Status**: ✅ Package structure created
 
-## 📦 Package Structure
+## Package structure
 
 Each app follows this structure:
 
-```
+```text
 apps/{app-name}/
 ├── package.json          # Dependencies & scripts
 ├── tsconfig.json         # TypeScript config
@@ -45,7 +45,7 @@ apps/{app-name}/
         └── main.rs       # Rust entry point
 ```
 
-## 🎯 App Configuration
+## App configuration
 
 Each app has a simple config in `src/main.tsx`:
 
@@ -61,7 +61,7 @@ const {appName}Config = {
 }
 ```
 
-## 🔧 Development Commands
+## Development commands
 
 ```bash
 # Install dependencies (from root)
@@ -78,29 +78,29 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
-## 📱 Pending Apps
+## Pending apps
 
-### 3. **Bloom** 🌸 - Wellness & Sustainability Coach
+### 3. **Bloom** - Wellness & sustainability coach
 
 - Port: 5175
 - Features: Fitness, nutrition, mood tracking, focus sessions
 
-### 4. **Peach** 🍑 - Social Connection Assistant
+### 4. **Peach** - Social connection assistant
 
 - Port: 5176
 - Features: Friend finder, activity planning, social insights
 
-### 5. **Focus** ⏱️ - Productivity Assistant
+### 5. **Focus** - Productivity assistant
 
 - Port: 5177
 - Features: Pomodoro timer, task management, time tracking
 
-### 6. **Nebula** 🌌 - Science & Exploration Hub
+### 6. **Nebula** - Science & exploration hub
 
 - Port: 5178
 - Features: Quantum computing, astrophysics, advanced math
 
-## 🎨 Shared Dependencies
+## Shared dependencies
 
 All apps share:
 
@@ -110,13 +110,13 @@ All apps share:
 - **Tauri 2.0**: Desktop framework
 - **Vite**: Build tool
 
-## 🚢 Build & Distribution
+## Build & distribution
 
-### Desktop Installers
+### Desktop installers
 
 Each app builds to separate installers:
 
-```bash
+```text
 # macOS
 atlas-1.0.0-universal.dmg
 vault-1.0.0-universal.dmg
@@ -142,9 +142,9 @@ vault-1.0.0-amd64.AppImage
 ✅ **Better branding** - Each app has its own icon, name, window title  
 ✅ **App Store ready** - Can submit each app to Mac App Store, Windows Store separately
 
-## 🔄 Migration from createStores.ts
+## Migration from createStores.ts
 
-### Before (Monolithic)
+### Before (monolithic)
 
 ```typescript
 // All apps in one giant createStores.ts file (9356 lines!)
@@ -154,7 +154,7 @@ const bloom = await createOrUpdateApp({ app: bloomPayload });
 // ... 20+ more apps
 ```
 
-### After (Modular)
+### After (modular)
 
 ```typescript
 // Each app is a standalone package
@@ -163,23 +163,23 @@ apps/vault/    → Vault desktop app
 apps/bloom/    → Bloom desktop app
 ```
 
-## 📊 Database Seeding - Decentralized Approach
+## Database seeding - decentralized approach
 
-### Old Way (Monolithic)
+### Old way (monolithic)
 
 All apps seeded from one giant `createStores.ts` file (9356 lines!)
 
-### New Way (Modular)
+### New way (modular)
 
 Each app has its own `seed.ts` file:
 
-```
+```text
 apps/atlas/seed.ts   → Seeds Atlas app independently
 apps/vault/seed.ts   → Seeds Vault app independently
 apps/bloom/seed.ts   → Seeds Bloom app independently
 ```
 
-### Example: Atlas Seed
+### Example: Atlas seed
 
 ```typescript
 // apps/atlas/seed.ts
@@ -206,7 +206,7 @@ export async function seedAtlas(params: {
 ✅ **Reusable** - Seed functions can be called from anywhere  
 ✅ **Testable** - Each app's seed can be tested independently
 
-### Shared Helpers
+### Shared helpers
 
 Common seed logic extracted to `/packages/machine/src/dna/helpers.ts`:
 
@@ -214,7 +214,7 @@ Common seed logic extracted to `/packages/machine/src/dna/helpers.ts`:
 - `getOrCreateStore()` - Create/update stores
 - etc.
 
-## 🎯 Next Steps
+## Next steps
 
 1. ✅ Create remaining app packages (Bloom, Peach, Focus, Nebula)
 2. ⏳ Add app icons to each `src-tauri/icons/` folder
@@ -223,13 +223,13 @@ Common seed logic extracted to `/packages/machine/src/dna/helpers.ts`:
 5. ⏳ Create build scripts for all apps
 6. ⏳ Setup CI/CD for multi-app releases
 
-## 🔗 Related Files
+## Related files
 
 - `/packages/machine/src/dna/createStores.ts` - Database seeding (still monolithic)
 - `/packages/machine/src/dna/apps/*.ts` - App payload definitions
 - `/apps/desktop/` - Original monolithic desktop app (can be deprecated)
 
-## 💡 Architecture Decision
+## Architecture decision
 
 **Why separate packages?**
 
@@ -246,7 +246,7 @@ Common seed logic extracted to `/packages/machine/src/dna/helpers.ts`:
 - ❌ More CI/CD pipelines needed
 - ✅ But: Better UX, smaller downloads, clearer product positioning
 
-## 🎉 Result
+## Result
 
 Users can now download:
 

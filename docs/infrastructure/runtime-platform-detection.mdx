@@ -9,7 +9,7 @@ description: "Architecture and API reference for the runtime platform detection 
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────┐
 │         Your Component Code             │
 │    (Weather.tsx, Thread.tsx, etc.)      │
@@ -374,31 +374,31 @@ const styles = useAdaptiveStyles(MyStyles, {
 
 ## Benefits
 
-### ✅ Single Codebase
+### Single codebase
 
 - No more `.native.tsx` and `.web.tsx` files
 - One component works everywhere
 - Easier to maintain
 
-### ✅ Runtime Detection
+### Runtime detection
 
 - App decides platform at runtime
 - No compile-time branching
 - Dynamic adaptation
 
-### ✅ Type Safety
+### Type safety
 
 - Full TypeScript support
 - Platform-aware types
 - Autocomplete works
 
-### ✅ Performance
+### Performance
 
 - No unnecessary code bundled
 - Tree-shaking works
 - Optimized for each platform
 
-### ✅ Developer Experience
+### Developer experience
 
 - Write once, run everywhere
 - Easy to test
@@ -406,7 +406,7 @@ const styles = useAdaptiveStyles(MyStyles, {
 
 ## Best Practices
 
-### ✅ Do:
+### Do:
 
 ```tsx
 // Use platform primitives
@@ -424,7 +424,7 @@ const value = select({ web: 10, native: 8, default: 8 });
 const styles = useAdaptiveStyles(MyStyles, overrides);
 ```
 
-### ❌ Don't:
+### Don't:
 
 ```tsx
 // Don't mix HTML and primitives
