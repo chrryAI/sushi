@@ -31,7 +31,7 @@ export type JobWithModelConfig = {
   modelConfig?: { model?: string } | null
 }
 
-export type RouteTier = "free" | "cheap" | "mid" | "quality" | "premium"
+export type routeTier = "free" | "cheap" | "mid" | "quality" | "premium"
 
 // ─────────────────────────────────────────────────────────────────
 // Pricing table ($/1M tokens)

@@ -185,7 +185,7 @@ export default function ImageComponent(props: ImageProps) {
       : app?.slug &&
         (app?.store?.slug === "movies" ||
           app?.store?.slug === "popcorn" ||
-          app?.store?.slug === "books")) &&
+          app?.store?.slug === "_books")) &&
       !ex)
 
   const { src: fallbackSrc } = useWannathis()
@@ -328,10 +328,10 @@ export default function ImageComponent(props: ImageProps) {
           // KRİTİK NOKTA: Rengi buraya veriyoruz
           color: themeColor,
           // KRİTİK NOKTA: Bu fontlar emojiyi 'boyanabilir sembol' haline getirir
-          fontFamily:
-            os.os === "ios"
-              ? undefined
-              : '"Noto Color Emoji", "Apple Symbols", "Segoe UI Symbol", "Symbola", sans-serif',
+          // fontFamily:
+          //   os.os === "ios"
+          //     ? undefined
+          //     : '"Noto Color Emoji", "Apple Symbols", "Segoe UI Symbol", "Symbola", sans-serif',
           fontWeight: "normal",
         }}
       >

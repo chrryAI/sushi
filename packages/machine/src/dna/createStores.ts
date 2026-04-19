@@ -8900,7 +8900,7 @@ You are Scholar, a Perplexity-powered academic research engine. Provide access t
 
   // Create Sushi store (migrates from DeepSeek if exists)
   const sushiStore = await getOrCreateStore({
-    ...(deepSeekStore || {}), // Preserve existing store data if migrating
+    ...deepSeekStore, // Preserve existing store data if migrating
     slug: "sushiStore",
     name: "Sushi",
     title: "Sushi AI",

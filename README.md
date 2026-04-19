@@ -14,7 +14,6 @@ sushi/
 │   ├── extension/     # Browser extension (Chrome/Firefox)
 │   ├── desktop/       # Tauri desktop app
 │   ├── mobile/        # Capacitor mobile app
-│   ├── bridge/        # Native messaging bridge
 │   └── agent/         # Autonomous AI agent
 ├── packages/
 │   ├── ui/            # @chrryai/donut — cross-platform UI library

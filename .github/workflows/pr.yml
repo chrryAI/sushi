@@ -109,7 +109,7 @@ jobs:
         run: |
           if [ -d "apps/api/node_modules/bun" ]; then
             cd apps/api/node_modules/bun && node install.js
-          else
+          elif [ -d "node_modules/bun" ]; then
             cd node_modules/bun && node install.js
           fi
 

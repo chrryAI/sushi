@@ -44,7 +44,9 @@ describe("Machine Integration Tests", () => {
           const model = makeLanguageModel(config)
           const response = yield* model.generate(
             "Say exactly: 'DeepSeek works!'",
-            { maxTokens: 20 },
+            {
+              maxTokens: 20,
+            },
           )
 
           return response

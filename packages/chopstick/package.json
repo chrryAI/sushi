@@ -11,12 +11,15 @@
     "build": "tsc",
     "dev": "tsx src/index.ts",
     "dev:mcp": "tsx src/index.ts mcp",
-    "start": "node dist/index.js"
+    "dev:proxy": "tsx src/index.ts proxy",
+    "start": "node dist/index.js",
+    "start:proxy": "node dist/index.js proxy"
   },
   "dependencies": {
     "@clack/prompts": "^0.9.0",
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "execa": "^9.0.0"
+    "execa": "^9.0.0",
+    "hono": "^4.12.8"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",

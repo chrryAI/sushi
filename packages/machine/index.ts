@@ -585,7 +585,7 @@ export type modelProviderPayload = {
     | string
   canReason?: boolean
   job?: cherry
-  user?: user | userWithRelations | null
+  user?: user | null
   guest?: guest | null
   isBYOK?: boolean
   isFree?: boolean
@@ -2062,7 +2062,6 @@ async function resolveMessageMedia(
     }
 
     const file = hippo.files?.[0]
-    console.log(file, "file")
 
     if (!file) return item
 
@@ -3967,7 +3966,7 @@ export const getAiAgents = async ({
   userId?: string
   guestId?: string
   include?: string | string[]
-  forApp?: app | sushi
+  forApp?: app
 } = {}) => {
   const result = await db
     .select()
@@ -5884,9 +5883,7 @@ export const updatePureApp = async (app: app) => {
     : undefined
 }
 
-export const updateApp = async (
-  app: (Partial<app> | Partial<sushi>) & { id: string },
-) => {
+export const updateApp = async (app: Partial<app> & { id: string }) => {
   const [updated] = await db
     .update(apps)
     .set(app)
@@ -6973,27 +6970,22 @@ export const chopStick = async <T extends sushi>(
 
     store: app.store
       ? {
-          ...{
-            name: app.store.name,
-            title: app.store.title,
-            description: app.store.description,
-            slug: app.store.slug,
-            images: app.store.images,
-            excludeGridApps: app.store.excludeGridApps,
-            isSystem: app.store.isSystem,
-            domain: app.store.isSystem,
-            appId: app.store.appId,
-            userId: app.store.appId,
-            guestId: app.store.guestId,
-            parentStoreId: app.store.parentStoreId,
-            visibility: app.store.visibility,
-            createdOn: app.store.createdOn,
-            updatedOn: app.store.updatedOn,
-          },
-          app:
-            toSafeApp({
-              app: beast,
-            }) ?? undefined,
+          name: app.store.name,
+          title: app.store.title,
+          description: app.store.description,
+          slug: app.store.slug,
+          images: app.store.images,
+          excludeGridApps: app.store.excludeGridApps,
+          isSystem: app.store.isSystem,
+          domain: app.store.isSystem,
+          appId: app.store.appId,
+          userId: app.store.appId,
+          guestId: app.store.guestId,
+          parentStoreId: app.store.parentStoreId,
+          visibility: app.store.visibility,
+          createdOn: app.store.createdOn,
+          updatedOn: app.store.updatedOn,
+          app: toSafeApp({ app: beast }) ?? undefined,
           apps: !include.includes("store")
             ? []
             : (storeApps?.filter(Boolean).map((a) => toSafeApp({ app: a })) ??
@@ -7439,7 +7431,7 @@ const toSafeApp = ({
     }
   }
 
-  const result: Partial<app | sushi> = {
+  const result: Partial<app> = {
     id: app.id,
     name: app.name,
     tools: app.tools,

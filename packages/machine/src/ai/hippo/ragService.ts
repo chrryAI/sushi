@@ -81,7 +81,7 @@ export async function generateEmbedding(
   options: {
     user?: user
     guest?: guest
-    app?: app | sushi
+    app?: app
     source?: string
   } = {},
 ): Promise<number[] | undefined> {
@@ -114,7 +114,7 @@ export async function generateDocumentSummary({
 }: {
   content: string
   filename: string
-  app?: app | sushi
+  app?: app
   member?: user
   guest?: guest
 }): Promise<{
@@ -197,7 +197,7 @@ export async function processFileForRAG({
   threadId: string
   userId?: string
   guestId?: string
-  app?: app | sushi
+  app?: app
   member?: user
   guest?: guest
 }): Promise<void> {
@@ -371,7 +371,7 @@ export async function findRelevantChunks({
   threshold?: number
   user?: user
   guest?: guest
-  app?: app | sushi
+  app?: app
 }): Promise<
   Array<{
     content: string
@@ -446,7 +446,7 @@ export async function getDocumentSummaries(threadId: string) {
 export async function buildRAGContext(
   query: string,
   threadId: string,
-  options: { user?: user; guest?: guest; app?: app | sushi } = {},
+  options: { user?: user; guest?: guest; app?: app } = {},
 ): Promise<string> {
   const [relevantChunks, documentSummaries] = await Promise.all([
     findRelevantChunks({
@@ -496,7 +496,7 @@ export async function processMessageForRAG({
   guestId?: string
   content: string
   role: "user" | "assistant"
-  app?: app | sushi
+  app?: app
 }): Promise<void> {
   try {
     // Skip only empty messages
@@ -594,7 +594,7 @@ export async function findRelevantMessages({
   excludeMessageId?: string
   user?: user
   guest?: guest
-  app?: app | sushi
+  app?: app
 }): Promise<
   Array<{
     messageId: string
@@ -664,7 +664,7 @@ export async function buildEnhancedRAGContext({
   query: string
   threadId: string
   excludeMessageId?: string
-  app?: app | sushi
+  app?: app
   user?: user
   guest?: guest
 }): Promise<string> {

@@ -40,7 +40,7 @@ export const uploadArtifacts = async ({
   member?: user
   guest?: guest
   job?: ramen
-  app?: app | null | sushi
+  app?: app | null
 }) => {
   if (!member && !guest) {
     throw new Error("User or guest not found")

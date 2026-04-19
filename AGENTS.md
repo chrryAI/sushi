@@ -35,7 +35,6 @@ The repository is split across two GitHub remotes:
 | `apps/extension` | React 19 + Vite         | Browser        | Chrome Extension Manifest V3, webextension-polyfill |
 | `apps/desktop`   | Tauri v2 + React 19     | Rust + Node.js | White-label desktop builds (DMG)                    |
 | `apps/mobile`    | Capacitor v8 + React 19 | iOS / Android  | Firebase Auth, react-native-web                     |
-| `apps/bridge`    | Bun (standalone)        | Native host    | Chrome Native Messaging, WebSocket fallback         |
 | `apps/agent`     | TypeScript + Playwright | Node.js        | Autonomous AI agent (job hunting, XP system)        |
 | `apps/web`       | Legacy/minimal          | —              | Dormant test helpers                                |
 
@@ -47,9 +46,7 @@ The repository is split across two GitHub remotes:
 | `packages/pepper`            | `@chrryai/pepper`         | Universal router for web/native/extension (AGPL-3.0) |
 | `packages/waffles`           | `@chrryai/waffles`        | Playwright + Vitest testing utilities (AGPL-3.0)     |
 | `packages/machine`           | `@chrryai/machine`        | Effect.js + XState AI orchestration primitives       |
-| `packages/calendar`          | `@chrryai/calendar`       | Calendar components for extensions (stub)            |
-| `packages/focus`             | `@chrryai/focus`          | Pomodoro/focus components for extensions (stub)      |
-| `packages/vault`             | `@chrryai/machine`        | Drizzle ORM schemas, migrations, AI vault, cache     |
+`packages/vault`             | `@chrryai/machine`        | Drizzle ORM schemas, migrations, AI vault, cache     |
 | `packages/shared`            | `@repo/shared`            | Shared React contexts, hooks, platform adapters      |
 | `packages/donut`             | —                         | Internal UI playground / demo app                    |
 | `packages/sushi`             | —                         | Legacy nested sub-workspace (not integrated)         |
@@ -73,8 +70,7 @@ The repository is split across two GitHub remotes:
 sushi/
 ├── apps/
 │   ├── agent/          # Autonomous AI agent (Zarathustra)
-│   ├── api/            # Core backend API (Hono + Bun) — PRIVATE
-│   ├── bridge/         # Native messaging bridge for extension
+│   ├── api/            # Core backend API (Hono + Bun) extension
 │   ├── desktop/        # Tauri desktop app (white-label)
 │   ├── extension/      # Browser extension (Chrome/Firefox, white-label)
 │   ├── chrry/          # Main SSR web frontend — PRIVATE
@@ -437,7 +433,7 @@ This monorepo is split across two GitHub remotes:
 - **`ibsukru/sushi`** — Private monorepo (this repo). Contains everything.
 - **`chrryai/vex`** — Public AGPL repo. Contains only public packages and apps.
 
-**Public (synced to `chrryai`)**: `packages/donut`, `pepper`, `waffles`, `calendar`, `focus`, `machine`, `typescript-config`, plus `apps/extension`, `desktop`, `mobile`, `bridge`, `agent`.
+**Public (synced to `chrryai`)**: `packages/donut`, `pepper`, `waffles`, `calendar`, `focus`, `machine`, `typescript-config`, plus `apps/extension`, `desktop`, `mobile`, `agent`.
 
 **Private (never leave this repo)**: `apps/api`, `apps/chrry`, `packages/vault`, `packages/shared`, `packages/sushi`, and everything under `infra/`.
 
