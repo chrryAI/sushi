@@ -157,7 +157,7 @@ Create `.github/workflows/ci.yml` for:
 - [ ] Post on Discord
 - [ ] Tweet about it
 - [ ] Update chrry.ai website
-- [ ] Add badge to README: `![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)`
+- [ ] Add badge to README: `![License](https://img.shields.io/badge/license-MIT-blue.svg)`
 
 ## 🚀 Post-Publication
 
@@ -193,7 +193,7 @@ Track these after open sourcing:
 
 ## Notes
 
-**License**: AGPL-3.0 - This requires anyone who uses Vex to also open source their modifications. Perfect for keeping the ecosystem open!
+**License**: MIT - This allows anyone to use, modify, and distribute Vex freely. Perfect for maximizing adoption!
 
 **Philosophy**: Vex is self-sustaining because users provide their own API keys. This means:
 

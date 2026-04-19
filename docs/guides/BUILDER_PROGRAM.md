@@ -79,4 +79,4 @@ Documentation Link
 
 Output: You deploy. If users find it useful, you get paid.
 
-Status: Production Version: 1.0 License: AGPL-3.0
+Status: Production Version: 1.0 License: MIT
