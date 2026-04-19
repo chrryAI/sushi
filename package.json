@@ -1,6 +1,6 @@
 {
   "name": "vex",
-  "version": "2.4.92",
+  "version": "2.4.93",
   "private": true,
   "type": "module",
   "workspaces": [

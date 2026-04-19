@@ -1,7 +1,5 @@
 # Vex Native Bridge: Browser-First IDE Architecture
 
-> **Deprecated**: The `apps/bridge` package was removed in v2.4.92. Proxy and local-server functionality has been consolidated into `packages/chopstick`. This document is kept for historical reference.
-
 ## Vision
 
 The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE that turns your browser extension into a complete development environment. Unlike traditional VS Code extensions that are isolated to the editor, Vex leverages its position as a LifeOS overlay to provide contextual, zero-friction development workflows.
