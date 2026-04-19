@@ -75,9 +75,37 @@ Handling breaking API changes without breaking the client cache.
   - **Major Change:** Nuke specific tables or the entire cache to force a fresh fetch.
 - **Benefit:** Prevents "White Screen of Death" caused by stale JSON structures matching old types.
 
-## 4. Implementation Checklist
+## 4. Zero Sync Layer (`@chrryai/jules`)
+
+Starting in v2.4.92, the `@chrryai/jules` package introduces a **Zero-based sync layer** powered by [`@rocicorp/zero`](https://zero.rocicorp.dev). This complements the SWR + Dexie approach with true client-side replication and offline-first state management.
+
+### How it works
+
+- `ZeroProvider` wraps the application with a `Zero` client instance that connects to a Zero server.
+- The schema is auto-generated from the Drizzle database schema (`drizzle-zero generate`).
+- Permissions are defined per-table using Zero's `definePermissions` API.
+- When the Zero server is unreachable, the client continues operating on local state and syncs when connectivity is restored.
+
+### Usage
+
+```tsx
+import { ZeroProvider } from "@chrryai/jules"
+
+<ZeroProvider
+  server="http://localhost:4848"
+  userID={session.user.id}
+  token={session.user.token}
+>
+  <App />
+</ZeroProvider>
+```
+
+> **Note**: The Zero integration is currently being rolled out incrementally and is commented out in the main provider tree. It will be enabled per-feature as the sync infrastructure stabilizes.
+
+## 5. Implementation Checklist
 
 - [x] **Hybrid Cache Provider:** Implemented with SWR + Dexie.
+- [x] **Zero Sync Layer:** `@chrryai/jules` package with `@rocicorp/zero` integration.
 - [ ] **Offline Detection:** Hook into `navigator.onLine` and `window.addEventListener('online')`.
 - [ ] **Mutation Queue:** Create `mutation_queue` schema in Dexie.
 - [ ] **Sync Worker:** Implement the replay logic.
