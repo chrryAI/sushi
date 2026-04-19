@@ -55,6 +55,8 @@ export default function Chrry({
   isBot,
   theme,
   donut,
+  zeroSchema,
+  zeroServer,
 }: {
   translations?: Record<string, any>
   useExtensionIcon?: (slug?: string) => void
@@ -87,6 +89,8 @@ export default function Chrry({
   tribePosts?: paginatedTribePosts
   tribePost?: tribePostWithDetails
   onSetLanguage?: (pathWithoutLocale: string, language: locale) => void
+  zeroSchema?: any
+  zeroServer?: string
 }) {
   return (
     <AppProviders
@@ -113,6 +117,7 @@ export default function Chrry({
       tribePost={tribePost}
       theme={theme}
       isBot={isBot}
+      zeroServer={zeroServer}
     >
       {children}
     </AppProviders>

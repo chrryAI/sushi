@@ -1,3 +1,4 @@
+// oxlint-disable no-unused-expressions
 "use client"
 /// <reference types="chrome" />
 
@@ -18,7 +19,7 @@ import React, {
 import toast from "react-hot-toast"
 
 import useSWR from "swr"
-import { v4 as uuidv4, validate } from "uuid"
+import { v4 as uuidv4 } from "uuid"
 import {
   initializeGoogleAuth,
   appleSignIn as nativeAppleSignIn,
@@ -32,16 +33,13 @@ import {
   type apiActions,
   getActions,
   getApp,
-  getGuest,
   getSession,
-  getUser,
   updateUser,
 } from "../../lib"
 import { defaultLocale, type locale, locales } from "../../locales"
 import {
   isBrowserExtension,
   storage,
-  useCookie,
   useNavigation,
   usePlatform,
 } from "../../platform"
@@ -484,7 +482,6 @@ const AuthContext = createContext<
 
 export function AuthProvider({
   children,
-  onSetLanguage,
   error,
   locale,
   translations,
@@ -529,7 +526,10 @@ export function AuthProvider({
   thread?: { thread: thread; messages: paginatedMessages }
 }) {
   const [wasGifted, setWasGifted] = useState<boolean>(false)
-  const [session, setSession] = useState<session | undefined>(props.session)
+  const [session, setSession] = useLocalStorage<session | undefined>(
+    "session",
+    props.session,
+  )
 
   const {
     searchParams: sp,
@@ -553,45 +553,35 @@ export function AuthProvider({
     toggleIDE,
   } = usePlatform()
 
-  const [API_URL, setAPI_URL] = useState(utils.API_URL)
-  const [MAX_FILE_LIMITS, setMAX_FILE_LIMITS] = useState(utils.MAX_FILE_LIMITS)
-  const [OWNER_CREDITS, setOWNER_CREDITS] = useState(utils.OWNER_CREDITS)
+  const [API_URL] = useState(utils.API_URL)
+  const [MAX_FILE_LIMITS] = useState(utils.MAX_FILE_LIMITS)
+  const [OWNER_CREDITS] = useState(utils.OWNER_CREDITS)
 
-  const [MAX_FILE_SIZES, setMAX_FILE_SIZES] = useState(utils.MAX_FILE_SIZES)
-  const [PRO_PRICE, setPRO_PRICE] = useState(utils.PRO_PRICE)
-  const [PLUS_PRICE, setPLUS_PRICE] = useState(utils.PLUS_PRICE)
-  const [FREE_DAYS, setFREE_DAYS] = useState(utils.FREE_DAYS)
-  const [ADDITIONAL_CREDITS, setADDITIONAL_CREDITS] = useState(
-    utils.ADDITIONAL_CREDITS,
-  )
+  const [MAX_FILE_SIZES] = useState(utils.MAX_FILE_SIZES)
+  const [PRO_PRICE] = useState(utils.PRO_PRICE)
+  const [PLUS_PRICE] = useState(utils.PLUS_PRICE)
+  const [FREE_DAYS] = useState(utils.FREE_DAYS)
+  const [ADDITIONAL_CREDITS] = useState(utils.ADDITIONAL_CREDITS)
 
-  const [CHRRY_URL, setCHRRY_URL] = useState(utils.CHRRY_URL)
+  const [CHRRY_URL] = useState(utils.CHRRY_URL)
 
   const siteConfig = props.siteConfig
     ? props.siteConfig
     : getSiteConfig(CHRRY_URL)
 
-  const [CREDITS_PRICE, setCREDITS_PRICE] = useState(utils.CREDITS_PRICE)
-  const [FRONTEND_URL, setFRONTEND_URL] = useState(utils.FRONTEND_URL)
-  const [isCI, setIsCI] = useState(utils.isCI)
-  const [isDevelopment, setIsDevelopment] = useState(utils.isDevelopment)
-  const [isE2E, setIsE2E] = useState(utils.isE2E)
-  const [PROD_FRONTEND_URL, setPROD_FRONTEND_URL] = useState(
+  const [CREDITS_PRICE] = useState(utils.CREDITS_PRICE)
+  const [FRONTEND_URL] = useState(utils.FRONTEND_URL)
+  const [isCI] = useState(utils.isCI)
+  const [isDevelopment] = useState(utils.isDevelopment)
+  const [isE2E] = useState(utils.isE2E)
+  const [PROD_FRONTEND_URL] = useState(
     siteConfig.url || utils.PROD_FRONTEND_URL,
   )
-  const [GUEST_TASKS_COUNT, setGUEST_TASKS_COUNT] = useState(
-    utils.GUEST_TASKS_COUNT,
-  )
-  const [MEMBER_TASKS_COUNT, setMEMBER_TASKS_COUNT] = useState(
-    utils.MEMBER_TASKS_COUNT,
-  )
-  const [MEMBER_FREE_TRIBE_CREDITS, setMEMBER_FREE_TRIBE_CREDITS] = useState(
-    utils.MEMBER_FREE_TRIBE_CREDITS,
-  )
-  const [PLUS_TASKS_COUNT, setPLUS_TASKS_COUNT] = useState(
-    utils.PLUS_TASKS_COUNT,
-  )
-  const [WS_URL, setWS_URL] = useState(utils.WS_URL)
+  const [GUEST_TASKS_COUNT] = useState(utils.GUEST_TASKS_COUNT)
+  // const [MEMBER_TASKS_COUNT] = useState(utils.MEMBER_TASKS_COUNT)
+  // const [MEMBER_FREE_TRIBE_CREDITS] = useState(utils.MEMBER_FREE_TRIBE_CREDITS)
+  const [PLUS_TASKS_COUNT] = useState(utils.PLUS_TASKS_COUNT)
+  const [WS_URL] = useState(utils.WS_URL)
 
   const apiFetch = utils.apiFetch
   const capitalizeFirstLetter = utils.capitalizeFirstLetter
@@ -1347,8 +1337,6 @@ export function AuthProvider({
   )
   const [storeApps, setAllApps] = useState<sushi[]>(allApps)
 
-  const [landing, setLanding] = useState<string | undefined>()
-
   const [isLoadingPosts, setIsLoadingPosts] = useState<boolean>(
     !initialTribePosts,
   )
@@ -1411,9 +1399,9 @@ export function AuthProvider({
     [pathname, baseApp],
   )
 
-  const [app, setAppInternal] = useState<
-    (sushi & { image?: string }) | undefined
-  >(props.app || session?.app || baseApp)
+  const [app, setAppInternal] = useState<sushi | undefined>(
+    props.app || session?.app || baseApp,
+  )
 
   const advanceDailySection = useCallback(() => {
     // Determine context based on current app
@@ -1613,53 +1601,9 @@ export function AuthProvider({
   )
   const sessionData = sessionSwr || session
 
-  const _getAlterNativeDomains = (store: storeWithApps) => {
-    // Map askvex.com and vex.chrry.ai as equivalent domains
-    if (
-      store?.domain === "https://vex.chrry.ai" ||
-      store?.domain === "https://askvex.com"
-    ) {
-      return ["https://vex.chrry.ai"]
-    }
-
-    return store.domain ? [store.domain] : []
-  }
-
   const [agentName, _setAgentName] = useState(session?.aiAgent?.name)
-  const flattenObject = (obj: any, prefix = ""): Record<string, any> => {
-    const flattened: Record<string, any> = {}
-    if (!obj) return flattened
 
-    for (const key in obj) {
-      if (Object.hasOwn(obj, key)) {
-        const value = obj[key]
-        const newKey = prefix ? `${prefix}_${key}` : key
-
-        if (
-          value &&
-          typeof value === "object" &&
-          !Array.isArray(value) &&
-          !(value instanceof Date)
-        ) {
-          Object.assign(flattened, flattenObject(value, newKey))
-        } else {
-          flattened[newKey] = value
-        }
-      }
-    }
-    return flattened
-  }
-
-  const plausibleEvent = ({
-    name,
-    url,
-    domain,
-    props = {},
-    device,
-    os,
-    browser,
-    isPWA,
-  }: {
+  const plausibleEvent = (_payload: {
     name: string
     url?: string
     domain?: string
@@ -1669,22 +1613,19 @@ export function AuthProvider({
     browser?: string
     isPWA?: boolean
   }) => {
-    if (isDevelopment) return
-
-    const canAdd =
-      isPWA !== undefined && os !== undefined && browser !== undefined
-
-    const u = isExtension
-      ? `/extension/${isFirefox ? "firefox" : "chrome"}${window.location.pathname}`
-      : isTauri
-        ? `/tauri/${os || "desktop"}${window?.location?.pathname || ""}`
-        : isCapacitor
-          ? `/capacitor/${os || "mobile"}${window?.location?.pathname || ""}`
-          : typeof window !== "undefined"
-            ? canAdd
-              ? `${isPWA ? `${os}/${browser}` : ""}${window?.location?.pathname || ""}`
-              : window?.location?.pathname || ""
-            : "/"
+    // const canAdd =
+    //   isPWA !== undefined && os !== undefined && browser !== undefined
+    // const u = isExtension
+    //   ? `/extension/${isFirefox ? "firefox" : "chrome"}${window.location.pathname}`
+    //   : isTauri
+    //     ? `/tauri/${os || "desktop"}${window?.location?.pathname || ""}`
+    //     : isCapacitor
+    //       ? `/capacitor/${os || "mobile"}${window?.location?.pathname || ""}`
+    //       : typeof window !== "undefined"
+    //         ? canAdd
+    //           ? `${isPWA ? `${os}/${browser}` : ""}${window?.location?.pathname || ""}`
+    //           : window?.location?.pathname || ""
+    //         : "/"
   }
 
   const trackPageview = () => {
@@ -1709,17 +1650,14 @@ export function AuthProvider({
       | "credentials"
       | null
 
-    // Only update state if it's different from URL to avoid loops
     if (currentPart !== signInPart) {
       setSignInPartInternal(user ? undefined : currentPart || undefined)
     }
   }, [searchParams, user])
 
-  // Throttle map to prevent duplicate rapid-fire events
   const plausibleThrottleMap = useRef<Map<string, number>>(new Map())
   const plausible_THROTTLE_MS = 500 // 500ms
 
-  // Duration map to track time between same event calls
   const plausibleDurationMap = useRef<Map<string, number>>(new Map())
   const [timer, setTimer] = useLocalStorage<timer | undefined | null>(
     "timer",
@@ -1784,79 +1722,11 @@ export function AuthProvider({
 
   const [creditsLeftInternal, setCreditsLeft] = useState<number | undefined>()
 
-  const [accountCreditsLeft, setAccountCreditsLeft] = useState<
-    number | undefined
-  >(user?.creditsLeft || guest?.creditsLeft)
+  const [, setAccountCreditsLeft] = useState<number | undefined>(
+    user?.creditsLeft || guest?.creditsLeft,
+  )
 
-  // useEffect(() => {
-  //   if (shouldGetCredits) {
-  //     ;(async () => {
-  //       try {
-  //         const creditsBefore = creditsLeft
-  //         let creditsAfter: number | undefined
-
-  //         if (user) {
-  //           const item = await actions.getUser({
-  //             threadId: toFetch,
-  //           })
-
-  //           if (item) {
-  //             creditsAfter = item.creditsLeft
-  //             setCreditsLeft(item.creditsLeft)
-  //           }
-  //         }
-
-  //         if (guest) {
-  //           const item = await actions.getGuest({
-  //             threadId: toFetch,
-  //           })
-
-  //           if (item) {
-  //             creditsAfter = item.creditsLeft
-  //             setCreditsLeft(item.creditsLeft)
-  //           }
-  //         }
-
-  //         // Auto-disable Pear mode if credits didn't increase 3 times in a row
-  //         if (
-  //           isPear &&
-  //           creditsAfter !== undefined &&
-  //           creditsBefore !== undefined
-  //         ) {
-  //           if (creditsAfter <= creditsBefore) {
-  //             pearNoGainStreakRef.current += 1
-  //             if (pearNoGainStreakRef.current >= 3) {
-  //               pearNoGainStreakRef.current = 0
-  //               toast.success(t("pearNoGainStreak"), {
-  //                 duration: 4000,
-  //               })
-  //             }
-  //           } else {
-  //             setPear(undefined)
-  //             // Credits went up — reset streak
-  //             pearNoGainStreakRef.current = 0
-  //           }
-  //         } else {
-  //           creditsAfter &&
-  //             creditsAfter <= 20 &&
-  //             creditsAfter % 5 === 0 &&
-  //             setPear(app)
-  //         }
-  //       } catch (error) {
-  //         console.error(error)
-  //       } finally {
-  //         setShouldGetCredits(false)
-  //       }
-  //     })()
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [shouldGetCredits])
-
-  const {
-    data: account,
-    mutate: refetchAccount,
-    isLoading: isLoadingAccount,
-  } = useSWR(
+  const { data: account } = useSWR(
     appId && (user || guest) ? ["account", appId] : null,
     async () => {
       try {
@@ -2044,10 +1914,6 @@ export function AuthProvider({
 
   const gift = searchParams.get("gift") || ""
 
-  // Note: deviceId initialization is handled by useLocalStorage hook above
-  // It automatically checks storage (localStorage/chrome.storage/MMKV) on all platforms
-  // and generates UUID if not found. No manual useEffect needed!
-
   useEffect(() => {
     if (gift) {
       setWasGifted(true)
@@ -2069,7 +1935,6 @@ export function AuthProvider({
     }
   }, [user])
 
-  // plausible UTM parameters for ad attribution (EthicalAds, etc.)
   useEffect(() => {
     if (typeof window === "undefined") return
 
@@ -2089,7 +1954,7 @@ export function AuthProvider({
         },
       })
     }
-  }, []) // Run once on mount
+  }, [])
 
   const characterProfilesEnabled =
     user?.characterProfilesEnabled ||
@@ -2118,8 +1983,6 @@ export function AuthProvider({
 
   const rtlLanguages = ["fa", "ar", "he", "ur", "ku"]
 
-  // Use locale prop (server data) for initial RTL - it's sync and reliable
-  // language (from useLocalStorage) is async and starts with default value
   const rtlInitial = rtlLanguages.includes(locale as string)
 
   const [rtl, setRTL] = useState(rtlInitial)
@@ -2135,13 +1998,6 @@ export function AuthProvider({
     processRTL(language)
   }, [language])
 
-  // useEffect(() => {
-  //   if (session?.locale) {
-  //     setLanguageInternal(session?.locale)
-  //   }
-  // }, [session?.locale])
-
-  // URL locale priority: if the URL has a locale prefix that differs from stored language, apply it
   useEffect(() => {
     const pn =
       typeof window === "undefined" ? pathname : window.location.pathname
@@ -2155,8 +2011,7 @@ export function AuthProvider({
         break
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // only on mount — URL is source of truth on first load
+  }, [])
 
   const setLanguage = async (language: locale) => {
     setLanguageInternal(language)
@@ -2166,7 +2021,6 @@ export function AuthProvider({
     const currentPath = window.location.pathname
     let pathWithoutLocale = currentPath
 
-    // Remove any existing locale prefix (e.g., /en/... or /ja/...)
     for (const loc of locales) {
       if (currentPath.startsWith(`/${loc}/`)) {
         pathWithoutLocale = currentPath.substring(loc.length + 1)
@@ -2191,12 +2045,11 @@ export function AuthProvider({
   // Find app by pathname - handles both base apps and sub-apps
   const findAppByPathname = (
     path: string,
-    apps: sushi[],
+    apps: sushi[] = storeApps || [],
   ): sushi | undefined => {
-    // if (focus && showFocus) return focus
     if (path === "/" && !showFocus) return undefined
 
-    const matchedApp = storeApps?.find((item) => {
+    const matchedApp = apps?.find((item) => {
       return getAppSlug(item) === pathname
     })
 
@@ -2208,9 +2061,6 @@ export function AuthProvider({
     undefined,
   )
 
-  // Get isStorageReady from platform context
-
-  // Centralized function to merge apps without duplicates
   const mergeApps = useCallback((newApps: sushi[]) => {
     setAllApps((prevApps) => {
       console.log(`� prevApps before merge: ${prevApps.length} apps`)
@@ -2219,12 +2069,6 @@ export function AuthProvider({
       return result
     })
   }, [])
-
-  // useEffect(() => {
-  //   if (tribePosts?.posts?.length) {
-  //     mergeApps(tribePosts.posts.map((p) => p.app) as sushi[])
-  //   }
-  // }, [tribePosts, mergeApps])
 
   const { clear } = useCache()
 
@@ -2257,7 +2101,6 @@ export function AuthProvider({
   useEffect(() => {
     if (!isAdmin || initAttemptedRef.current) return
 
-    // Handle extension notifications
     if (isExtension) {
       if (typeof chrome !== "undefined" && chrome.notifications) {
         chrome.notifications.getPermissionLevel((level) => {
@@ -2269,19 +2112,17 @@ export function AuthProvider({
       return
     }
 
-    const initializeServiceWorker = async () => {
+    const _initializeServiceWorker = async () => {
       if (initializingRef.current) return
       initializingRef.current = true
       initAttemptedRef.current = true
 
-      // Skip in Tauri/Electron
       if (isTauri || window.location.protocol === "file:") {
         initializingRef.current = false
         return
       }
 
       try {
-        // 1. Permission kontrol
         if ("Notification" in window) {
           const permission = Notification.permission
           console.log("[Push] Permission:", permission)
@@ -2302,7 +2143,6 @@ export function AuthProvider({
                 subscription.endpoint,
               )
 
-              // Backend sync
               const result = await apiFetch(`${API_URL}/pushSubscription`, {
                 method: "POST",
                 headers: {
@@ -2319,7 +2159,6 @@ export function AuthProvider({
                 return
               }
 
-              // Manual key extract + register
               const p256dh = subscription.getKey("p256dh")
               const auth = subscription.getKey("auth")
 
@@ -2341,7 +2180,6 @@ export function AuthProvider({
               return
             }
 
-            // 4. Auto-subscribe (permission granted ama subscription yok)
             const publicVapidKey = utils.VITE_VAPID_PUBLIC_KEY
             console.log("[Push] VAPID:", publicVapidKey ? "OK" : "MISSING")
 
@@ -2358,7 +2196,6 @@ export function AuthProvider({
                   const p256dh = newSubscription.getKey("p256dh")
                   const auth = newSubscription.getKey("auth")
                   if (isAdmin && p256dh && auth) {
-                    // await addPushSubscription({ newSubscription, p256dh, auth, token, API_URL })
                   }
                   return
                 }
@@ -2369,11 +2206,10 @@ export function AuthProvider({
           }
         }
 
-        // 5. Initial state - permission yok veya SW yok
         const registration = await registerServiceWorker()
         if (registration) {
           setSwRegistration(registration)
-          setIsSubscribed(false) // Button göster
+          setIsSubscribed(false)
         }
       } catch (error: any) {
         console.error("[Push] Init failed:", error)
@@ -2395,15 +2231,15 @@ export function AuthProvider({
     (app) => hasStoreApps(app) && !app.store?.parentStoreId,
   )
   const vex = storeApps?.find((app) => hasStoreApps(app) && app.slug === "vex")
-  const vault = storeApps?.find(
-    (app) => hasStoreApps(app) && app.slug === "vault",
-  )
-  const hippo = storeApps?.find(
-    (app) => hasStoreApps(app) && app.slug === "hippo",
-  )
-  const peach = storeApps?.find(
-    (app) => hasStoreApps(app) && app.slug === "peach",
-  )
+  // const vault = storeApps?.find(
+  //   (app) => hasStoreApps(app) && app.slug === "vault",
+  // )
+  // const hippo = storeApps?.find(
+  //   (app) => hasStoreApps(app) && app.slug === "hippo",
+  // )
+  // const peach = storeApps?.find(
+  //   (app) => hasStoreApps(app) && app.slug === "peach",
+  // )
   const sushi = storeApps?.find(
     (app) => hasStoreApps(app) && app.slug === "sushi",
   )
@@ -2474,11 +2310,7 @@ export function AuthProvider({
     },
   )
 
-  const {
-    data: accountAppsSwr,
-    mutate: refetchAccountApps,
-    isLoading: isLoadingAccountApps,
-  } = useSWR(
+  const { data: accountAppsSwr, mutate: refetchAccountApps } = useSWR(
     !isRemovingApp &&
       !isSavingApp &&
       token && [
@@ -2528,11 +2360,6 @@ export function AuthProvider({
 
       if (accountAppsSwr && updatedApp?.id) {
         toast.success(`${t("Updated")} 🚀`)
-        // if (!isExtension && !isNative) {
-        //   // setSlug(getAppSlug(n) || "")
-        //   window.location.href = getAppSlug(u)
-        //   return
-        // }
         setUpdatedApp(undefined)
         setAccountApp(accountAppsSwr)
 
@@ -2543,7 +2370,6 @@ export function AuthProvider({
         setStore(accountAppsSwr.store || undefined)
 
         setSlug(getAppSlug(accountAppsSwr) || "")
-        // router.push(getAppSlug(accountAppsSwr))
 
         return
       }
@@ -2660,8 +2486,6 @@ export function AuthProvider({
 
   const [burnInternal, setBurnInternal] = useState<boolean | null>(null)
 
-  // MinIO download URLs (production bucket)
-
   const burn = burnInternal === null ? false : burnInternal
 
   const burning = !!(burn || burnApp)
@@ -2673,10 +2497,6 @@ export function AuthProvider({
   const setBurn = (value: boolean) => {
     setBurnInternal(value)
 
-    // Privacy-respecting analytics: plausible burn usage WITHOUT personal info or identifiers.
-    // This helps us understand if the feature is valuable and worth investing in,
-    // while respecting the user's choice for privacy. No user data, IDs, or content is plausibleed.
-    // Only the fact that burn was activated (boolean event).
     if (value) {
       if (!hasInformedRef.current) {
         hasInformedRef.current = true
@@ -2692,15 +2512,6 @@ export function AuthProvider({
         },
       })
     }
-
-    // if (burnApp && value) {
-    //   router.push(getAppSlug(burnApp))
-    //   return
-    // }
-
-    // if (zarathustra && baseApp?.id === zarathustra.id) {
-    //   value && router.push(getAppSlug(zarathustra))
-    // }
   }
 
   const [isUpdatingCharacterProfile, setIsUpdatingCharacterProfile] =
@@ -2787,20 +2598,18 @@ export function AuthProvider({
     })
   })
 
-  const hive = (app?: sushi, apps: (sushi | undefined)[] = allApps) =>
-    apps
-      ?.sort((a) =>
-        (["popcorn", "chrry", "vex", "sushi", "hippo", "peach"].includes(
-          a?.slug || "",
-        ) &&
-          a?.id === app?.id) ||
-        a?.storeId === app?.storeId
-          ? -1
-          : 1,
-      )
-      .filter((a) => a !== undefined) as sushi[]
-
-  const [selecting, setSelecting] = useState("")
+  // const hive = (app?: sushi, apps: (sushi | undefined)[] = allApps) =>
+  //   apps
+  //     ?.sort((a) =>
+  //       (["popcorn", "chrry", "vex", "sushi", "hippo", "peach"].includes(
+  //         a?.slug || "",
+  //       ) &&
+  //         a?.id === app?.id) ||
+  //       a?.storeId === app?.storeId
+  //         ? -1
+  //         : 1,
+  //     )
+  //     .filter((a) => a !== undefined) as sushi[]
 
   const accountApps = apps?.filter((app) =>
     isOwner(app, {
@@ -2970,10 +2779,6 @@ export function AuthProvider({
     showWatermelonInitial || !!siteConfig.isWatermelon,
   )
 
-  useEffect(() => {
-    // setShowGrapeInternal(showGrapeInitial)
-  }, [showGrapeInitial])
-
   const setShowGrape = (sw: boolean) => {
     setShowGrapeInternal(sw)
   }
@@ -2997,8 +2802,6 @@ export function AuthProvider({
     : undefined
 
   const tribeQuery = searchParams.get("tribe") === "true"
-
-  // Normalize to first path segment (strip locale prefix if present) for excludedSlugRoutes
 
   const canBeTribeProfile =
     !canShowAllTribe &&
@@ -3061,9 +2864,6 @@ export function AuthProvider({
 
   useEffect(() => {
     setShowFocusInternal(showFocusQuery)
-    // if (showFocusInitial) {
-    //   setShowFocusInternal(showFocusInitial)
-    // }
   }, [showFocusQuery])
 
   const setShowFocus = (sw: boolean) => {
@@ -3267,31 +3067,6 @@ export function AuthProvider({
     undefined,
   )
 
-  const refetchInstructions = async ({ appId }: { appId?: string }) => {
-    // if (!token) return
-    // // setInstructions(app?.userInstructions)
-    // if (user) {
-    //   const item = await getUser({
-    //     token,
-    //     appId,
-    //     threadId,
-    //   })
-    //   if (item) {
-    //     setInstructions(item.instructions)
-    //   }
-    // }
-    // if (guest) {
-    //   const item = await getGuest({
-    //     token,
-    //     appId,
-    //     threadId,
-    //   })
-    //   if (item) {
-    //     setInstructions(item.instructions)
-    //   }
-    // }
-  }
-
   const setApp = useCallback(
     (item: sushi | undefined) => {
       if (!hasStoreApps(item)) {
@@ -3300,7 +3075,7 @@ export function AuthProvider({
       }
 
       setLastAppId(item?.id)
-      setAppInternal((prevApp) => {
+      setAppInternal(() => {
         const newApp = item
           ? {
               ...item,
@@ -3308,13 +3083,6 @@ export function AuthProvider({
             }
           : undefined
 
-        // Only refetch instructions if app ID actually changed
-        if (prevApp?.id !== newApp?.id) {
-          // refetchAccount()
-          // refetchInstructions({ appId: newApp?.id })
-        }
-
-        // Merge apps from the new app's store
         newApp?.store?.apps && mergeApps(newApp?.store?.apps)
         return newApp
       })
@@ -3335,20 +3103,10 @@ export function AuthProvider({
     setThreadInternal(thread)
   }
 
-  // useEffect(() => {
-  //   const slug = accountApp ? getAppSlug(accountApp) : ""
-  //   if (slug !== pathname && accountApp?.id === app?.id) {
-  //     router.push(slug)
-  //   }
-  // }, [accountApp, app, pathname])
-
-  // app?.id removed from deps - use prevApp inside setState instead
-
   useEffect(() => {
     if (!baseApp) return
     if (!storeApps.length) return
 
-    // Priority 1: If there's a thread, use the thread's app
     let matchedApp: sushi | undefined
 
     if (!matchedApp && thread?.appId && !loadingAppId) {
@@ -3361,17 +3119,11 @@ export function AuthProvider({
       matchedApp = postApp
     }
 
-    // Priority 2: Find app by pathname
     if (!matchedApp) {
       matchedApp = findAppByPathname(pathname, storeApps) || baseApp
-      // Using pathname app
     }
 
-    // App detection logic
-
-    // Only update if the matched app is different from current app
     if (matchedApp && matchedApp.id !== app?.id) {
-      // Switching app
       setApp(matchedApp)
       setStore(matchedApp.store || undefined)
 
@@ -3390,18 +3142,14 @@ export function AuthProvider({
     updatedApp,
     tribePost,
   ])
-  // Thread app takes priority over pathname, then falls back to pathname detection
 
   const [profile, setProfileInternal] = useState<user | undefined>(undefined)
 
   const setProfile = (profile: user | undefined) => {
-    // if (profile && profile?.id === user?.id) return
-
     setProfileInternal(profile)
   }
 
   useEffect(() => {
-    // PerformanceObserver is web-only, skip on React Native
     if (typeof PerformanceObserver === "undefined") {
       return
     }
@@ -3409,18 +3157,15 @@ export function AuthProvider({
     try {
       new PerformanceObserver((entryList) => {
         for (const entry of entryList.getEntries()) {
-          // Sanitize URL to remove sensitive query params (fingerprint, tokens, etc.)
           const sanitizeName = (name: string) => {
             try {
               const url = new URL(name)
-              // Remove sensitive query parameters
-              url.searchParams.delete("fp") // fingerprint
-              url.searchParams.delete("auth_token") // auth tokens
-              url.searchParams.delete("token") // auth tokens
-              url.searchParams.delete("api_key") // API keys
+              url.searchParams.delete("fp")
+              url.searchParams.delete("auth_token")
+              url.searchParams.delete("token")
+              url.searchParams.delete("api_key")
               return url.toString()
             } catch {
-              // If not a valid URL, return as-is (could be a resource name)
               return name
             }
           }
@@ -3455,20 +3200,17 @@ export function AuthProvider({
     data: tasksData,
     mutate: refetchTasks,
     isLoading: isLoadingTasks,
-  } = useSWR(
-    shouldFetchTasks && token ? ["tasks"] : null, // Disabled by default, fetch manually with refetchTasks()
-    async () => {
-      const response = await apiFetch(`${API_URL}/tasks`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      const data = await response.json()
-      return data
-    },
-  )
+  } = useSWR(shouldFetchTasks && token ? ["tasks"] : null, async () => {
+    const response = await apiFetch(`${API_URL}/tasks`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const data = await response.json()
+    return data
+  })
 
   const [tasks, setTasks] = useState<
     | {
@@ -3524,7 +3266,6 @@ export function AuthProvider({
         errorMessage.includes("HTTP 429") ||
         errorMessage.includes("Too Many Requests")
       ) {
-        // Only show toast if it's a different error or enough time has passed
         if (lastRateLimitErrorRef.current !== errorMessage) {
           lastRateLimitErrorRef.current = errorMessage
           toast.error(
@@ -3538,7 +3279,6 @@ export function AuthProvider({
     }
   }, [sessionError])
 
-  // Create sign in wrapper to match Chrry's expected interface
   const signInContext = async (
     provider: "google" | "apple" | "github" | "credentials",
     options: {
@@ -3576,7 +3316,6 @@ export function AuthProvider({
     return { success: false, error: "Invalid provider or missing credentials" }
   }
 
-  // Create sign out wrapper
   const signOutContext = async (options: { callbackUrl?: string }) => {
     return signOutInternal(options)
   }
@@ -3596,10 +3335,6 @@ export function AuthProvider({
     }
 
     signOutInternal({ callbackUrl: "/" })
-
-    // if (typeof window !== "undefined") {
-    //   window.location.href = "/?loggedOut=true"
-    // }
   }
 
   const isExtensionRedirect = searchParams.get("extension") === "true"
@@ -3635,14 +3370,11 @@ export function AuthProvider({
 
   const [displayedApps, setDisplayedApps] = useState<sushi[]>([])
 
-  // Find the most recent cross-store app from navigation history:
-  // i.e., an app the user previously visited that is NOT in the current store's apps
   const lastAnchorApp = useMemo(() => {
     const currentAppId = app?.id
     for (let i = navigationHistory.length - 1; i >= 0; i--) {
       const entry = navigationHistory[i]
       if (!entry || entry.appId === currentAppId) continue
-      // Not in current store → this is the cross-store anchor
       if (!apps.some((x) => x.id === entry.appId)) {
         return entry
       }
@@ -3652,7 +3384,6 @@ export function AuthProvider({
 
   const lastApp = app
 
-  // back = the cross-store anchor app object (resolved from storeApps cache)
   const backInitial = lastAnchorApp
     ? storeApps.find((a) => a.id === lastAnchorApp.appId && a.id !== app?.id)
     : undefined
@@ -3681,13 +3412,7 @@ export function AuthProvider({
 
         return token
 
-        // Set cookie with domain for cross-subdomain auth
-
         console.log("✅ Client-side OAuth exchange successful")
-
-        // Clean up URL - remove auth_token param
-
-        // Reload to get fresh session with new token
       } else {
         const errText = await exchangeResponse.text()
         console.error(
@@ -3701,7 +3426,7 @@ export function AuthProvider({
     }
   }
 
-  const [loadingToken, setLoadingToken] = useState(!!auth_token)
+  const [, setLoadingToken] = useState(!!auth_token)
 
   useEffect(() => {
     if (auth_token) {
@@ -3716,25 +3441,20 @@ export function AuthProvider({
       setToken(fingerprint)
     }
     if (fp) {
-      // Remove fp from URL
       !isE2E && removeParams("fp")
     }
   }, [auth_token, tokenCandidate, fp, fingerprint, isStorageReady])
-
-  // Track spatial navigation (app changes)
   useEffect(() => {
     if (!app?.id) return
 
     const now = Date.now()
 
-    // Throttle: Skip rapid transitions (< 100ms)
     if (now - lastNavigationTime.current < NAVIGATION_THROTTLE_MS) {
       return
     }
     lastNavigationTime.current = now
 
     setNavigationHistory((prev) => {
-      // Update duration of last entry
       if (prev.length > 0) {
         const lastEntry = prev[prev.length - 1]
         if (lastEntry && !lastEntry.duration) {
@@ -3767,7 +3487,6 @@ export function AuthProvider({
       ]
     })
 
-    // Track spatial navigation analytics
     plausible({
       name: ANALYTICS_EVENTS.SPATIAL_NAVIGATION,
       props: {
@@ -3785,11 +3504,11 @@ export function AuthProvider({
     }
   }, [session?.versions])
 
-  const [PROMPT_LIMITS, setPromptLimits] = useState({
-    INPUT: 7000, // Max for direct input
-    INSTRUCTIONS: 2000, // Max for instructions
-    TOTAL: 30000, // Combined max (input + context)
-    WARNING_THRESHOLD: 5000, // Show warning at this length
+  const [PROMPT_LIMITS] = useState({
+    INPUT: 7000,
+    INSTRUCTIONS: 2000,
+    TOTAL: 30000,
+    WARNING_THRESHOLD: 5000,
     THREAD_TITLE: 100,
   })
 
@@ -3907,14 +3626,9 @@ export function AuthProvider({
     ]
     return fahrenheitCountries.includes(country) ? "F" : "C"
   }
-  const {
-    data: weatherData,
-    error: weatherError,
-    mutate: refetchWeather,
-  } = useSWR(
+  const { data: weatherData, mutate: refetchWeather } = useSWR(
     token ? ["weather"] : null,
     async () => {
-      // return
       if (!token) return null
 
       try {
@@ -3934,7 +3648,6 @@ export function AuthProvider({
     },
     {
       refreshInterval: (data) => {
-        // Use the data parameter provided by SWR
         if (data) {
           return getWeatherCacheTime(data) * 1000 // Convert seconds to milliseconds
         }
@@ -3967,26 +3680,21 @@ export function AuthProvider({
   const toVersionNumber = (version?: string): number => {
     if (!version) return 0
 
-    // Split by dots and take first 3 parts for major.minor.patch
     const parts = version.split(".").slice(0, 3)
 
-    // Pad with zeros if needed and convert each part
     const [major = 0, minor = 0, patch = 0] = parts.map((part) => {
       const num = Number.parseInt(part.replace(/\D/g, ""), 10)
       return Number.isNaN(num) ? 0 : num
     })
 
-    // Create a comparable number: major * 10000 + minor * 100 + patch
     return major * 10000 + minor * 100 + patch
   }
 
   useEffect(() => {
     if (!token) return
-    // Check URL for ref parameter
     const ref = searchParams.get("ref")
 
     if (ref && !affiliateCode) {
-      // Track click immediately for all users (guests and registered)
       apiFetch(`${API_URL}/affiliates/trackClick`, {
         method: "POST",
         headers: {
@@ -3998,7 +3706,6 @@ export function AuthProvider({
         console.error("Failed to plausible affiliate click:", error)
       })
 
-      // Check if user is trying to use their own affiliate code
       if (user) {
         apiFetch(`${API_URL}/affiliates`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -4010,13 +3717,11 @@ export function AuthProvider({
               console.log("⚠️ Cannot use your own affiliate link")
               return
             }
-            // Store affiliate code with timestamp
             setAffiliateCodeData({ code: data.code, timestamp: Date.now() })
             console.log("🎯 Affiliate code stored (30 days):", ref)
           })
           .catch((error) => {
             console.error("Failed to check affiliate link:", error)
-            // If check fails, still store the code (backend will validate)
             setAffiliateCodeData({ code: ref, timestamp: Date.now() })
           })
       } else {
@@ -4027,8 +3732,7 @@ export function AuthProvider({
     }
   }, [searchParams, affiliateCode, setAffiliateCodeData, user, token])
 
-  //Stable since
-  const RELEASE_TIMESTAMP = "2025-09-14T09:48:29.393Z" // Move to constants
+  const RELEASE_TIMESTAMP = "2025-09-14T09:48:29.393Z"
 
   const [createdOn, setCreatedOn] = useLocalStorage("createdOn", "")
 

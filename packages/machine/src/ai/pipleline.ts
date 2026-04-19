@@ -573,7 +573,9 @@ export const executeBgJob = (
         Effect.tryPromise({
           try: async () => {
             const { extractAndSaveMemories } = await import("./memories").catch(
-              () => ({ extractAndSaveMemories: async () => {} }),
+              () => ({
+                extractAndSaveMemories: async () => {},
+              }),
             )
             await extractAndSaveMemories(
               context.conversationText,
@@ -612,7 +614,9 @@ export const executeBgJob = (
         Effect.tryPromise({
           try: async () => {
             const { generateSuggestions } = await import("./suggestions").catch(
-              () => ({ generateSuggestions: async () => {} }),
+              () => ({
+                generateSuggestions: async () => {},
+              }),
             )
             await generateSuggestions(context)
           },
@@ -630,7 +634,9 @@ export const executeBgJob = (
           try: async () => {
             const { updateCharacterProfile } = await import(
               "./character"
-            ).catch(() => ({ updateCharacterProfile: async () => {} }))
+            ).catch(() => ({
+              updateCharacterProfile: async () => {},
+            }))
             await updateCharacterProfile(context)
           },
           catch: (e) => new BgJobError({ jobId: context.threadId, cause: e }),

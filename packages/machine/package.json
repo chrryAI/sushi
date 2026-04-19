@@ -1,6 +1,6 @@
 {
   "name": "@chrryai/machine",
-  "version": "2.4.90",
+  "version": "2.4.94",
   "description": "",
   "keywords": [],
   "license": "ISC",
@@ -15,8 +15,6 @@
     "./ai/sushi": "./src/ai/sushi/provider.ts"
   },
   "scripts": {
-    "zero:generate": "drizzle-zero generate --format",
-    "_postinstall": "npm run zero:generate",
     "check-types": "tsc --noEmit -p tsconfig.check.json",
     "clear": "CLEAR=true pnpm exec tsx seed.ts",
     "g": "pnpm exec drizzle-kit generate",
@@ -51,7 +49,6 @@
     "@effect/platform": "^0.96.0",
     "@neondatabase/serverless": "^1.0.2",
     "@openrouter/ai-sdk-provider": "^2.3.3",
-    "@rocicorp/zero": "^1.3.0",
     "@sentry/node": "^10.45.0",
     "@types/all-the-cities": "^3.1.3",
     "@types/bcrypt": "^6.0.0",
@@ -67,7 +64,6 @@
     "dotenv": "^17.3.1",
     "drizzle-kit": "^0.31.10",
     "drizzle-orm": "^0.45.1",
-    "drizzle-zero": "^0.18.0",
     "effect": "^3.21.0",
     "esbuild": "^0.27.4",
     "falkordb": "^6.6.2",
@@ -77,6 +73,7 @@
     "kebab-case": "^2.0.2",
     "langdetect": "^0.2.1",
     "npm": "^11.12.0",
+    "ollama-ai-provider": "^1.2.0",
     "p-limit": "^7.3.0",
     "postgres": "^3.4.8",
     "slug": "^11.0.1",
