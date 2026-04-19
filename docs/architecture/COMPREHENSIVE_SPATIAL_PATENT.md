@@ -1053,7 +1053,7 @@ pnpm build:mobile      # React Native (iOS/Android)
 // packages/machine/src/schema.ts
 // Stores, apps, storeInstalls, inheritance chains
 // Without this schema, the system doesn't work
-// Schema is AGPL-3.0 (copyleft - share modifications)
+// Schema is MIT-licensed
 ```
 
 ### 3. Domain Verification
