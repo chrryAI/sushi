@@ -3,68 +3,68 @@ title: "SonarCloud auto-sync setup"
 description: "Automated SonarCloud synchronization using GitHub Actions and smart sync logic to avoid unnecessary API calls."
 ---
 
-## Tamamlandı
+## Completed
 
-### 1. **Smart Sync Logic**
+### 1. Smart sync logic
 
-- `hasNewAnalysis()` fonksiyonu eklendi
-- Son analiz zamanı ile son sync zamanını karşılaştırır
-- Yeni analiz yoksa sync'i skip eder (gereksiz API calls'dan kaçınır)
+- Added `hasNewAnalysis()` function
+- Compares last analysis time with last sync time
+- Skips sync when there is no new analysis (avoids unnecessary API calls)
 
-### 2. **GitHub Actions Workflow**
+### 2. GitHub Actions workflow
 
-Dosya: `.github/workflows/sonarcloud.yml`
+File: `.github/workflows/sonarcloud.yml`
 
-**Tetiklenme:**
+**Triggers:**
 
-- Her push (main, prod, dev branches)
-- Her PR
-- Manuel trigger
+- Every push (main, prod, dev branches)
+- Every PR
+- Manual trigger
 
-**Adımlar:**
+**Steps:**
 
-1. Kod checkout
+1. Code checkout
 2. Dependencies install
 3. Test coverage (optional)
-4. **SonarCloud analizi**
-5. 90 saniye bekle (SonarCloud processing için)
+4. **SonarCloud analysis**
+5. Wait 90 seconds (for SonarCloud processing)
 6. **Database sync trigger** (`/api/cron/syncSonarCloud`)
 
-### 3. **Coolify Post-Deploy Hook**
+### 3. Coolify post-deploy hook
 
-Dosya: `scripts/coolify-post-deploy.sh`
+File: `scripts/coolify-post-deploy.sh`
 
-Coolify'da kullanmak için:
+To use with Coolify:
 
-1. Coolify dashboard'a git
-2. Application Settings > Post-Deployment Command
-3. Script'i yapıştır veya dosya yolunu ver
+1. Go to the Coolify dashboard
+2. Navigate to Application Settings > Post-Deployment Command
+3. Paste the script or provide the file path
 
-## Kullanım
+## Usage
 
-### GitHub Actions (Otomatik)
+### GitHub Actions (automatic)
 
 ```bash
-# Her merge'de otomatik çalışır
+# Runs automatically on every merge
 git push origin main
 ```
 
-### Manuel Trigger
+### Manual trigger
 
 ```bash
-# GitHub Actions UI'dan "Run workflow" butonuna tıkla
-# veya
+# Click "Run workflow" in the GitHub Actions UI
+# or
 gh workflow run sonarcloud.yml
 ```
 
-### Coolify (Deployment sonrası)
+### Coolify (post-deployment)
 
 ```bash
-# Coolify otomatik çalıştırır her deployment'ta
-# Ek ayar gerekmez
+# Coolify runs this automatically on every deployment
+# No additional configuration needed
 ```
 
-## Akış
+## Flow
 
 ```
 Code Push → GitHub Actions
@@ -79,21 +79,21 @@ Check hasNewAnalysis()
     └─ New → Sync to DB ✓
 ```
 
-## Gerekli Secrets
+## Required secrets
 
 GitHub Repository Settings > Secrets:
 
 - `SONAR_TOKEN` - SonarCloud API token
 - `CRON_SECRET` - API endpoint auth
 
-## Notlar
+## Notes
 
-- **Free Plan**: Webhook yok, GitHub Actions kullanıyoruz
-- **Smart Sync**: Gereksiz sync'leri önler
-- **Non-blocking**: Sync fail olursa build fail olmaz
-- **Retry**: Sonraki deployment'ta tekrar dener
+- **Free plan**: No webhooks available, so GitHub Actions is used instead
+- **Smart sync**: Prevents unnecessary sync operations
+- **Non-blocking**: If sync fails, the build is not affected
+- **Retry**: Automatically retries on the next deployment
 
-## Bonus: Manual Sync
+## Manual sync
 
 ```bash
 # Development
@@ -108,7 +108,7 @@ curl https://chrry.dev/api/cron/syncSonarCloud \
 ## Monitoring
 
 ```sql
--- Son sync zamanı
+-- Last sync time
 SELECT
   project_key,
   MAX(measured_at) as last_sync,
@@ -116,7 +116,7 @@ SELECT
 FROM sonar_metrics
 GROUP BY project_key;
 
--- Yeni issues
+-- Unresolved issues
 SELECT severity, COUNT(*)
 FROM sonar_issues
 WHERE status != 'RESOLVED'
