@@ -3,16 +3,16 @@ title: "SonarCloud graph integration"
 description: "Syncing SonarCloud code quality data into FalkorDB graph database for RAG-powered insights, hotspot analysis, and topic-based search."
 ---
 
-## Amaç
+## Purpose
 
-SonarCloud kod kalitesi verilerini **FalkorDB graph database**'e senkronize ederek:
+Synchronize SonarCloud code quality data into a **FalkorDB graph database** to:
 
-- RAG sisteminin kod kalitesi hakkında bilgi vermesini sağlamak
-- Kod dosyaları ile issue'ları ilişkilendirmek
-- Topic-based arama yapmak (security, performance, code-smell, etc.)
-- Hotspot analizi yapmak (en çok issue olan dosyalar)
+- Enable the RAG system to provide code quality insights
+- Link code files with their issues
+- Support topic-based search (security, performance, code-smell, etc.)
+- Perform hotspot analysis (files with the most issues)
 
-## Graph Schema
+## Graph schema
 
 ```cypher
 // Nodes
@@ -28,9 +28,9 @@ SonarCloud kod kalitesi verilerini **FalkorDB graph database**'e senkronize eder
 (Issue)-[:RELATES_TO]->(Topic)
 ```
 
-## Example Queries
+## Example queries
 
-### 1. Find Files with Most Issues
+### 1. Find files with most issues
 
 ```cypher
 MATCH (f:File)-[:HAS_ISSUE]->(i:Issue)
@@ -40,7 +40,7 @@ ORDER BY issueCount DESC
 LIMIT 10
 ```
 
-### 2. Security Issues
+### 2. Security issues
 
 ```cypher
 MATCH (i:Issue)-[:RELATES_TO]->(t:Topic {name: 'security'})
@@ -55,7 +55,7 @@ ORDER BY
   END
 ```
 
-### 3. Code Hotspots (Risk Score)
+### 3. Code hotspots (risk score)
 
 ```cypher
 MATCH (f:File)-[:HAS_ISSUE]->(i:Issue)
@@ -73,7 +73,7 @@ ORDER BY riskScore DESC
 LIMIT 10
 ```
 
-### 4. Performance Issues in TypeScript Files
+### 4. Performance issues in TypeScript files
 
 ```cypher
 MATCH (f:File {language: 'TypeScript'})-[:HAS_ISSUE]->(i:Issue)-[:RELATES_TO]->(t:Topic {name: 'performance'})
@@ -81,7 +81,7 @@ WHERE i.status <> 'RESOLVED'
 RETURN f.path, i.message, i.severity
 ```
 
-### 5. Latest Metrics
+### 5. Latest metrics
 
 ```cypher
 MATCH (p:Project {key: 'chrryAI_vex'})-[:HAS_METRIC]->(m:Metric)
@@ -90,28 +90,28 @@ RETURN m.name, m.value, m.measuredAt
 ORDER BY m.measuredAt DESC
 ```
 
-## RAG Integration
+## RAG integration
 
-### Example User Questions
+### Example user questions
 
 **User:** "What are the main code quality issues in the project?"
 
-**RAG Response:**
+**RAG response:**
 
 ```
 Based on the latest SonarCloud analysis:
 
-🔴 High Priority Issues:
+High priority issues:
 - 3 CRITICAL security vulnerabilities in authentication module
 - 5 MAJOR performance issues in API routes
 - 12 code smells in legacy components
 
-📊 Code Hotspots (files needing attention):
+Code hotspots (files needing attention):
 1. apps/api/routes/auth.ts (Risk Score: 45)
 2. packages/donut/components/legacy/Modal.tsx (Risk Score: 32)
 3. apps/api/lib/database/queries.ts (Risk Score: 28)
 
-💡 Recommendations:
+Recommendations:
 - Focus on security issues first
 - Consider refactoring high-risk files
 - Current test coverage: 67% (target: 80%)
@@ -119,29 +119,29 @@ Based on the latest SonarCloud analysis:
 
 **User:** "Are there any security vulnerabilities?"
 
-**RAG Response:**
+**RAG response:**
 
 ```
-Yes, I found 3 unresolved security issues:
+Yes, 3 unresolved security issues found:
 
-🔒 CRITICAL - SQL Injection Risk
+CRITICAL - SQL Injection Risk
 File: apps/api/lib/database/queries.ts:45
 Message: "Unsanitized user input in SQL query"
 
-🔒 MAJOR - XSS Vulnerability
+MAJOR - XSS Vulnerability
 File: apps/web/components/UserProfile.tsx:123
 Message: "Unescaped user content in JSX"
 
-🔒 MAJOR - Weak Cryptography
+MAJOR - Weak Cryptography
 File: apps/api/lib/auth/tokens.ts:67
 Message: "Use stronger hashing algorithm"
 
-I recommend addressing these immediately.
+These should be addressed immediately.
 ```
 
-## API Functions
+## API functions
 
-### Sync Functions
+### Sync functions
 
 ```typescript
 // Sync issues to graph
@@ -151,7 +151,7 @@ await syncIssuesToGraph(issues);
 await syncMetricsToGraph(projectKey, metrics, measuredAt);
 ```
 
-### Query Functions
+### Query functions
 
 ```typescript
 // Get code quality insights
@@ -166,12 +166,12 @@ const hotspots = await getCodeHotspots();
 
 ## Benefits
 
-1. **Context-Aware Responses**: RAG can provide specific file/line references
-2. **Trend Analysis**: Track quality over time via metrics
-3. **Smart Recommendations**: Link issues to related topics and documentation
-4. **Proactive Alerts**: Notify about critical issues in active files
+1. **Context-aware responses**: RAG can provide specific file/line references
+2. **Trend analysis**: Track quality over time via metrics
+3. **Smart recommendations**: Link issues to related topics and documentation
+4. **Proactive alerts**: Notify about critical issues in active files
 
-## Next Steps
+## Next steps
 
 1. ✅ Graph sync implemented
 2. ✅ Topic extraction from issue messages
@@ -180,9 +180,9 @@ const hotspots = await getCodeHotspots();
 5. Add quality gate status to graph
 6. Link issues to specific code chunks (if available)
 
-## Advanced Use Cases
+## Advanced use cases
 
-### Link Issues to Conversations
+### Link issues to conversations
 
 ```cypher
 // When user asks about a file, show related issues
@@ -191,7 +191,7 @@ WHERE i.status <> 'RESOLVED'
 RETURN i.message, i.severity, i.lineNumber
 ```
 
-### Track Quality Trends
+### Track quality trends
 
 ```cypher
 // Compare metrics over time
@@ -201,7 +201,7 @@ RETURN m.measuredAt, m.value
 ORDER BY m.measuredAt ASC
 ```
 
-### Find Related Issues
+### Find related issues
 
 ```cypher
 // Issues sharing the same topics
