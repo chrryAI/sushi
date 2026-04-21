@@ -9,9 +9,9 @@ Focus now has its own **separate site mode** with custom domain support, indepen
 
 ---
 
-## ✅ What Was Added
+## What was added
 
-### **1. New siteMode: "focus"**
+### 1. New siteMode: "focus"
 
 ```typescript
 export type siteMode = "chrryDev" | "vex" | "chrryAI" | "chrryStore" | "focus";
@@ -21,9 +21,9 @@ Focus is now a first-class site mode alongside Chrry, Vex, and others.
 
 ---
 
-## 🌐 Domain Configuration
+## Domain configuration
 
-### **Supported Domains**
+### Supported domains
 
 ```typescript
 // Primary subdomain
@@ -36,7 +36,7 @@ getfocus.ai → "focus" mode
 yourfocus.com → "focus" mode (add to detectsiteModeDomain)
 ```
 
-### **Domain Detection Logic**
+### Domain detection logic
 
 ```typescript
 export function detectsiteModeDomain(hostname?: string): siteMode {
@@ -60,9 +60,9 @@ export function detectsiteModeDomain(hostname?: string): siteMode {
 
 ---
 
-## 🎨 Focus Site Configuration
+## Focus site configuration
 
-### **Metadata**
+### Metadata
 
 ```typescript
 {
@@ -79,7 +79,7 @@ export function detectsiteModeDomain(hostname?: string): siteMode {
 }
 ```
 
-### **Links**
+### Links
 
 ```typescript
 links: {
@@ -88,7 +88,7 @@ links: {
 }
 ```
 
-### **Features**
+### Features
 
 ```typescript
 features: [
@@ -145,7 +145,7 @@ features: [
 
 ---
 
-## 🌍 Translations (All Languages)
+## Translations
 
 Focus has dedicated translations in **10 languages**:
 
@@ -160,15 +160,15 @@ focus: {
   es: "Focus - Asistente de Productividad IA",
   zh: "Focus - AI 生产力助手",
   nl: "Focus - AI-productiviteitsassistent",
-  tr: "Focus - Yapay Zekâ Üretkenlik Asistanı",
+  tr: "Focus - AI Productivity Assistant",
 }
 ```
 
 ---
 
-## 🔧 Usage
+## Usage
 
-### **Automatic Detection**
+### Automatic detection
 
 ```typescript
 // Client-side - automatic
@@ -184,7 +184,7 @@ const config = getSiteConfig(hostname);
 console.log(config.mode); // "focus"
 ```
 
-### **Direct Mode**
+### Direct mode
 
 ```typescript
 // Pass mode directly
@@ -195,9 +195,9 @@ console.log(config.logo); // "⏱️"
 
 ---
 
-## 🎯 How It Works
+## How it works
 
-### **Request Flow**
+### Request flow
 
 ```
 1. User visits focus.chrry.ai
@@ -215,7 +215,7 @@ console.log(config.logo); // "⏱️"
 7. App renders with Focus branding
 ```
 
-### **Domain Priority**
+### Domain priority
 
 ```typescript
 Priority Order:
@@ -229,9 +229,9 @@ Priority Order:
 
 ---
 
-## 🚀 Adding Custom Domains
+## Adding custom domains
 
-### **Step 1: Update Domain Detection**
+### Step 1: Update domain detection
 
 ```typescript
 // packages/donut/utils/siteConfig.ts
@@ -245,14 +245,14 @@ if (
 }
 ```
 
-### **Step 2: Configure DNS**
+### Step 2: Configure DNS
 
 ```
 yourfocus.com → Server IP (A record)
 www.yourfocus.com → yourfocus.com (CNAME)
 ```
 
-### **Step 3: SSL Certificate**
+### Step 3: SSL certificate
 
 ```bash
 # Add domain to SSL cert
@@ -261,7 +261,7 @@ certbot certonly --webroot -w /var/www/html \
   -d www.yourfocus.com
 ```
 
-### **Step 4: Test**
+### Step 4: Test
 
 ```bash
 curl https://yourfocus.com
@@ -270,9 +270,9 @@ curl https://yourfocus.com
 
 ---
 
-## 📊 Comparison: Focus vs Chrry AI
+## Comparison: Focus vs Chrry AI
 
-### **Focus Mode** (focus.chrry.ai)
+### Focus mode (focus.chrry.ai)
 
 ```typescript
 {
@@ -294,7 +294,7 @@ curl https://yourfocus.com
 }
 ```
 
-### **Chrry AI Mode** (chrry.ai)
+### Chrry AI mode (chrry.ai)
 
 ```typescript
 {
@@ -320,16 +320,16 @@ curl https://yourfocus.com
 
 ---
 
-## 🎨 Branding Differences
+## Branding differences
 
-### **Focus**
+### Focus
 
 - **Color**: Blue (#3B82F6) - Calm, focused
 - **Icon**: ⏱️ - Timer/productivity
 - **Vibe**: Minimalist, distraction-free
 - **Target**: Individual productivity users
 
-### **Chrry AI**
+### Chrry AI
 
 - **Color**: Pink (#E91E63) - Vibrant, creative
 - **Icon**: 🍒 - Playful, memorable
@@ -338,9 +338,9 @@ curl https://yourfocus.com
 
 ---
 
-## 🔐 SEO & Metadata
+## SEO and metadata
 
-### **Focus-Specific Meta Tags**
+### Focus-specific meta tags
 
 ```html
 <!-- When on focus.chrry.ai -->
@@ -355,7 +355,7 @@ curl https://yourfocus.com
 <link rel="canonical" href="https://focus.chrry.ai" />
 ```
 
-### **Chrry AI Meta Tags**
+### Chrry AI meta tags
 
 ```html
 <!-- When on chrry.ai -->
@@ -366,9 +366,9 @@ curl https://yourfocus.com
 
 ---
 
-## 🧪 Testing
+## Testing
 
-### **Test Domain Detection**
+### Test domain detection
 
 ```typescript
 // Test Focus subdomain
@@ -385,7 +385,7 @@ detectsiteModeDomain("chrry.ai"); // → "chrryAI" ✅
 detectsiteModeDomain("vex.chrry.ai"); // → "vex" ✅
 ```
 
-### **Test Site Config**
+### Test site config
 
 ```typescript
 const config = getSiteConfig("focus");
@@ -399,7 +399,7 @@ console.log(config.features.length); // 8
 
 ---
 
-## 📝 Environment Variable Fallback
+## Environment variable fallback
 
 If domain detection fails, you can still use env vars:
 
@@ -415,9 +415,9 @@ detectsiteMode(); // → "focus"
 
 ---
 
-## 🚢 Deployment Checklist
+## Deployment checklist
 
-### **Before Launch**
+### Before launch
 
 - [x] Add "focus" siteMode type
 - [x] Add Focus translations (10 languages)
@@ -426,14 +426,14 @@ detectsiteMode(); // → "focus"
 - [x] Update validModes array
 - [x] Add env var fallback
 
-### **DNS Configuration**
+### DNS configuration
 
 - [ ] Point focus.chrry.ai to server
 - [ ] Point custom domain (if any) to server
 - [ ] Configure SSL certificates
 - [ ] Test HTTPS on all domains
 
-### **Testing**
+### Testing (checklist)
 
 - [ ] Test focus.chrry.ai loads correctly
 - [ ] Test custom domain (if configured)
@@ -442,7 +442,7 @@ detectsiteMode(); // → "focus"
 - [ ] Test translations in all languages
 - [ ] Test SSR with hostname detection
 
-### **Monitoring**
+### Monitoring
 
 - [ ] Set up analytics for focus.chrry.ai
 - [ ] Monitor traffic and conversions
@@ -451,20 +451,20 @@ detectsiteMode(); // → "focus"
 
 ---
 
-## 🎉 Summary
+## Summary
 
-### **What We Built**
+### What was built
 
-✅ **Separate Site Mode** - Focus is independent from Chrry AI
-✅ **Custom Domain Support** - focus.chrry.ai + custom domains
-✅ **Dedicated Metadata** - SEO, OG tags, descriptions
-✅ **Unique Branding** - Blue theme, timer icon, productivity focus
-✅ **8 Feature Highlights** - Timer, tasks, AI, tracking, analytics, goals, insights, deep work
-✅ **10 Language Translations** - Full i18n support
-✅ **Domain Detection** - Automatic routing based on hostname
-✅ **SSR Compatible** - Works with Next.js server-side rendering
+- **Separate Site Mode** - Focus is independent from Chrry AI
+- **Custom Domain Support** - focus.chrry.ai + custom domains
+- **Dedicated Metadata** - SEO, OG tags, descriptions
+- **Unique Branding** - Blue theme, timer icon, productivity focus
+- **8 Feature Highlights** - Timer, tasks, AI, tracking, analytics, goals, insights, deep work
+- **10 Language Translations** - Full i18n support
+- **Domain Detection** - Automatic routing based on hostname
+- **SSR Compatible** - Works with Next.js server-side rendering
 
-### **How to Use**
+### How to use
 
 ```typescript
 // Automatic detection
@@ -477,7 +477,7 @@ const config = getSiteConfig(hostname);
 const config = getSiteConfig("focus");
 ```
 
-### **Domains**
+### Domains
 
 ```
 focus.chrry.ai → Focus app ✅
@@ -485,4 +485,4 @@ getfocus.ai → Focus app ✅ (add custom domain)
 yourfocus.com → Focus app ✅ (add to detection)
 ```
 
-**Focus is now a standalone productivity platform with its own identity!** ⏱️✨
+**Focus is now a standalone productivity platform with its own identity!**
