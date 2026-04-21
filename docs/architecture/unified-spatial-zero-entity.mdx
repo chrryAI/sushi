@@ -681,7 +681,7 @@ export async function syncGuard(requiredVersion: number): Promise<void> {
 
 ## 9. Evolutionary principles (not a rewrite)
 
-| Principle | How We Apply It |
+| Principle | How it applies |
 |-----------|-----------------|
 | **Keep existing routes** | `server-loader.ts` continues to SSR; Zero hydrates client-side. |
 | **Drizzle stays king** | `packages/machine/schema.ts` is still the source of truth; `drizzle-zero` generates from it. |
@@ -695,8 +695,8 @@ export async function syncGuard(requiredVersion: number): Promise<void> {
 ## 10. 30-second summary for stakeholders
 
 1. **What changes for users?** App switching becomes instant because apps are cached locally via Zero. AI agents remember context across sessions because EntityDB persists semantic memory in the browser.
-2. **What changes for developers?** We introduce two new packages (`@chrryai/entitydb`, `packages/agent`) and rewrite `AppLink` to read from Zero. Everything else stays.
-3. **What changes for DevOps?** We add a `zero-cache` container to Docker Compose and enable Postgres logical replication.
+2. **What changes for developers?** Two new packages (`@chrryai/entitydb`, `packages/agent`) are introduced and `AppLink` is rewritten to read from Zero. Everything else stays.
+3. **What changes for DevOps?** A `zero-cache` container is added to Docker Compose and Postgres logical replication is enabled.
 4. **What's the payoff?** Sub-50ms app switching, offline-capable AI agents, and a patented spatial navigation system that actually has a local reactive database underneath it instead of HTTP round-trips.
 
 ---

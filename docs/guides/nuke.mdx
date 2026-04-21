@@ -1,5 +1,5 @@
 ---
-title: "Watermelon Machine deployment"
+title: "Nuke deployment"
 description: "Container environment setup and Dokploy deployment guide for the Watermelon Machine stack."
 ---
 
@@ -49,13 +49,13 @@ pnpm nuke
 
 | Service | Name | Port | Description | Type |
 |---------|------|------|-------------|------|
-| 🖥️ | **machine** | 3000/3001 | Main App (Donut + API) | App |
-| 🦛 | **hippo** | 5432 | PostgreSQL Main DB | Database |
-| 🧇 | **waffles** | 5432 | PostgreSQL E2E Test | Database |
-| 🍒 | **cherry** | 6379 | Redis Cache | Cache |
-| 🍑 | **peach** | 9000 | MinIO S3 Storage | Storage |
-| 🔷 | **vex** | 6379 | FalkorDB Graph | Cache |
-| 📧 | **mailhog** | 8025 | Email Testing | Utils |
+| Machine | **machine** | 3000/3001 | Main App (Donut + API) | App |
+| Hippo | **hippo** | 5432 | PostgreSQL Main DB | Database |
+| Waffles | **waffles** | 5432 | PostgreSQL E2E Test | Database |
+| Cherry | **cherry** | 6379 | Redis Cache | Cache |
+| Peach | **peach** | 9000 | MinIO S3 Storage | Storage |
+| Vex | **vex** | 6379 | FalkorDB Graph | Cache |
+| Mailhog | **mailhog** | 8025 | Email Testing | Utils |
 
 ## Machine dashboard
 
@@ -123,11 +123,11 @@ pnpm dev
 
 | Port | Service | Public |
 |------|---------|--------|
-| 3000 | 🍩 Donut Web UI | ✅ Yes |
-| 3001 | 🔌 API | ✅ Yes |
-| 5432 | 🦛 Hippo | ❌ Internal |
-| 5433 | 🧇 Waffles | ❌ Internal |
-| 6379 | 🍒 Cherry | ❌ Internal |
-| 9000 | 🍑 Peach | ❌ Internal |
-| 6380 | 🔷 Vex | ❌ Internal |
-| 8025 | 📧 Mailhog | ✅ Optional |
+| 3000 | Donut Web UI | Yes |
+| 3001 | API | Yes |
+| 5432 | Hippo | Internal |
+| 5433 | Waffles | Internal |
+| 6379 | Cherry | Internal |
+| 9000 | Peach | Internal |
+| 6380 | Vex | Internal |
+| 8025 | Mailhog | Optional |
