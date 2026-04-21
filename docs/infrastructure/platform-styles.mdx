@@ -7,7 +7,7 @@ description: "Auto-mapping className to React Native styles using a style regist
 
 Your platform primitives now automatically convert `className` to React Native styles on native platforms!
 
-## How It Works
+## How it works
 
 1. **Style Registry**: All `.styles.ts` files are registered in `PlatformProvider`
 2. **Auto-mapping**: When you use `className`, it automatically maps to the corresponding style object
@@ -43,9 +43,9 @@ function MyComponent() {
 }
 ```
 
-## What Gets Mapped
+## What gets mapped
 
-### CSS Module Classes
+### CSS module classes
 
 ```tsx
 // App.styles.ts
@@ -61,7 +61,7 @@ export const AppStyles = {
 <Div className="app"> // ← Automatically maps to AppStyles.app on native
 ```
 
-### Utility Classes
+### Utility classes
 
 Supported utilities:
 
@@ -100,13 +100,13 @@ export function App() {
 
 ## Benefits
 
-✅ **Write once, run everywhere** - Same code for web and native
-✅ **No platform-specific files** - No `.native.tsx` or `.web.tsx` needed
-✅ **Type-safe** - Full TypeScript support
-✅ **Performant** - Results are cached
-✅ **Flexible** - Mix CSS modules with utility classes
+**Write once, run everywhere** - Same code for web and native
+**No platform-specific files** - No `.native.tsx` or `.web.tsx` needed
+**Type-safe** - Full TypeScript support
+**Performant** - Results are cached
+**Flexible** - Mix CSS modules with utility classes
 
-## Registering Multiple Style Modules
+## Registering multiple style modules
 
 ```tsx
 import { AppStyles } from "./App.styles";

@@ -3,11 +3,11 @@ title: "Security policy"
 description: "Security practices, vulnerability reporting, and best practices for the Vex platform."
 ---
 
-## Reporting a Vulnerability
+## Reporting a vulnerability
 
 We take the security of Vex seriously. If you discover a security vulnerability, please report it responsibly.
 
-### How to Report
+### How to report
 
 **Email**: iliyan@chrry.ai
 
@@ -20,9 +20,9 @@ Please include:
 
 We'll respond within 48 hours and work with you to address the issue.
 
-## Security Best Practices
+## Security best practices
 
-### Environment Variables
+### Environment variables
 
 **Never commit sensitive data!**
 
@@ -31,7 +31,7 @@ We'll respond within 48 hours and work with you to address the issue.
 - Keep your API keys and secrets in `.env.local`
 - Rotate keys if accidentally exposed
 
-### Secret Scanning (Pre-Commit Hook)
+### Secret scanning (pre-commit hook)
 
 We use **Gitleaks** to automatically scan for secrets before every commit.
 
@@ -58,7 +58,7 @@ SKIP=gitleaks git commit -m "your message"
 
 **Note**: All bypasses are logged. If you bypass the check, ensure the secret is properly handled before pushing.
 
-### API Keys
+### API keys
 
 When using Vex:
 
@@ -74,7 +74,7 @@ When using Vex:
 - Regularly backup your data
 - Restrict database access by IP
 
-### Production Deployment
+### Production deployment
 
 - Set `NODE_ENV=production`
 - Enable CORS restrictions
@@ -83,16 +83,16 @@ When using Vex:
 - Enable security headers
 - Rate limit API endpoints
 
-## Known Security Considerations
+## Known security considerations
 
-### AI Model Integration
+### AI model integration
 
 - User-provided API keys are stored encrypted
 - Custom model URLs are validated
 - Rate limiting prevents abuse
 - Audit logs track usage
 
-### Data Privacy
+### Data privacy
 
 - Users control their data
 - Incognito mode available

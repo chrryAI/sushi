@@ -7,7 +7,7 @@ This integration allows real-time tracking of code quality metrics and issues fr
 
 ## Setup
 
-### 1. Environment Variables
+### 1. Environment variables
 
 Add these to your `.env` file:
 
@@ -30,7 +30,7 @@ SONAR_WEBHOOK_SECRET=your_random_secret_here
 openssl rand -hex 32
 ```
 
-### 2. Configure Webhook in SonarCloud
+### 2. Configure webhook in SonarCloud
 
 1. Go to your project in SonarCloud
 2. Navigate to **Administration > Webhooks**
@@ -40,7 +40,7 @@ openssl rand -hex 32
    - **URL**: `https://your-api-domain.com/api/sonarWebhook`
    - **Secret**: Use the same value as `SONAR_WEBHOOK_SECRET`
 
-### 3. Test the Webhook
+### 3. Test the webhook
 
 After configuration, trigger an analysis:
 
@@ -56,7 +56,7 @@ Check your API logs for:
 ✅ Stored X metrics for chrryAI_vex
 ```
 
-## Webhook Payload
+## Webhook payload
 
 The webhook receives notifications for:
 
@@ -64,7 +64,7 @@ The webhook receives notifications for:
 - **Quality gate status changes** - Logs status (OK/ERROR)
 - **Issue updates** - Updates issue status in database
 
-### Example Payload
+### Example payload
 
 ```json
 {
@@ -103,20 +103,20 @@ The webhook uses **HMAC-SHA256** signature verification to ensure authenticity:
 
 ## Monitoring
 
-### View Webhook Deliveries in SonarCloud
+### View webhook deliveries in SonarCloud
 
 1. Go to **Administration > Webhooks**
 2. Click the three-dot menu on your webhook
 3. Select **Recent Deliveries**
 
-### Database Tables
+### Database tables
 
 Metrics and issues are stored in:
 
 - `sonar_metrics` - Historical metrics snapshots
 - `sonar_issues` - Current and resolved issues
 
-### Query Examples
+### Query examples
 
 ```sql
 -- Latest metrics for project
@@ -169,7 +169,7 @@ If metrics aren't being stored, check:
 2. Project key matches (`chrryAI_vex`)
 3. API logs for fetch errors
 
-## Migration from Polling
+## Migration from polling
 
 The old `sonarSync.ts` cron job can be disabled once webhooks are working:
 
@@ -184,12 +184,12 @@ The old `sonarSync.ts` cron job can be disabled once webhooks are working:
 
 Webhooks are more efficient because they:
 
-- ✅ Provide real-time updates (no delay)
-- ✅ Reduce API calls (no polling)
-- ✅ Lower rate limit usage
-- ✅ Capture exact analysis timestamps
+- Provide real-time updates (no delay)
+- Reduce API calls (no polling)
+- Lower rate limit usage
+- Capture exact analysis timestamps
 
-## Adding Custom Properties
+## Adding custom properties
 
 You can pass custom properties to the webhook payload:
 
@@ -207,7 +207,7 @@ These appear in the webhook payload:
 }
 ```
 
-## Future Enhancements
+## Future enhancements
 
 - [ ] Send Slack/Discord notifications on quality gate failures
 - [ ] Create GitHub issues for critical security vulnerabilities

@@ -10,13 +10,13 @@ description: "Architecture proposal fusing spatial navigation, Rocicorp Zero syn
 
 ---
 
-## 1. The Vision in One Sentence
+## 1. The vision in one sentence
 
 > The Tesseract architecture fuses the existing **Spatial Navigation System** (patent-pending), **Rocicorp Zero** (already generating drizzle-zero schema), **EntityDB** (browser-side vector embeddings via Transformers.js), and **Real-Time AI Agents** (Sensei, Student, Spatial) into a single cohesive runtime where every pixel, every database row, and every AI thought shares the same 4D coordinate system.
 
 ---
 
-## 2. Text-Based System Overview
+## 2. Text-based system overview
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗
@@ -86,9 +86,9 @@ description: "Architecture proposal fusing spatial navigation, Rocicorp Zero syn
 
 ---
 
-## 3. How the Four Systems Interact
+## 3. How the four systems interact
 
-### 3.1 Interaction Matrix
+### 3.1 Interaction matrix
 
 | Actor | Touches Spatial | Touches Zero | Touches EntityDB | Touches Agents |
 |-------|----------------|--------------|------------------|----------------|
@@ -99,7 +99,7 @@ description: "Architecture proposal fusing spatial navigation, Rocicorp Zero syn
 | **Student agent** | Reviews `z` axis files | Reads code via ZQL | Embeds PR diff | Follows Sensei |
 | **Spatial agent** | Optimizes routes | Reads nav analytics | — | Coordinates agents |
 
-### 3.2 Unified Coordinate System
+### 3.2 Unified coordinate system
 
 Every entity in the system carries a **4D coordinate**:
 
@@ -126,9 +126,9 @@ interface TesseractEntity {
 
 ---
 
-## 4. Data Flow Diagrams
+## 4. Data flow diagrams
 
-### 4.1 User → Spatial Nav → Zero → Postgres
+### 4.1 User → spatial nav → Zero → Postgres
 
 ```
 User clicks "Atlas" in navigation bar
@@ -180,7 +180,7 @@ User clicks "Atlas" in navigation bar
                   └────────────────┘
 ```
 
-### 4.2 User → Agent → EntityDB → Local Memory
+### 4.2 User → agent → EntityDB → local memory
 
 ```
 User sends prompt to Sensei
@@ -227,9 +227,9 @@ User sends prompt to Sensei
 
 ---
 
-## 5. Specific Integration Points
+## 5. Specific integration points
 
-### 5.1 AppLink + Zero (Replacing SWR for Entity Data)
+### 5.1 AppLink + Zero (replacing SWR for entity data)
 
 **Current state:** `apps/chrry/src/server-loader.ts` calls `getApp()` over HTTP; client may SWR-cache apps.
 
@@ -294,7 +294,7 @@ export function AppLink({ targetAppId, children }: AppLinkProps) {
 
 ---
 
-### 5.2 Agent Memory Persistence in EntityDB
+### 5.2 Agent memory persistence in EntityDB
 
 Agents require a memory substrate that survives page reloads, works offline, and supports semantic retrieval. EntityDB is that substrate.
 
@@ -377,7 +377,7 @@ export const entityDbSchema = {
 
 ---
 
-### 5.3 DNA Threading Connected to Zero Mutations
+### 5.3 DNA threading connected to Zero mutations
 
 The `.sushi` directory (Z-axis) is both a filesystem artifact and a database mutation log. Zero is the authoritative replication layer.
 
@@ -437,7 +437,7 @@ export function useDnaThread(appId: string) {
 
 ---
 
-### 5.4 Spatial Coordinates Mapped to Zero Queries
+### 5.4 Spatial coordinates mapped to Zero queries
 
 Every `{x, y, z}` tuple can be turned into a constrained ZQL query range.
 
@@ -485,9 +485,9 @@ const entities = useQuery(
 
 ---
 
-## 6. Migration Path from Current SWR-Heavy Architecture
+## 6. Migration path from current SWR-heavy architecture
 
-### Phase 1: Foundation (Weeks 1–2)
+### Phase 1: foundation (weeks 1–2)
 
 | Task | Owner | Files |
 |------|-------|-------|
@@ -495,7 +495,7 @@ const entities = useQuery(
 | Generate full Zero schema from Drizzle via existing `drizzle-zero` pipeline | Platform | `packages/machine/zero-schema.gen.ts` (already exists!) |
 | Add `@rocicorp/zero` to `apps/chrry` and `apps/extension` | Frontend | `apps/chrry/package.json` |
 
-### Phase 2: Seed EntityDB (Weeks 2–3)
+### Phase 2: seed EntityDB (weeks 2–3)
 
 | Task | Owner | Files |
 |------|-------|-------|
@@ -503,7 +503,7 @@ const entities = useQuery(
 | Pre-compute embeddings for all `apps` and `stores` during build | Build | `packages/entitydb/scripts/seed.ts` |
 | Ship WASM SIMD blob as static asset | Build | `apps/chrry/public/wasm/` |
 
-### Phase 3: AppLink Zero Migration (Weeks 3–4)
+### Phase 3: AppLink Zero migration (weeks 3–4)
 
 | Task | Owner | Files |
 |------|-------|-------|
@@ -511,7 +511,7 @@ const entities = useQuery(
 | Add `useSpatial` hook that binds coordinate → Zero query | Frontend | `packages/pepper/src/hooks/useSpatial.ts` |
 | Keep SWR for auth/session; mark entity hooks as `@deprecated` | Frontend | incremental |
 
-### Phase 4: Agent Onboarding (Weeks 4–6)
+### Phase 4: agent onboarding (weeks 4–6)
 
 | Task | Owner | Files |
 |------|-------|-------|
@@ -519,7 +519,7 @@ const entities = useQuery(
 | Port Student PR review to read `.sushi` via Zero | Agent | `packages/agent/src/student/`
 | Add Spatial agent route-optimizer that queries nav analytics | Agent | `packages/agent/src/spatial/` |
 
-### Phase 5: Production Hardening (Weeks 6–8)
+### Phase 5: production hardening (weeks 6–8)
 
 | Task | Owner | Files |
 |------|-------|-------|
@@ -529,7 +529,7 @@ const entities = useQuery(
 
 ---
 
-## 7. Proposed File Structure
+## 7. Proposed file structure
 
 ```
 sushi/
@@ -615,9 +615,9 @@ sushi/
 
 ---
 
-## 8. Key Risks and Mitigations
+## 8. Key risks and mitigations
 
-### Risk 1: Zero Subscription Storm (Performance)
+### Risk 1: Zero subscription storm (performance)
 
 **Problem:** Every `AppLink` and every agent observer opens a ZQL subscription. At 1000 concurrent users with 10 ZQL queries each, the WebSocket fan-out could overwhelm `zero-cache`.
 
@@ -633,7 +633,7 @@ const rootSub = z.query.apps
   .related("dnaMutations", (q) => q.limit(50)) // capped
 ```
 
-### Risk 2: EntityDB Cold Start (Embedding Latency)
+### Risk 2: EntityDB cold start (embedding latency)
 
 **Problem:** Transformers.js model download (~80–200 MB) on first page load blocks agent readiness.
 
@@ -642,7 +642,7 @@ const rootSub = z.query.apps
 - Warm up the pipeline during the idle period after initial paint.
 - Provide a server-side fallback: if EntityDB is cold, hit the `/api/semantic-search` route (existing server embeddings via `pgvector`) and backfill EntityDB asynchronously.
 
-### Risk 3: Z-Axis Mutation Log Growth (Storage)
+### Risk 3: Z-axis mutation log growth (storage)
 
 **Problem:** `.sushi/mutations/` and the `dnaMutations` table grow indefinitely.
 
@@ -650,7 +650,7 @@ const rootSub = z.query.apps
 - Implement a **DNA compression** pass: after 1000 mutations, archive old rows to cold S3 storage and replace them with a single `epoch` checkpoint row.
 - The filesystem watcher only keeps the last 100 `.sushi/mutations/*.json` files; older ones are moved to `.sushi/mutations/archive/`.
 
-### Risk 4: Offline-First Data Divergence
+### Risk 4: Offline-first data divergence
 
 **Problem:** Zero supports optimistic mutations, but agents may act on stale EntityDB memory after coming back online.
 
@@ -668,7 +668,7 @@ export async function syncGuard(requiredVersion: number): Promise<void> {
 }
 ```
 
-### Risk 5: Cross-Platform Agent Memory (Extension vs. Web PWA)
+### Risk 5: Cross-platform agent memory (extension vs. Web PWA)
 
 **Problem:** `apps/extension` runs in a service-worker context where IndexedDB and WASM SIMD access are limited.
 
@@ -679,7 +679,7 @@ export async function syncGuard(requiredVersion: number): Promise<void> {
 
 ---
 
-## 9. Evolutionary Principles (Not a Rewrite)
+## 9. Evolutionary principles (not a rewrite)
 
 | Principle | How We Apply It |
 |-----------|-----------------|
@@ -692,7 +692,7 @@ export async function syncGuard(requiredVersion: number): Promise<void> {
 
 ---
 
-## 10. 30-Second Summary for Stakeholders
+## 10. 30-second summary for stakeholders
 
 1. **What changes for users?** App switching becomes instant because apps are cached locally via Zero. AI agents remember context across sessions because EntityDB persists semantic memory in the browser.
 2. **What changes for developers?** We introduce two new packages (`@chrryai/entitydb`, `packages/agent`) and rewrite `AppLink` to read from Zero. Everything else stays.

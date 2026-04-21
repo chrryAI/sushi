@@ -11,15 +11,15 @@ This system automatically converts SCSS files to cross-platform TypeScript style
 
 ## Writing SCSS
 
-### File Naming Convention
+### File naming convention
 
 ```
 ComponentName.module.scss  →  ComponentName.styles.ts
 ```
 
-### Supported Features
+### Supported features
 
-#### 1. Basic Styles
+#### 1. Basic styles
 
 ```scss
 .container {
@@ -30,7 +30,7 @@ ComponentName.module.scss  →  ComponentName.styles.ts
 }
 ```
 
-#### 2. Interactive States
+#### 2. Interactive states
 
 ```scss
 .button {
@@ -54,7 +54,7 @@ ComponentName.module.scss  →  ComponentName.styles.ts
 }
 ```
 
-#### 3. CSS Variables
+#### 3. CSS variables
 
 ```scss
 .card {
@@ -64,7 +64,7 @@ ComponentName.module.scss  →  ComponentName.styles.ts
 }
 ```
 
-#### 4. Responsive Fonts
+#### 4. Responsive fonts
 
 ```scss
 .title {
@@ -72,7 +72,7 @@ ComponentName.module.scss  →  ComponentName.styles.ts
 }
 ```
 
-#### 5. toRem.toRem() Function
+#### 5. toRem.toRem() function
 
 ```scss
 .box {
@@ -81,9 +81,9 @@ ComponentName.module.scss  →  ComponentName.styles.ts
 }
 ```
 
-## Conversion Commands
+## Conversion commands
 
-### Manual Conversion
+### Manual conversion
 
 ```bash
 # Convert single file
@@ -96,7 +96,7 @@ npm run s:all
 npm run s:changed
 ```
 
-### Automatic Conversion
+### Automatic conversion
 
 The pre-commit hook automatically converts changed SCSS files:
 
@@ -107,9 +107,9 @@ git commit -m "Update button styles"
 # ✅ Stages the generated .styles.ts file
 ```
 
-## Generated Output
+## Generated output
 
-### Non-Interactive Styles (Flat Structure)
+### Non-interactive styles (flat structure)
 
 Input:
 
@@ -133,7 +133,7 @@ export const ComponentStyleDefs = {
 export const useComponentStyles = createStyleHook<ComponentStylesHook>(ComponentStyles);
 ```
 
-### Interactive Styles (Nested Structure)
+### Interactive styles (nested structure)
 
 Input:
 
@@ -165,9 +165,9 @@ export const useComponentStyles = (): ComponentStylesHook => {
 };
 ```
 
-## Using Generated Styles
+## Using generated styles
 
-### Basic Usage
+### Basic usage
 
 ```typescript
 import { useComponentStyles } from './Component.styles'
@@ -183,7 +183,7 @@ function MyComponent() {
 }
 ```
 
-### Interactive Styles
+### Interactive styles
 
 ```typescript
 import { useComponentStyles } from './Component.styles'
@@ -202,7 +202,7 @@ function MyButton() {
 }
 ```
 
-### Accessing State
+### Accessing state
 
 ```typescript
 const styles = useComponentStyles();
@@ -214,7 +214,7 @@ console.log(styles.button.state.isFocused); // boolean
 
 ## Testing
 
-### Run Tests
+### Run tests
 
 ```bash
 # Run SCSS converter tests
@@ -224,20 +224,20 @@ npm test
 npm run test:scss
 ```
 
-### Test File
+### Test file
 
 The test file `packages/donut/__tests__/TestComponent.module.scss` contains comprehensive examples of all supported features.
 
-### What Gets Tested
+### What gets tested
 
-- ✅ Basic style conversion
-- ✅ toRem.toRem() → numbers
-- ✅ CSS variables → theme markers
-- ✅ Interactive states detection
-- ✅ Responsive font sizes
-- ✅ kebab-case → camelCase
-- ✅ TypeScript types generation
-- ✅ Proper structure (flat vs nested)
+- Basic style conversion
+- toRem.toRem() → numbers
+- CSS variables → theme markers
+- Interactive states detection
+- Responsive font sizes
+- kebab-case → camelCase
+- TypeScript types generation
+- Proper structure (flat vs nested)
 
 ## Troubleshooting
 
@@ -304,7 +304,7 @@ createStyleHook / useInteractiveStyles
 React Component
 ```
 
-## Best Practices
+## Best practices
 
 1. **Always use .module.scss extension** for component styles
 2. **Use CSS variables** for theme colors (e.g., `var(--accent-6)`)
@@ -315,14 +315,14 @@ React Component
 
 ## Benefits
 
-- ✅ **Cross-platform** - Works on web and React Native
-- ✅ **Type-safe** - Full TypeScript support
-- ✅ **Theme-aware** - Automatic light/dark mode
-- ✅ **Responsive** - Viewport units work everywhere
-- ✅ **Interactive** - Hover/active/focus states on native
-- ✅ **Performant** - Cached with debounced resize
-- ✅ **Maintainable** - Write SCSS, get TypeScript
-- ✅ **Tested** - Comprehensive test coverage
+- **Cross-platform** - Works on web and React Native
+- **Type-safe** - Full TypeScript support
+- **Theme-aware** - Automatic light/dark mode
+- **Responsive** - Viewport units work everywhere
+- **Interactive** - Hover/active/focus states on native
+- **Performant** - Cached with debounced resize
+- **Maintainable** - Write SCSS, get TypeScript
+- **Tested** - Comprehensive test coverage
 
 ## Examples
 

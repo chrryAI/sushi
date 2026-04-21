@@ -7,9 +7,9 @@ description: "How Redis caching is integrated into getUser() and getGuest() func
 
 Added Redis caching layer to `getUser()` and `getGuest()` functions to dramatically reduce database load and improve API response times.
 
-## What Changed
+## What changed
 
-### 1. Cache Integration in `getUser()`
+### 1. Cache integration in `getUser()`
 
 **Before:**
 
@@ -60,7 +60,7 @@ export const getUser = async ({ email, id, ... }) => {
 }
 ```
 
-### 2. Cache Integration in `getGuest()`
+### 2. Cache integration in `getGuest()`
 
 **Same pattern:**
 
@@ -101,7 +101,7 @@ export const getGuest = async ({ fingerprint, id, ... }) => {
 }
 ```
 
-### 3. Cache Invalidation (Already Implemented)
+### 3. Cache invalidation (already implemented)
 
 **`updateUser()`:**
 
@@ -139,18 +139,18 @@ export const updateGuest = async (guest: guest) => {
 // Both already invalidate cache on delete ✅
 ```
 
-## Cache Strategy
+## Cache strategy
 
-### What Gets Cached
+### What gets cached
 
-✅ **Simple lookups only:**
+**Simple lookups only:**
 
 - `getUser({ email })` → Cached
 - `getUser({ id })` → Cached
 - `getGuest({ fingerprint })` → Cached
 - `getGuest({ id })` → Cached
 
-❌ **Complex lookups NOT cached:**
+**Complex lookups NOT cached:**
 
 - `getUser({ password, email })` → Not cached (auth check)
 - `getUser({ stripeSubscriptionId })` → Not cached (payment lookup)
@@ -171,7 +171,7 @@ const CACHE_TTL_GUEST = 60 * 2; // 2 minutes
 - Long enough to avoid most duplicate queries
 - Matches existing cache.ts TTL configuration
 
-### Cache Keys
+### Cache keys
 
 ```typescript
 // User cache keys
@@ -183,9 +183,9 @@ cacheKeys.guest(id); // "guest:{id}"
 cacheKeys.guestByFingerprint(fingerprint); // "guest:fp:{fingerprint}"
 ```
 
-## Performance Impact
+## Performance impact
 
-### Before (No Cache)
+### Before (no cache)
 
 ```
 API Request Flow:
@@ -197,7 +197,7 @@ Every request = 1 DB query
 1000 requests/day = 1000 DB queries
 ```
 
-### After (With Cache)
+### After (with cache)
 
 ```
 API Request Flow:
@@ -210,7 +210,7 @@ Every request = 1 Redis check (fast)
 1000 requests/day = 50 DB queries + 950 cache hits
 ```
 
-### Expected Improvements
+### Expected improvements
 
 **Response Times:**
 
@@ -229,9 +229,9 @@ Every request = 1 Redis check (fast)
 - Snappier interactions
 - Better perceived performance
 
-## Type Safety
+## Type safety
 
-### Generic Cache Functions
+### Generic cache functions
 
 ```typescript
 // Type-safe cache get
@@ -241,7 +241,7 @@ const cached = await getCache<CachedUserData>(cacheKey);
 await setCache(cacheKey, userData, CACHE_TTL_USER);
 ```
 
-### Inferred Return Types
+### Inferred return types
 
 ```typescript
 // Automatically infers the return type of getUser()
@@ -253,14 +253,14 @@ type CachedGuestData = Awaited<ReturnType<typeof getGuest>>;
 
 **Benefits:**
 
-- ✅ Full TypeScript type checking
-- ✅ No manual type definitions needed
-- ✅ Stays in sync with function changes
-- ✅ IDE autocomplete works perfectly
+- Full TypeScript type checking
+- No manual type definitions needed
+- Stays in sync with function changes
+- IDE autocomplete works perfectly
 
-## Cache Infrastructure (Already Exists)
+## Cache infrastructure (already exists)
 
-### Redis Client
+### Redis client
 
 ```typescript
 // /packages/machine/src/redis.ts
@@ -272,7 +272,7 @@ export const redis = new Redis({
 });
 ```
 
-### Cache Helpers
+### Cache helpers
 
 ```typescript
 // /packages/machine/src/cache.ts
@@ -297,7 +297,7 @@ export const cacheKeys = {
 
 ## Testing
 
-### Enable Cache in Development
+### Enable cache in development
 
 ```bash
 # .env
@@ -306,7 +306,7 @@ ENABLE_CACHE=true
 
 By default, cache is disabled in development for easier debugging.
 
-### Monitor Cache Performance
+### Monitor cache performance
 
 Check Redis logs to see cache hits/misses:
 
@@ -317,7 +317,7 @@ Check Redis logs to see cache hits/misses:
 # 💾 Cached: user:email:newuser@example.com
 ```
 
-### Verify Invalidation
+### Verify invalidation
 
 ```typescript
 // Update user
@@ -330,9 +330,9 @@ await updateUser({ id: userId, name: "New Name" });
 // 3. Cache the new data
 ```
 
-## API Endpoints That Benefit
+## API endpoints that benefit
 
-### High-Traffic Endpoints
+### High-traffic endpoints
 
 ```
 ✅ /api/session (every page load)
@@ -345,7 +345,7 @@ await updateUser({ id: userId, name: "New Name" });
 
 All these endpoints call `getUser()` or `getGuest()` internally.
 
-### Cache Hit Rate Expectations
+### Cache hit rate expectations
 
 ```
 Session endpoint: 95%+ hit rate
@@ -362,9 +362,9 @@ Guest data: 85%+ hit rate
 - Fingerprint stays same per session
 ```
 
-## Monitoring & Metrics
+## Monitoring and metrics
 
-### Add to Admin Dashboard
+### Add to admin dashboard
 
 ```typescript
 // /api/admin/cache-stats/route.ts
@@ -387,7 +387,7 @@ export async function GET() {
 }
 ```
 
-### Key Metrics to Track
+### Key metrics to track
 
 ```
 1. Cache hit rate (target: >90%)
@@ -396,9 +396,9 @@ export async function GET() {
 4. Database query count (should drop 90%+)
 ```
 
-## Next Steps
+## Next steps
 
-### Phase 1: Deploy & Monitor (Week 1)
+### Phase 1: deploy and monitor (week 1)
 
 ```
 ✅ Code is ready
@@ -408,7 +408,7 @@ export async function GET() {
 □ Verify performance gains
 ```
 
-### Phase 2: Expand Caching (Week 2-3)
+### Phase 2: expand caching (week 2-3)
 
 ```
 □ Cache app configurations
@@ -417,7 +417,7 @@ export async function GET() {
 □ Cache translations (already done)
 ```
 
-### Phase 3: Optimize (Week 4+)
+### Phase 3: optimize (week 4+)
 
 ```
 □ Adjust TTLs based on data
@@ -426,11 +426,11 @@ export async function GET() {
 □ Implement cache analytics
 ```
 
-## Rollback Plan
+## Rollback plan
 
 If issues arise:
 
-### Option 1: Disable Cache
+### Option 1: disable cache
 
 ```bash
 # .env
@@ -439,14 +439,14 @@ ENABLE_CACHE=false
 
 Everything falls back to direct DB queries immediately.
 
-### Option 2: Increase TTL
+### Option 2: increase TTL
 
 ```typescript
 // If stale data is an issue
 const CACHE_TTL_USER = 60 * 1; // 1 minute instead of 2
 ```
 
-### Option 3: Selective Caching
+### Option 3: selective caching
 
 ```typescript
 // Only cache in production
@@ -455,21 +455,21 @@ const isSimpleLookup = (email || id) && !password && process.env.NODE_ENV === "p
 
 ## Summary
 
-✅ **Implemented:**
+**Implemented:**
 
 - Type-safe Redis caching for `getUser()` and `getGuest()`
 - Automatic cache invalidation on updates/deletes
 - Smart cache key generation
 - Production-ready with dev toggle
 
-✅ **Benefits:**
+**Benefits:**
 
 - 10-50x faster API responses (cached)
 - 95% reduction in database queries
 - Better user experience
 - Lower infrastructure costs
 
-✅ **Zero Breaking Changes:**
+**Zero Breaking Changes:**
 
 - Same function signatures
 - Same return types

@@ -7,9 +7,9 @@ description: "N-dimensional spatial navigation system enabling seamless movement
 
 The Wine ecosystem introduces a revolutionary **N-dimensional spatial navigation system** that enables seamless movement between **Stores (Universes)** and **Apps (Tools)** while maintaining perfect spatial context. This isn't just app switching—it's dimensional navigation through an interconnected AI ecosystem.
 
-## Core Concepts
+## Core concepts
 
-### 1. Store (Universe) > App (Tool) Hierarchy
+### 1. Store (universe) > App (tool) hierarchy
 
 **Stores are universes, Apps are locations within them.**
 
@@ -46,9 +46,9 @@ interface Store {
 - **Istanbul** (`istanbul.chrry.ai`) - City guide
 - **Tokyo** (`tokyo.chrry.ai`) - City guide
 
-### 2. The Three Navigation States
+### 2. The three navigation states
 
-#### State 1: Store Home (Base Position)
+#### State 1: store home (base position)
 
 ```
 Location: chrry.ai/
@@ -57,7 +57,7 @@ Visible: [Vex] [Focus] [Atlas] [Bloom] [Vault] [Peach] etc.
 Hidden: Chrry (you're here)
 ```
 
-#### State 2: In-Store (Deep Link Active)
+#### State 2: in-store (deep link active)
 
 ```
 Location: chrry.ai/vex
@@ -67,7 +67,7 @@ Note: Chrry button appears (back to store home)
       Vex is now active but Chrry store context maintained
 ```
 
-#### State 3: Cross-Store (Dimensional Jump)
+#### State 3: cross-store (dimensional jump)
 
 ```
 Location: vex.chrry.ai/
@@ -77,9 +77,9 @@ Hidden: Vex (current location)
 Note: Full context switch - you're in Vex's universe now
 ```
 
-## Navigation Rules
+## Navigation rules
 
-### Rule 1: Same-Store Navigation (Context Maintained)
+### Rule 1: same-store navigation (context maintained)
 
 When clicking an app **within the same store domain**:
 
@@ -104,7 +104,7 @@ Result: Navigate to chrry.ai/sushi
         Still in Chrry universe
 ```
 
-### Rule 2: Cross-Store Navigation (Context Switch)
+### Rule 2: cross-store navigation (context switch)
 
 When clicking an app from a **different store**:
 
@@ -130,7 +130,7 @@ Result: Navigate to vex.chrry.ai/
         Full context switch to Vex universe
 ```
 
-### Rule 3: Chrry is the Universal Anchor
+### Rule 3: Chrry is the universal anchor
 
 ```typescript
 // Chrry always resets to home base
@@ -141,7 +141,7 @@ if (clickedStore === "chrry") {
 }
 ```
 
-## Button Morphing Logic
+## Button morphing logic
 
 **The genius: Buttons tell you where you are by what's missing**
 
@@ -174,9 +174,9 @@ Missing: None (Sushi isn't a store)
 Back: Chrry button appears (return to store home)
 ```
 
-## Real User Journeys
+## Real user journeys
 
-### Journey 1: Grape Discovery → App Usage
+### Journey 1: Grape discovery → app usage
 
 ```
 1. Start: chrry.ai/
@@ -195,7 +195,7 @@ Back: Chrry button appears (return to store home)
    Full circle: Discovery → Usage → Home
 ```
 
-### Journey 2: Cross-Beast Integration
+### Journey 2: cross-beast integration
 
 ```
 1. Coding in Sushi: sushi.chrry.ai/
@@ -210,7 +210,7 @@ Back: Chrry button appears (return to store home)
    Context: Preserved, continue coding
 ```
 
-### Journey 3: Deep Nesting
+### Journey 3: deep nesting
 
 ```
 1. Start: chrry.ai/
@@ -220,9 +220,9 @@ Back: Chrry button appears (return to store home)
 5. Click Chrry → chrry.ai/ (universal reset)
 ```
 
-## Technical Implementation
+## Technical implementation
 
-### State Management
+### State management
 
 ```typescript
 interface NavigationState {
@@ -255,7 +255,7 @@ function handleNavigation(targetStore: Store, targetPath?: string) {
 }
 ```
 
-### URL Structure
+### URL structure
 
 ```
 Store Home:     vex.chrry.ai/
@@ -265,16 +265,16 @@ Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
 
 **Key Insight:** The domain tells you which universe you're in, the path tells you which tool you're using.
 
-## Analytics & Tracking
+## Analytics and tracking
 
-### Current Events (Last 24h)
+### Current events (last 24h)
 
 - `app`: 135 events (app switches)
 - `store_view`: 9 events (store views)
 - `store_app_selected`: 9 events (store selections)
 - `grape_app_select`: 9 events (Grape navigation)
 
-### Enhanced Spatial Tracking
+### Enhanced spatial tracking
 
 ```typescript
 // Track dimensional navigation
@@ -291,7 +291,7 @@ Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
 }
 ```
 
-### Metrics to Track
+### Metrics to track
 
 1. **Navigation Depth**: How deep do users nest?
 2. **Store Affinity**: Which stores are used together?
@@ -300,15 +300,15 @@ Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
 5. **Context Switches**: Same-store vs cross-store ratio
 6. **Back Button Usage**: Do users use back paths effectively?
 
-## Design Principles
+## Design principles
 
-### 1. Self-Documenting Interface
+### 1. Self-documenting interface
 
 - **What's visible** = Where you can go
 - **What's missing** = Where you are
 - **What appears** = Where you came from
 
-### 2. Zero Cognitive Load
+### 2. Zero cognitive load
 
 Users never ask:
 
@@ -316,21 +316,21 @@ Users never ask:
 - "How do I go back?" (Previous store button appears)
 - "What can I access?" (Visible buttons show options)
 
-### 3. Infinite Scalability
+### 3. Infinite scalability
 
 - Unlimited stores in the ecosystem
 - Unlimited apps per store
 - Unlimited nesting depth
 - No navigation limits
 
-### 4. Context Preservation
+### 4. Context preservation
 
 - Same-store navigation maintains context
 - Cross-store navigation switches cleanly
 - Back paths always available
 - No getting lost
 
-## The Wine Ecosystem Loop
+## The Wine ecosystem loop
 
 Spatial navigation enables the "beasts feeding each other":
 
@@ -348,7 +348,7 @@ Grape (Promotion)
 
 Each navigation is tracked, analyzed, and used to improve the ecosystem.
 
-## Advantages Over Traditional Navigation
+## Advantages over traditional navigation
 
 | Feature           | Traditional Tabs | Wine Spatial Nav  |
 | ----------------- | ---------------- | ----------------- |
@@ -359,23 +359,23 @@ Each navigation is tracked, analyzed, and used to improve the ecosystem.
 | Cognitive load    | High             | Zero              |
 | Scalability       | Poor             | Infinite          |
 
-## Future Enhancements
+## Future enhancements
 
-### 1. Visual Spatial Memory
+### 1. Visual spatial memory
 
 ```
 Show navigation trail:
 chrry → vex → sushi → [You are here]
 ```
 
-### 2. Smart Suggestions
+### 2. Smart suggestions
 
 ```
 "You often go from Vex → Sushi"
 "Quick jump to Sushi?"
 ```
 
-### 3. Gesture Navigation
+### 3. Gesture navigation
 
 ```
 Swipe left: Back to previous store
@@ -383,7 +383,7 @@ Swipe right: Forward in history
 Pinch: Zoom to store overview
 ```
 
-### 4. Navigation Heatmaps
+### 4. Navigation heatmaps
 
 ```
 Visualize most common paths:
@@ -392,9 +392,9 @@ Vex → Sushi (60% of users)
 Atlas → Peach (40% of users)
 ```
 
-## Implementation Guidelines
+## Implementation guidelines
 
-### For Store Creators
+### For store creators
 
 **1. Choose Your Domain**
 
@@ -424,7 +424,7 @@ trackEvent("spatial_navigation", {
 });
 ```
 
-### For App Developers
+### For app developers
 
 **1. Respect Store Context**
 
@@ -461,11 +461,11 @@ useEffect(() => {
 
 Wine's spatial navigation system is the first truly N-dimensional navigation architecture for AI ecosystems. By treating stores as universes and apps as locations, we've created:
 
-✅ **Intuitive navigation** - Physical spatial metaphor
-✅ **Zero cognitive load** - Self-documenting interface
-✅ **Infinite scalability** - Unlimited stores and apps
-✅ **Perfect context** - Maintained or switched cleanly
-✅ **Analytics-ready** - Every movement tracked
-✅ **Ecosystem integration** - Beasts feeding each other
+**Intuitive navigation** - Physical spatial metaphor
+**Zero cognitive load** - Self-documenting interface
+**Infinite scalability** - Unlimited stores and apps
+**Perfect context** - Maintained or switched cleanly
+**Analytics-ready** - Every movement tracked
+**Ecosystem integration** - Beasts feeding each other
 
 **The result: Users navigate infinite complexity with zero friction.**
