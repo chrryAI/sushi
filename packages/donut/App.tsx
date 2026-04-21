@@ -220,10 +220,12 @@ export default function App({
   const grok = apps.find((app) => app.slug === "grok")
   const pear = apps.find((app) => app.slug === "pear")
   const hippo = apps.find((app) => app.slug === "hippo")
+  const peach = apps.find((app) => app.slug === "peach")
 
   const isBlossom = app?.store?.id === chrry?.store?.id
   const isLifeOS = app?.store?.id === vex?.store?.id
   const isSushi = app?.store?.id === sushi?.store?.id
+  const isSwarm = app?.store?.id === peach?.store?.id
 
   const getApps = () => {
     return apps
@@ -236,7 +238,9 @@ export default function App({
           item.id !== hippo?.id &&
           (item.id !== vex?.id || !isSushi) &&
           (item.id !== claude?.id || !isBlossom) &&
+          (item.id !== vex?.id || !isSwarm) &&
           (item.id !== grok?.id || !isBlossom) &&
+          (item.id !== sushi?.id || !isBlossom) &&
           //Pear zaten chatte var :)
           (item.id !== pear?.id || !isBlossom) &&
           !store?.excludeGridApps?.includes(item.slug) &&

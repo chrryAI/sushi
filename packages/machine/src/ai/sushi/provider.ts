@@ -28,21 +28,37 @@ export const OLLAMA_MODEL_MAP: Record<
   string,
   { name: string; reasoning_effort?: string }
 > = {
-  "deepseek/deepseek-v3.2": { name: "glm-5.1:cloud", reasoning_effort: "none" },
-  "deepseek/deepseek-r1": { name: "glm-5.1:cloud", reasoning_effort: "high" },
-  "deepseek/deepseek-chat": { name: "glm-5.1:cloud", reasoning_effort: "none" },
-  "deepseek-chat": { name: "glm-5.1:cloud", reasoning_effort: "none" },
-  "minimax/minimax-m2.7": { name: "glm-5.1:cloud", reasoning_effort: "high" },
-  "minimax/minimax-m2.5": { name: "glm-5.1:cloud", reasoning_effort: "none" },
+  //glm-5.1:cloud
+  "deepseek/deepseek-v3.2": {
+    name: "deepseek-v3.2:cloud",
+    reasoning_effort: "none",
+  },
+  "deepseek/deepseek-r1": {
+    name: "deepseek-v3.2:cloud",
+    reasoning_effort: "medium",
+  },
+  "deepseek/deepseek-chat": {
+    name: "deepseek-v3.2:cloud",
+    reasoning_effort: "none",
+  },
+  "deepseek-chat": { name: "deepseek-v3.2:cloud", reasoning_effort: "none" },
+  "minimax/minimax-m2.7": {
+    name: "minimax-m2.7:cloud",
+    reasoning_effort: "high",
+  },
+  "minimax/minimax-m2.5": {
+    name: "minimax-m2.5:cloud",
+    reasoning_effort: "none",
+  },
   "nvidia/nemotron-3-super-120b-a12b": {
-    name: "glm-5.1:cloud",
+    name: "deepseek-v3.2:cloud",
     reasoning_effort: "none",
   },
   "google/gemini-3.1-pro-preview": {
-    name: "glm-5.1:cloud",
+    name: "kimi-k2.5:cloud",
     reasoning_effort: "none",
   },
-  "x-ai/grok-4.1-fast": { name: "glm-5.1:cloud", reasoning_effort: "none" },
+  "x-ai/grok-4.1-fast": { name: "kimi-k2.5:cloud", reasoning_effort: "none" },
 }
 
 export function toOllamaModel(orModelId: string) {
@@ -197,12 +213,12 @@ const SCHEDULE_TIERS: Record<string, { tier: routeTier; model?: string }> = {
 // Route function
 // ─────────────────────────────────────────────────────────────────
 
-interface routeResult {
+export interface routeResult {
   primary: string
   fallbacks: string[]
 }
 
-function route(
+export function route(
   tier: routeTier,
   opts: {
     needsTools?: boolean
@@ -274,17 +290,10 @@ function route(
 
 // ─────────────────────────────────────────────────────────────────
 // getModelProvider
-// ─────────────────────────────────────────────────────────────────
+// ──────────
+// ───────────────────────────────────────────────────────
 
-export async function getModelProvider({
-  app,
-  swarm,
-  user,
-  guest,
-  job,
-  source,
-  ...rest
-}: {
+export type modelProviderOptions = {
   app?: sushiType | nil
   source?: string | nil
   name?: string | nil
@@ -293,8 +302,19 @@ export async function getModelProvider({
   job?: JobWithModelConfig | nil
   user?: user | nil
   guest?: guest | nil
+  isEffect?: boolean | nil
   swarm?: { modelId?: string; postType?: string } | nil
-}): Promise<ModelProviderResult> {
+}
+export async function getModelProvider({
+  app,
+  swarm,
+  user,
+  guest,
+  job,
+  source,
+  isEffect,
+  ...rest
+}: modelProviderOptions): Promise<ModelProviderResult> {
   const agents = (await getAiAgents({ include: app?.id })) as aiAgent[]
   const foundAgent = rest.name
     ? agents.find((a) => a.name.toLowerCase() === rest.name?.toLowerCase())
@@ -418,7 +438,9 @@ export async function getModelProvider({
   if (
     ollamaModel &&
     !isBYOK &&
-    (user?.role === "admin" || !!OLLAMA_SOURCE_TIERS[source || ""])
+    (isDevelopment ||
+      user?.role === "admin" ||
+      !!OLLAMA_SOURCE_TIERS[source || ""])
   ) {
     return {
       provider: ollamaWithThinking(ollamaModel.name, {
@@ -447,8 +469,9 @@ export async function getModelProvider({
     : undefined
 
   return {
-    provider:
-      deepseekApiModelId && deepseekApiKey
+    provider: isEffect
+      ? null
+      : deepseekApiModelId && deepseekApiKey
         ? createDeepSeek({ apiKey: deepseekApiKey })(deepseekApiModelId)
         : orProvider,
     modelId,
@@ -484,17 +507,21 @@ export const EMBEDDING_SOURCES: Record<string, string> = {
   default: "qwen/qwen3-embedding-8b",
 }
 
-export async function getEmbeddingProvider({
-  app,
-  user,
-  guest,
-  source,
-}: {
+export type getModelProviderOptions = {
   app?: sushiType | null
   user?: user | null
   guest?: guest | null
   source?: string
-}): Promise<{
+  isEffect?: boolean
+}
+
+export async function getEmbeddingProvider({
+  app,
+  user,
+  guest,
+  isEffect,
+  source,
+}: getModelProviderOptions): Promise<{
   provider?: ReturnType<typeof createOpenRouter>
   modelId?: string
   textEmbeddingModel?: any
@@ -512,8 +539,9 @@ export async function getEmbeddingProvider({
 
   const creditsLeft = user?.creditsLeft ?? guest?.creditsLeft ?? 1
 
-  const provider =
-    creditsLeft === 0 || !orKey
+  const provider = isEffect
+    ? undefined
+    : creditsLeft === 0 || !orKey
       ? undefined
       : createOpenRouter({ apiKey: orKey })
 

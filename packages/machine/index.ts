@@ -58,6 +58,7 @@ import {
   getModelProvider,
 } from "./src/ai/sushi/provider"
 import { MODEL_LIMITS, type ModelProviderResult } from "./src/ai/vault"
+// import { createStores } from "./src/dna/createStores"
 import { decrypt } from "./src/encryption"
 import { deleteFalkorUser } from "./src/falkorSync"
 // Better Auth tables
@@ -198,6 +199,7 @@ export {
   codebaseIssues,
   codebaseQueries,
   codeEmbeddings,
+  // createStores,
   getEmbeddingProvider,
   getMediaAPIKeys,
   getModelProvider,

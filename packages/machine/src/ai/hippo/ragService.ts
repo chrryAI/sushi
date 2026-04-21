@@ -12,7 +12,7 @@ import {
   sql,
   type user,
 } from "@chrryai/machine"
-import { createLayer } from "@chrryai/machine/src/ai/sushi/effectProvider"
+import { getEffectModelLayer } from "@chrryai/machine/src/ai/sushi/effectProvider"
 import {
   createEmbeddingLayer,
   runEmbed,
@@ -80,6 +80,7 @@ export async function generateEmbedding(
     source?: string
   } = {},
 ): Promise<number[] | undefined> {
+  const startTime = performance.now()
   try {
     if (!process.env.OPENROUTER_API_KEY) return undefined
 
@@ -88,9 +89,15 @@ export async function generateEmbedding(
       process.env.OPENROUTER_API_KEY,
     )
     const embedding = await runEmbed(text.substring(0, 8000), embeddingLayer)
+    console.log(
+      `📊 [generateEmbedding] completed in ${Math.round(performance.now() - startTime)}ms`,
+    )
     return embedding
   } catch (error) {
-    console.error("❌ Error generating embedding:", error)
+    console.error(
+      `❌ [generateEmbedding] failed after ${Math.round(performance.now() - startTime)}ms:`,
+      error,
+    )
     captureException(error)
     throw error
   }
@@ -130,7 +137,12 @@ Required JSON format:
       keyTopics: Schema.Array(Schema.String),
     })
 
-    const modelLayer = createLayer()
+    const { layer: modelLayer } = await getEffectModelLayer({
+      app,
+      user: member,
+      guest,
+      source: "rag/documentSummary",
+    })
 
     try {
       const parsed = await runStructuredOutputWithFallback(
@@ -365,17 +377,23 @@ export async function findRelevantChunks({
     metadata: any
   }>
 > {
+  const fnStart = performance.now()
   try {
     console.log(
       `🔍 Searching for content relevant to: "${query.substring(0, 50)}..."`,
     )
 
     // Generate query embedding
+    const embedStart = performance.now()
     const queryEmbedding = await generateEmbedding(query, { user, guest, app })
+    console.log(
+      `📊 [findRelevantChunks] generateEmbedding took ${Math.round(performance.now() - embedStart)}ms`,
+    )
 
     // Use raw SQL for vector similarity search with pgvector
     // CRITICAL: Use raw operator in ORDER BY for index usage (HNSW/IVFFlat)
     const thresholdDistance = 1 - threshold // Convert similarity to distance
+    const queryStart = performance.now()
     const relevantChunks = await db.execute(sql`
       SELECT 
         content,
@@ -389,6 +407,9 @@ export async function findRelevantChunks({
       ORDER BY embedding <=> ${JSON.stringify(queryEmbedding)}::vector ASC
       LIMIT ${limit}
     `)
+    console.log(
+      `📊 [findRelevantChunks] pgvector query took ${Math.round(performance.now() - queryStart)}ms`,
+    )
 
     const results = relevantChunks.map((row: any) => ({
       content: row.content,
@@ -399,12 +420,15 @@ export async function findRelevantChunks({
     }))
 
     console.log(
-      `📊 Found ${results.length} relevant chunks (threshold: ${threshold})`,
+      `📊 [findRelevantChunks] total ${Math.round(performance.now() - fnStart)}ms | Found ${results.length} chunks (threshold: ${threshold})`,
     )
     return results
   } catch (error) {
     captureException(error)
-    console.error("❌ Error in vector similarity search:", error)
+    console.error(
+      `❌ [findRelevantChunks] failed after ${Math.round(performance.now() - fnStart)}ms:`,
+      error,
+    )
     return []
   }
 }

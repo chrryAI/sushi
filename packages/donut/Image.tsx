@@ -220,7 +220,7 @@ export default function ImageComponent(props: ImageProps) {
         <Span style={{ ...style, display: "inline-flex" }}>
           <OpenAI color={color} size={intSize} />
         </Span>
-      ) : ["claude", "researcher", "review", "writer"].includes(appSlug) ? (
+      ) : ["claude"].includes(appSlug) ? (
         <Span style={{ ...style, display: "inline-flex" }}>
           <Claude color={color} size={intSize} />
         </Span>

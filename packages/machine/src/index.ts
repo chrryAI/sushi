@@ -23,3 +23,5 @@ export const VERSION = "0.1.0"
 
 // Free models for testing
 export { FREE_MODELS } from "./ai/index.js"
+// DNA / Seed exports
+export { createStores } from "./dna/index"
