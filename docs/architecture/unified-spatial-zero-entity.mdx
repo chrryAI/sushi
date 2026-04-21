@@ -18,7 +18,7 @@ description: "Architecture proposal fusing spatial navigation, Rocicorp Zero syn
 
 ## 2. Text-based system overview
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                         CHRRY SPATIAL-ZERO-ENTITY                            ║
 ║                         Unified Browser Runtime (Tesseract)                   ║
@@ -130,7 +130,7 @@ interface TesseractEntity {
 
 ### 4.1 User → spatial nav → Zero → Postgres
 
-```
+```text
 User clicks "Atlas" in navigation bar
          │
          ▼
@@ -182,7 +182,7 @@ User clicks "Atlas" in navigation bar
 
 ### 4.2 User → agent → EntityDB → local memory
 
-```
+```text
 User sends prompt to Sensei
          │
          ▼
@@ -531,7 +531,7 @@ const entities = useQuery(
 
 ## 7. Proposed file structure
 
-```
+```text
 sushi/
 ├── apps/
 │   ├── chrry/

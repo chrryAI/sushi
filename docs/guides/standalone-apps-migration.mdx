@@ -29,7 +29,7 @@ Each app was migrated to be packaged as a separate standalone Tauri desktop appl
 
 Each app follows this structure:
 
-```
+```text
 apps/{app-name}/
 ├── package.json          # Dependencies & scripts
 ├── tsconfig.json         # TypeScript config
@@ -170,7 +170,7 @@ All apps seeded from one giant `createStores.ts` file (9356 lines).
 
 Each app has its own `seed.ts` file:
 
-```
+```text
 apps/atlas/seed.ts   → Seeds Atlas app independently
 apps/vault/seed.ts   → Seeds Vault app independently
 apps/bloom/seed.ts   → Seeds Bloom app independently
