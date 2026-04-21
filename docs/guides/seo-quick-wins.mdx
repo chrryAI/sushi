@@ -3,14 +3,14 @@ title: "SEO quick wins"
 description: "Highest-impact, lowest-effort SEO fixes ranked by priority for the Vex web app."
 ---
 
-You're tired, I get it. Here are the **easiest, highest-impact** SEO fixes ranked by effort vs. reward:
+Below are the highest-impact SEO fixes ranked by effort vs. reward:
 
-## 🍒 Cherry-Pick These (5 min each)
+## Quick wins (5 min each)
 
 ### 1. Fix Sitemap - Remove Non-Canonical Pages
 
-**Impact**: 🔥🔥🔥 (Fixes 51 pages)  
-**Effort**: ⚡ (One file edit)
+**Impact**: High (Fixes 51 pages)  
+**Effort**: Low (One file edit)
 
 Your sitemap includes localized pages that shouldn't be there.
 
@@ -28,8 +28,8 @@ const urls = pages.filter(
 
 ### 2. Fix Multiple H1s
 
-**Impact**: 🔥🔥 (Fixes 69 pages)  
-**Effort**: ⚡⚡ (Search & replace)
+**Impact**: Medium (Fixes 69 pages)  
+**Effort**: Low (Search & replace)
 
 You have components rendering multiple `<h1>` tags.
 
@@ -50,8 +50,8 @@ Common culprits:
 
 ### 3. Add Internal Links
 
-**Impact**: 🔥 (Helps 288 pages get indexed)  
-**Effort**: ⚡⚡⚡ (Requires some thought)
+**Impact**: Medium (Helps 288 pages get indexed)  
+**Effort**: Medium (Requires some thought)
 
 Pages with only 1 internal link are at risk.
 
@@ -62,12 +62,12 @@ Pages with only 1 internal link are at risk.
 - Add footer links to main pages
 - Add sitemap page
 
-## 🛠️ Medium Effort (Save for tomorrow)
+## Medium effort
 
 ### 4. Fix Large HTML Files
 
-**Impact**: 🔥🔥  
-**Effort**: ⚡⚡⚡⚡
+**Impact**: Medium  
+**Effort**: High
 
 7 pages are too large. Likely causes:
 
@@ -84,8 +84,8 @@ find apps/web/.next -name "*.html" -size +500k
 
 ### 5. Fix Broken JavaScript
 
-**Impact**: 🔥  
-**Effort**: ⚡⚡
+**Impact**: Low  
+**Effort**: Low
 
 The `share-modal.js` error is a timing issue. It's trying to access DOM before it's ready.
 
@@ -101,29 +101,27 @@ document.addEventListener("networkidle", () => {
 });
 ```
 
-## 📊 Your Current Score
+## Current score
 
-- **Health Score**: 78/100 (Good! 🎉)
+- **Health Score**: 78/100 (Good)
 - **Errors**: 266
 - **Warnings**: 1,235
 - **Success Rate**: 923/939 pages (98.3%)
 
-## 🎯 Priority Order (If you only do 3 things)
+## Priority order
 
 1. **Fix sitemap** (5 min, huge impact)
 2. **Audit H1 tags** (10 min, easy wins)
 3. **Add related links** (20 min, helps indexing)
 
-## 🚀 Automated Fix Script
+## Automated fix script
 
-Want me to create a script that automatically:
+A script can be created to automatically:
 
-- Scans for multiple H1s
-- Generates a sitemap without localized pages
-- Adds null checks to event listeners
-
-Just say "automate it" and I'll build it for you! 😎
+- Scan for multiple H1s
+- Generate a sitemap without localized pages
+- Add null checks to event listeners
 
 ---
 
-**TL;DR**: Fix the sitemap first. It's 5 minutes and fixes 51 pages. Then chill. 🏖️
+**TL;DR**: Fix the sitemap first. It takes 5 minutes and fixes 51 pages.

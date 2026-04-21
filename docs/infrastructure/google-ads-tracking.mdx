@@ -7,17 +7,17 @@ description: "Server-side Google Ads conversion tracking implementation that req
 
 Track Google Ads conversions **without any client-side tracking**:
 
-- ✅ No cookies
-- ✅ No consent banners
-- ✅ No JavaScript tracking
-- ✅ 100% privacy compliant
-- ✅ Google Ads still optimizes
+- No cookies
+- No consent banners
+- No JavaScript tracking
+- 100% privacy compliant
+- Google Ads still optimizes
 
 ---
 
 ## Setup
 
-### 1. Get Conversion IDs from Google Ads
+### 1. Get conversion IDs from Google Ads
 
 1. Go to Google Ads → Goals → Conversions
 2. Create conversions:
@@ -28,7 +28,7 @@ Track Google Ads conversions **without any client-side tracking**:
    - Conversion ID: `AW-XXXXXXXXX`
    - Conversion Label: `YYYYYYYYY`
 
-### 2. Add to Environment Variables
+### 2. Add to environment variables
 
 ```bash
 # .env
@@ -38,15 +38,15 @@ GOOGLE_ADS_TRIAL_LABEL=def456
 GOOGLE_ADS_PURCHASE_LABEL=ghi789
 ```
 
-### 3. Install Package
+### 3. Install package
 
 Already created: `/packages/machine/src/google-ads.ts`
 
 ---
 
-## Usage Examples
+## Usage examples
 
-### Track Signup (API Route)
+### Track signup (API route)
 
 ```typescript
 // app/api/auth/signup/route.ts
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 }
 ```
 
-### Track Purchase (Stripe Webhook)
+### Track purchase (Stripe webhook)
 
 ```typescript
 // app/api/webhooks/stripe/route.ts
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
 }
 ```
 
-### Track Trial Start
+### Track trial start
 
 ```typescript
 // app/api/trial/start/route.ts
@@ -111,15 +111,15 @@ export async function POST(request: Request) {
 
 ---
 
-## How It Works
+## How it works
 
-### Traditional (Client-Side) - ❌ Not Privacy Compliant
+### Traditional (client-side)
 
 ```
 Browser → Google Tag → Cookie → Track Everything
 ```
 
-### Server-Side (Our Approach) - ✅ Privacy Compliant
+### Server-side (recommended)
 
 ```
 User Action → Your Server → Google Ads API → Track Conversion Only
@@ -135,9 +135,9 @@ User Action → Your Server → Google Ads API → Track Conversion Only
 
 ---
 
-## What Google Ads Gets
+## What Google Ads gets
 
-### Minimal Data (Privacy-First)
+### Minimal data (privacy-first)
 
 ```json
 {
@@ -151,48 +151,48 @@ User Action → Your Server → Google Ads API → Track Conversion Only
 
 **What's NOT sent:**
 
-- ❌ IP address
-- ❌ User agent
-- ❌ Cookies
-- ❌ Browsing behavior
-- ❌ Personal data
+- IP address
+- User agent
+- Cookies
+- Browsing behavior
+- Personal data
 
 **What IS sent:**
 
-- ✅ Conversion happened
-- ✅ Value (for ROAS)
-- ✅ Transaction ID (deduplication)
+- Conversion happened
+- Value (for ROAS)
+- Transaction ID (deduplication)
 
 ---
 
 ## Benefits
 
-### For Users
+### For users
 
-- ✅ Zero tracking
-- ✅ No cookies
-- ✅ No consent needed
-- ✅ Maximum privacy
+- Zero tracking
+- No cookies
+- No consent needed
+- Maximum privacy
 
-### For You
+### For you
 
-- ✅ Google Ads can optimize
-- ✅ Track conversions
-- ✅ Measure ROAS
-- ✅ No compliance issues
+- Google Ads can optimize
+- Track conversions
+- Measure ROAS
+- No compliance issues
 
 ### For Google Ads
 
-- ✅ Knows which clicks convert
-- ✅ Can optimize bidding
-- ✅ Can target better
-- ✅ Improves campaign performance
+- Knows which clicks convert
+- Can optimize bidding
+- Can target better
+- Improves campaign performance
 
 ---
 
 ## Testing
 
-### 1. Test in Development
+### 1. Test in development
 
 ```typescript
 // Test conversion tracking
@@ -208,7 +208,7 @@ console.log("Conversion tracked:", result);
 2. Check "Recent conversions" column
 3. Should see test conversions appear within 3 hours
 
-### 3. Check Campaign Performance
+### 3. Check campaign performance
 
 After 24-48 hours:
 
@@ -218,9 +218,9 @@ After 24-48 hours:
 
 ---
 
-## Expected Results
+## Expected results
 
-### Before (No Tracking)
+### Before (no tracking)
 
 ```
 Clicks: 1000
@@ -230,7 +230,7 @@ ROAS: Unknown
 Optimization: Random
 ```
 
-### After (Server-Side Tracking)
+### After (server-side tracking)
 
 ```
 Clicks: 1000
@@ -242,22 +242,22 @@ Optimization: Data-driven
 
 ---
 
-## Privacy Compliance
+## Privacy compliance
 
-### GDPR ✅
+### GDPR
 
 - No personal data collected
 - No cookies
 - No consent needed
 - Server-side only
 
-### CCPA ✅
+### CCPA
 
 - No tracking of California residents
 - No sale of personal data
 - No behavioral tracking
 
-### Your Zero-Tracker Policy ✅
+### Your zero-tracker policy
 
 - No client-side tracking
 - No JavaScript tags
@@ -268,7 +268,7 @@ Optimization: Data-driven
 
 ## Maintenance
 
-### Update Conversion Values
+### Update conversion values
 
 ```typescript
 // Adjust values based on your business
@@ -283,7 +283,7 @@ export async function trackPurchase(userId: string, amount: number, orderId: str
 }
 ```
 
-### Monitor Performance
+### Monitor performance
 
 ```typescript
 // Add logging for debugging
@@ -294,7 +294,7 @@ console.log(`[Google Ads] Tracked conversion: ${transactionId}`);
 
 ## Troubleshooting
 
-### Conversions Not Showing Up
+### Conversions not showing up
 
 1. **Check Environment Variables**
 
@@ -315,7 +315,7 @@ console.log(`[Google Ads] Tracked conversion: ${transactionId}`);
    curl "https://www.googleadservices.com/pagead/conversion/AW-XXXXX/?label=LABEL&value=10&currency=EUR"
    ```
 
-### Low Conversion Rate
+### Low conversion rate
 
 - Ensure tracking is called AFTER successful action
 - Check for duplicate transaction IDs
@@ -327,10 +327,10 @@ console.log(`[Google Ads] Tracked conversion: ${transactionId}`);
 
 **What You Get:**
 
-- ✅ Zero client-side tracking (maintains your policy)
-- ✅ Google Ads optimization (fixes your campaign)
-- ✅ Privacy compliant (no consent needed)
-- ✅ Easy to implement (30 minutes)
+- Zero client-side tracking (maintains your policy)
+- Google Ads optimization (fixes your campaign)
+- Privacy compliant (no consent needed)
+- Easy to implement (30 minutes)
 
 **Next Steps:**
 

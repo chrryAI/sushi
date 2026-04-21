@@ -3,13 +3,13 @@ title: "Apps migration summary"
 description: "Summary of migrating app seeding logic from a monolithic file to decentralized, modular seed functions."
 ---
 
-## ✅ Completed Migration
+## Completed migration
 
 Successfully migrated hardcoded app seeding logic from the monolithic `createStores.ts` (9356 lines) to individual app files in `packages/machine/src/dna/apps/`.
 
-## 📦 Migrated Apps
+## Migrated apps
 
-### 1. **Atlas** 🌍 - Travel Companion
+### 1. Atlas - travel companion
 
 - **File**: `packages/machine/src/dna/apps/atlas.ts`
 - **Function**: `seedAtlas()`
@@ -17,7 +17,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Extends**: Chrry
 - **RPG Stats**: Intelligence 60, Creativity 80, Empathy 70, Efficiency 85
 
-### 2. **Vault** 💰 - Finance Assistant
+### 2. Vault - finance assistant
 
 - **File**: `packages/machine/src/dna/apps/vault.ts`
 - **Function**: `seedVault()`
@@ -25,7 +25,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Extends**: Chrry, Vex (optional), Focus (optional)
 - **RPG Stats**: Intelligence 90, Creativity 10, Empathy 10, Efficiency 100
 
-### 3. **Bloom** 🌸 - Wellness Coach
+### 3. Bloom - wellness coach
 
 - **File**: `packages/machine/src/dna/apps/bloom.ts`
 - **Function**: `seedBloom()`
@@ -33,7 +33,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Extends**: Chrry, Vex (optional), Focus (optional)
 - **RPG Stats**: Intelligence 60, Creativity 40, Empathy 90, Efficiency 80
 
-### 4. **Peach** 🍑 - Social Assistant
+### 4. Peach - social assistant
 
 - **File**: `packages/machine/src/dna/apps/peach.ts`
 - **Function**: `seedPeach()`
@@ -41,7 +41,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Extends**: Chrry, Vex (optional), Focus (optional)
 - **RPG Stats**: Intelligence 40, Creativity 70, Empathy 100, Efficiency 30
 
-### 5. **Focus** ⏱️ - Productivity Assistant
+### 5. Focus - productivity assistant
 
 - **File**: `packages/machine/src/dna/apps/focus.ts`
 - **Function**: `seedFocus()`
@@ -49,9 +49,9 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Extends**: None (base app)
 - **RPG Stats**: Not configured (can be added)
 
-## 🔧 Shared Infrastructure
+## Shared infrastructure
 
-### Helper Functions
+### Helper functions
 
 **File**: `packages/machine/src/dna/helpers.ts`
 
@@ -61,9 +61,9 @@ export async function handleAppExtends(appId: string, extendsIds: string[], stor
 
 Handles app inheritance relationships and store installations.
 
-## 📊 Before vs After
+## Before vs after
 
-### Before (Monolithic) ❌
+### Before (monolithic)
 
 ```typescript
 // createStores.ts - 9356 lines!
@@ -82,7 +82,7 @@ export const createStores = async ({ user, isProd }) => {
 }
 ```
 
-### After (Modular) ✅
+### After (modular)
 
 ```typescript
 // packages/machine/src/dna/apps/atlas.ts
@@ -102,7 +102,7 @@ export async function seedVault(params) {
 }
 ```
 
-## 🎯 Usage Example
+## Usage example
 
 ```typescript
 // In createStores.ts (simplified)
@@ -145,13 +145,13 @@ export const createStores = async ({ user: admin, isProd }) => {
 };
 ```
 
-## ✨ Benefits
+## Benefits
 
-### 1. **Modularity**
+### 1. Modularity
 
 Each app's seeding logic is self-contained and can be tested independently.
 
-### 2. **Reusability**
+### 2. Reusability
 
 Seed functions can be called from anywhere:
 
@@ -160,45 +160,45 @@ Seed functions can be called from anywhere:
 - Admin tools
 - CLI commands
 
-### 3. **Maintainability**
+### 3. Maintainability
 
 No more 9356-line monolith! Each app file is ~200 lines max.
 
-### 4. **Clarity**
+### 4. Clarity
 
 Clear separation of concerns - each app owns its seeding logic.
 
-### 5. **Backup Safety**
+### 5. Backup safety
 
 Original logic preserved in `createStores.ts` - can rollback if needed.
 
-## 📁 File Structure
+## File structure
 
 ```
 packages/machine/src/dna/
 ├── apps/
-│   ├── atlas.ts       ✅ seedAtlas()
-│   ├── vault.ts       ✅ seedVault()
-│   ├── bloom.ts       ✅ seedBloom()
-│   ├── peach.ts       ✅ seedPeach()
-│   ├── focus.ts       ✅ seedFocus()
+│   ├── atlas.ts       seedAtlas()
+│   ├── vault.ts       seedVault()
+│   ├── bloom.ts       seedBloom()
+│   ├── peach.ts       seedPeach()
+│   ├── focus.ts       seedFocus()
 │   ├── vex.ts         (payload only - can add seedVex)
 │   ├── chrry.ts       (payload only - can add seedChrry)
 │   ├── jules.ts       (payload only)
 │   ├── grok.ts        (payload only)
 │   └── ...
-├── helpers.ts         ✅ handleAppExtends()
+├── helpers.ts         handleAppExtends()
 ├── createStores.ts    (original - still works as backup)
 └── appUtils.ts        (shared utilities)
 ```
 
-## 🚀 Next Steps
+## Next steps
 
 ### Immediate
 
-1. ✅ Test each seed function independently
-2. ⏳ Update `createStores.ts` to call new seed functions
-3. ⏳ Migrate remaining apps (Vex, Chrry, Jules, Grok, etc.)
+1. Test each seed function independently
+2. Update `createStores.ts` to call new seed functions
+3. Migrate remaining apps (Vex, Chrry, Jules, Grok, etc.)
 
 ### Future
 
@@ -207,7 +207,7 @@ packages/machine/src/dna/
 3. Add validation for app dependencies
 4. Document app inheritance graph
 
-## 🎉 Impact
+## Impact
 
 **Before**: 9356-line monolith, impossible to maintain  
 **After**: Modular, testable, reusable seed functions

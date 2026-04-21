@@ -3,14 +3,14 @@ title: "Performance optimization"
 description: "Summary of performance optimizations including gzip compression, cache headers, pre-compressed assets, and chunk splitting."
 ---
 
-## 🎯 Pingdom Test Results (Before)
+## Pingdom test results (before)
 
 - **Performance Grade:** B90
 - **Load Time:** 3.29s
 - **Page Size:** 1.5 MB
 - **Requests:** 14
 
-## ❌ Issues Found
+## Issues found
 
 | Grade   | Issue                         | Impact                       |
 | ------- | ----------------------------- | ---------------------------- |
@@ -20,9 +20,9 @@ description: "Summary of performance optimizations including gzip compression, c
 
 ---
 
-## ✅ Optimizations Applied
+## Optimizations applied
 
-### 1. **Enhanced Gzip Compression** (F45 → A100)
+### 1. Enhanced gzip compression (F45 → A100)
 
 **File:** `apps/chrry/server.js`
 
@@ -45,7 +45,7 @@ app.use(
 
 ---
 
-### 2. **Aggressive Cache Headers** (D67 → A100)
+### 2. Aggressive cache headers (D67 → A100)
 
 **File:** `apps/chrry/server.js`
 
@@ -65,7 +65,7 @@ if (req.path.match(/\.(js|css|png|jpg|...)$/)) {
 
 ---
 
-### 3. **Pre-Compressed Assets** (Build-time)
+### 3. Pre-compressed assets (build-time)
 
 **File:** `apps/chrry/vite.config.ts`
 
@@ -83,7 +83,7 @@ viteCompression({ algorithm: "brotliCompress", ext: ".br" });
 
 ---
 
-### 4. **Optimized Chunk Splitting**
+### 4. Optimized chunk splitting
 
 **File:** `apps/chrry/vite.config.ts`
 
@@ -104,7 +104,7 @@ manualChunks: (id) => {
 
 ---
 
-### 5. **Production Minification**
+### 5. Production minification
 
 **File:** `apps/chrry/vite.config.ts`
 
@@ -126,7 +126,7 @@ terserOptions: {
 
 ---
 
-## 📊 Expected Results (After)
+## Expected results (after)
 
 | Metric                | Before | After   | Improvement |
 | --------------------- | ------ | ------- | ----------- |
@@ -138,9 +138,9 @@ terserOptions: {
 
 ---
 
-## 🚀 Deployment Steps
+## Deployment steps
 
-### 1. **Build with Optimizations**
+### 1. Build with optimizations
 
 ```bash
 cd apps/chrry
@@ -153,7 +153,7 @@ This will generate:
 - `dist/client/assets/index-[hash].js.gz` (gzip)
 - `dist/client/assets/index-[hash].js.br` (brotli)
 
-### 2. **Deploy to Coolify**
+### 2. Deploy to Coolify
 
 ```bash
 git add .
@@ -167,7 +167,7 @@ Coolify will automatically:
 - Serve pre-compressed files
 - Apply cache headers
 
-### 3. **Verify**
+### 3. Verify
 
 After deployment, re-run Pingdom test:
 
@@ -178,15 +178,15 @@ URL: https://chrry.ai
 
 Expected improvements:
 
-- ✅ Gzip: F45 → A100
-- ✅ Cache: D67 → A100
-- ✅ Load time: 3.29s → ~1.5s
+- Gzip: F45 → A100
+- Cache: D67 → A100
+- Load time: 3.29s → ~1.5s
 
 ---
 
-## 🔍 Monitoring
+## Monitoring
 
-### Check Compression
+### Check compression
 
 ```bash
 # Test if gzip is working
@@ -197,7 +197,7 @@ curl -H "Accept-Encoding: gzip" -I https://chrry.ai/assets/index-*.js
 # Content-Length: ~300000 (instead of 1300000)
 ```
 
-### Check Cache Headers
+### Check cache headers
 
 ```bash
 curl -I https://chrry.ai/assets/index-*.js
@@ -209,9 +209,9 @@ curl -I https://chrry.ai/assets/index-*.js
 
 ---
 
-## 📝 Additional Recommendations
+## Additional recommendations
 
-### 1. **Fix URL Redirects** (C80)
+### 1. Fix URL redirects (C80)
 
 The 6 redirects are likely from:
 
@@ -225,7 +225,7 @@ The 6 redirects are likely from:
 - Choose one canonical domain (with or without www)
 - Whitelist known IPs to skip challenge
 
-### 2. **Enable HTTP/2**
+### 2. Enable HTTP/2
 
 If not already enabled, HTTP/2 allows:
 
@@ -235,7 +235,7 @@ If not already enabled, HTTP/2 allows:
 
 **Check:** `curl -I --http2 https://chrry.ai`
 
-### 3. **Consider CDN for Assets**
+### 3. Consider CDN for assets
 
 Move static assets to CDN for:
 
@@ -245,13 +245,13 @@ Move static assets to CDN for:
 
 ---
 
-## 🎉 Summary
+## Summary
 
 **Files Modified:**
 
-- ✅ `apps/chrry/server.js` - Enhanced compression + cache headers
-- ✅ `apps/chrry/vite.config.ts` - Pre-compression + chunk splitting
-- ✅ `apps/chrry/package.json` - Added vite-plugin-compression
+- `apps/chrry/server.js` - Enhanced compression + cache headers
+- `apps/chrry/vite.config.ts` - Pre-compression + chunk splitting
+- `apps/chrry/package.json` - Added vite-plugin-compression
 
 **Expected Performance Gain:**
 

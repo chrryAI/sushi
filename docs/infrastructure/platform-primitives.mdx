@@ -3,9 +3,9 @@ title: "Platform primitives"
 description: "Cross-platform UI primitives that resolve TypeScript errors when sharing components between React Native and web."
 ---
 
-## All TypeScript Errors Fixed!
+## All TypeScript errors fixed
 
-### **Problem:**
+### Problem
 
 React Native components accept different prop types than HTML elements. When spreading `{...props}` from RN components into HTML elements, TypeScript throws errors because:
 
@@ -13,15 +13,15 @@ React Native components accept different prop types than HTML elements. When spr
 2. **Platform-specific props**: RN has props like `hitSlop`, `onLayout` that don't exist in HTML
 3. **Function children**: `Pressable` accepts function children, but HTML buttons don't
 
-### **Solution:**
+### Solution
 
 Filter out React Native-specific props before spreading into HTML elements.
 
 ---
 
-## Fixed Components ✅
+## Fixed components
 
-### **1. Button Component**
+### 1. Button component
 
 ```tsx
 // ✅ Handles function children
@@ -33,7 +33,7 @@ Filter out React Native-specific props before spreading into HTML elements.
 </Button>
 ```
 
-### **2. Link Component**
+### 2. Link component
 
 ```tsx
 // ✅ Handles function children
@@ -46,7 +46,7 @@ Filter out React Native-specific props before spreading into HTML elements.
 </Link>
 ```
 
-### **3. Input Component**
+### 3. Input component
 
 ```tsx
 // ✅ Filters 40+ RN-specific TextInput props
@@ -56,7 +56,7 @@ Filter out React Native-specific props before spreading into HTML elements.
 <Input type="email" placeholder="Enter email" onChangeText={(text) => console.log(text)} />
 ```
 
-### **4. ScrollView Component**
+### 4. ScrollView component
 
 ```tsx
 // ✅ Filters 50+ RN-specific ScrollView props
@@ -70,9 +70,9 @@ Filter out React Native-specific props before spreading into HTML elements.
 
 ---
 
-## How It Works
+## How it works
 
-### **Platform Detection**
+### Platform detection
 
 ```tsx
 const { isWeb } = usePlatform();
@@ -90,7 +90,7 @@ if (isWeb) {
 return <Pressable {...props}>{children}</Pressable>;
 ```
 
-### **Prop Filtering**
+### Prop filtering
 
 ```tsx
 // Extract RN-specific props
@@ -106,7 +106,7 @@ const {
 <button {...webProps}>
 ```
 
-### **Function Children Handling**
+### Function children handling
 
 ```tsx
 // Check if children is a function
@@ -118,9 +118,9 @@ const renderedChildren =
 
 ---
 
-## Usage Examples
+## Usage examples
 
-### **Basic Usage**
+### Basic usage
 
 ```tsx
 import { Box, Text, Button, Input } from "@chrryai/donut/platform";
@@ -136,7 +136,7 @@ function MyComponent() {
 }
 ```
 
-### **With Platform Detection**
+### With platform detection
 
 ```tsx
 import { usePlatform, Box, Text } from "@chrryai/donut/platform";
@@ -152,7 +152,7 @@ function MyComponent() {
 }
 ```
 
-### **With Adaptive Styles**
+### With adaptive styles
 
 ```tsx
 import { useAdaptiveStyles, Box } from "@chrryai/donut/platform";
@@ -174,25 +174,25 @@ function MyComponent() {
 
 ## Benefits
 
-### **✅ Type Safety**
+### Type safety
 
 - No TypeScript errors
 - Full autocomplete support
 - Proper type checking
 
-### **✅ Platform Agnostic**
+### Platform agnostic
 
 - ONE component file
 - Works on web AND native
 - Runtime platform detection
 
-### **✅ Developer Experience**
+### Developer experience
 
 - Familiar HTML-like API
 - No platform-specific files needed
 - Easy to migrate existing code
 
-### **✅ Production Ready**
+### Production ready
 
 - Handles all edge cases
 - Filters incompatible props
@@ -200,7 +200,7 @@ function MyComponent() {
 
 ---
 
-## Complete Architecture
+## Complete architecture
 
 ```
 ┌─────────────────────────────────────┐
@@ -229,7 +229,7 @@ function MyComponent() {
 
 ---
 
-## Files Created
+## Files created
 
 ```
 packages/donut/platform/
@@ -241,9 +241,9 @@ packages/donut/platform/
 
 ---
 
-## What's Next?
+## What's next
 
-### **1. Test the Components**
+### 1. Test the components
 
 ```bash
 # Web
@@ -253,7 +253,7 @@ cd apps/web && npm run dev
 cd apps/native && npm run dev
 ```
 
-### **2. Migrate Existing Components**
+### 2. Migrate existing components
 
 ```tsx
 // Before
@@ -267,7 +267,7 @@ cd apps/native && npm run dev
 </Box>
 ```
 
-### **3. Build Cross-Platform Features**
+### 3. Build cross-platform features
 
 ```tsx
 // ONE component, ALL platforms!
@@ -288,12 +288,12 @@ export function Weather() {
 
 ## Summary
 
-- ✅ All TypeScript errors fixed
-- ✅ All components work on web AND native
-- ✅ Runtime platform detection working
-- ✅ Prop filtering implemented
-- ✅ Function children supported
-- ✅ Production ready!
+- All TypeScript errors fixed
+- All components work on web AND native
+- Runtime platform detection working
+- Prop filtering implemented
+- Function children supported
+- Production ready
 
 ONE codebase, FIVE platforms:
 

@@ -3,19 +3,19 @@ title: "SonarCloud integration setup"
 description: "Overview of the SonarCloud integration using polling-based sync with cron jobs, including webhook-ready endpoint for future upgrades."
 ---
 
-## Current Setup: Manual Polling (Free Plan)
+## Current setup: manual polling (free plan)
 
 Since SonarCloud webhooks require a **Team or Enterprise plan** ($32+/month), we're using a **polling-based approach** with cron jobs.
 
-## What's Implemented
+## What's implemented
 
-### 1. **Cron Endpoint** ✅
+### 1. Cron endpoint
 
 - **URL**: `GET /api/cron/syncSonarCloud`
 - **Auth**: Requires `CRON_SECRET` in Authorization header
 - **Frequency**: Can be called manually or scheduled (e.g., every 6 hours)
 
-### 2. **Sync Function** ✅
+### 2. Sync function
 
 Located in `apps/api/lib/cron/sonarSync.ts`:
 
@@ -25,7 +25,7 @@ Located in `apps/api/lib/cron/sonarSync.ts`:
   - `sonar_issues` - Current and historical issues
   - `sonar_metrics` - Metrics snapshots over time
 
-### 3. **Webhook Endpoint** ✅ (Ready for future upgrade)
+### 3. Webhook endpoint (ready for future upgrade)
 
 - **URL**: `POST /api/sonarWebhook`
 - **Features**:
@@ -35,16 +35,16 @@ Located in `apps/api/lib/cron/sonarSync.ts`:
   - Issue updates
 - **Status**: Implemented but requires Team/Enterprise plan to use
 
-## How to Use
+## How to use
 
-### Manual Sync (Development)
+### Manual sync (development)
 
 ```bash
 curl http://localhost:3000/api/cron/syncSonarCloud \
   -H "Authorization: Bearer YOUR_CRON_SECRET"
 ```
 
-### Scheduled Sync (Production)
+### Scheduled sync (production)
 
 Add to your cron scheduler (e.g., Vercel Cron, GitHub Actions):
 
@@ -66,7 +66,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"
 ```
 
-### View Data
+### View data
 
 ```sql
 -- Latest metrics
@@ -91,7 +91,7 @@ ORDER BY
   END;
 ```
 
-## Environment Variables
+## Environment variables
 
 Required in `.env`:
 
@@ -106,7 +106,7 @@ Optional (for future webhook support):
 SONAR_WEBHOOK_SECRET=your_webhook_secret_here
 ```
 
-## Upgrade Path: Webhooks
+## Upgrade path: webhooks
 
 When you upgrade to Team/Enterprise plan:
 
@@ -117,24 +117,24 @@ When you upgrade to Team/Enterprise plan:
      - **Secret**: Use `SONAR_WEBHOOK_SECRET` from `.env`
 
 2. **Benefits of webhooks**:
-   - ✅ Real-time updates (no delay)
-   - ✅ Reduced API calls
-   - ✅ Lower rate limit usage
-   - ✅ Exact analysis timestamps
+   - Real-time updates (no delay)
+   - Reduced API calls
+   - Lower rate limit usage
+   - Exact analysis timestamps
 
 3. **Disable cron** (optional):
    - Remove/comment out the cron schedule
    - Keep endpoint for manual syncs
 
-## Files Created/Modified
+## Files created/modified
 
-- ✅ `apps/api/lib/cron/sonarSync.ts` - Sync logic
-- ✅ `apps/api/hono/routes/sonarWebhook.ts` - Webhook endpoint (future)
-- ✅ `apps/api/hono/routes/cron.ts` - Added `/syncSonarCloud` endpoint
-- ✅ `apps/api/hono/index.ts` - Registered webhook route
-- ✅ `docs/SONARCLOUD_WEBHOOK.md` - Full documentation
+- `apps/api/lib/cron/sonarSync.ts` - Sync logic
+- `apps/api/hono/routes/sonarWebhook.ts` - Webhook endpoint (future)
+- `apps/api/hono/routes/cron.ts` - Added `/syncSonarCloud` endpoint
+- `apps/api/hono/index.ts` - Registered webhook route
+- `docs/SONARCLOUD_WEBHOOK.md` - Full documentation
 
-## Next Steps
+## Next steps
 
 1. **Set up scheduled cron** (GitHub Actions or Vercel Cron)
 2. **Monitor sync logs** to ensure it's working
