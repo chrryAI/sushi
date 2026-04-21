@@ -231,7 +231,7 @@ Priority Order:
 
 ## Adding custom domains
 
-### Step 1: Update domain detection
+### Step 1: update domain detection
 
 ```typescript
 // packages/donut/utils/siteConfig.ts
@@ -245,7 +245,7 @@ if (
 }
 ```
 
-### Step 2: Configure DNS
+### Step 2: configure DNS
 
 ```
 yourfocus.com → Server IP (A record)
@@ -261,7 +261,7 @@ certbot certonly --webroot -w /var/www/html \
   -d www.yourfocus.com
 ```
 
-### Step 4: Test
+### Step 4: test
 
 ```bash
 curl https://yourfocus.com

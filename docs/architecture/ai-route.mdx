@@ -9,20 +9,20 @@ The `/api/ai` route is the **single, unified entry point** for all AI interactio
 
 **What makes it special:**
 
-- ✅ **100% Open Source** - Every line is public
-- ✅ **Universal Interface** - One endpoint for all AI
-- ✅ **App Extensibility** - Infinite inheritance chains
-- ✅ **Multi-Modal** - Text, images, videos, PDFs
-- ✅ **Real-Time Streaming** - SSE with chunks
-- ✅ **Tool Integration** - Dynamic execution
-- ✅ **Web Search** - Real-time information
-- ✅ **Memory System** - Context-aware
-- ✅ **Rate Limiting** - Smart quotas
-- ✅ **Security** - Malware scanning, SSRF protection
+- **100% Open Source** - Every line is public
+- **Universal Interface** - One endpoint for all AI
+- **App Extensibility** - Infinite inheritance chains
+- **Multi-Modal** - Text, images, videos, PDFs
+- **Real-Time Streaming** - SSE with chunks
+- **Tool Integration** - Dynamic execution
+- **Web Search** - Real-time information
+- **Memory System** - Context-aware
+- **Rate Limiting** - Smart quotas
+- **Security** - Malware scanning, SSRF protection
 
-## Core Features
+## Core features
 
-### 1. App Inheritance System
+### 1. App inheritance system
 
 Apps inherit capabilities from parents (max 5 levels):
 
@@ -45,14 +45,14 @@ const buildAppKnowledgeBase = async (currentApp, depth = 0) => {
 };
 ```
 
-### 2. Multi-Modal Processing
+### 2. Multi-modal processing
 
 - **Images**: Upload, OCR, vision analysis
 - **PDFs**: Text extraction, RAG processing
 - **Videos**: Frame extraction, analysis
 - **Audio**: Transcription (coming soon)
 
-### 3. Memory System
+### 3. Memory system
 
 **User Memories** (personal) + **App Memories** (institutional)
 
@@ -66,7 +66,7 @@ const memories = await getMemories({
 });
 ```
 
-### 4. Real-Time Streaming
+### 4. Real-time streaming
 
 Server-Sent Events with tool execution:
 
@@ -85,7 +85,7 @@ const stream = new ReadableStream({
 });
 ```
 
-### 5. Web Search Integration
+### 5. Web search integration
 
 Perplexity with citations:
 
@@ -94,7 +94,7 @@ const searchResults = await performWebSearch(query);
 // Add to context with citations [1], [2], [3]
 ```
 
-### 6. Tool System
+### 6. Tool system
 
 Dynamic tools per app/agent:
 
@@ -106,7 +106,7 @@ const tools = {
 };
 ```
 
-### 7. Rate Limiting
+### 7. Rate limiting
 
 Multi-tier quotas:
 
@@ -114,7 +114,7 @@ Multi-tier quotas:
 - Plus: 200/hour
 - Pro: 1000/hour
 
-### 8. Background Processing
+### 8. Background processing
 
 Non-blocking automation after response:
 
@@ -126,9 +126,9 @@ after(async () => {
 })
 ```
 
-## App-Specific Personalization
+## App-specific personalization
 
-### Bloom (Productivity)
+### Bloom (productivity)
 
 ```typescript
 const bloomContext = {
@@ -139,7 +139,7 @@ const bloomContext = {
 };
 ```
 
-### Atlas (Travel)
+### Atlas (travel)
 
 ```typescript
 const atlasContext = {
@@ -162,7 +162,7 @@ const atlasContext = {
 - **Parallel Processing** - Fetch all context
 - **Streaming Optimization** - Immediate chunks
 
-## Open Source
+## Open source
 
 **100% of this code is open source!**
 

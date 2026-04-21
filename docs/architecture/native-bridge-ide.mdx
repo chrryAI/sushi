@@ -7,9 +7,9 @@ description: "Browser-first AI-driven IDE architecture using the Vex Native Brid
 
 The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE that turns your browser extension into a complete development environment. Unlike traditional VS Code extensions that are isolated to the editor, Vex leverages its position as a LifeOS overlay to provide contextual, zero-friction development workflows.
 
-## Why This is Unique
+## Why this is unique
 
-### The Vex Advantage Over VS Code Extensions
+### The Vex advantage over VS Code extensions
 
 | Feature         | VS Code AI Extension      | Vex Browser-First IDE                                      |
 | --------------- | ------------------------- | ---------------------------------------------------------- |
@@ -19,7 +19,7 @@ The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE t
 | **Flow**        | Multi-step manual process | Single AI command                                          |
 | **Integration** | Isolated to editor        | Integrated with your entire workflow                       |
 
-### Key Differentiators
+### Key differentiators
 
 1. **AI as Super-CLI**: Chat becomes the command interface
    - "Agent, create a Drizzle schema for userSettings"
@@ -38,7 +38,7 @@ The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE t
    alias gacr="ga -A && gc '🚀' && gps"
    ```
 
-## Architecture Overview
+## Architecture overview
 
 ```
 ┌─────────────────────────────────────┐
@@ -65,7 +65,7 @@ The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE t
 └─────────────────────────────────────┘
 ```
 
-## Core Principles
+## Core principles
 
 1. **Security First**: All operations scoped to user-approved directory (`~/Documents/vex`)
 2. **User Consent**: Explicit permission required for Bridge installation
@@ -73,17 +73,17 @@ The **Vex Native Bridge** enables a revolutionary Browser-First, AI-Driven IDE t
 4. **Streaming**: Real-time output for CLI commands (terminal feel)
 5. **Efficiency**: Leverage existing aliases and environment
 
-## API Specification
+## API specification
 
-### Communication Protocol
+### Communication protocol
 
 **Transport**: WebSocket (preferred) or Chrome Native Messaging
 **Format**: JSON
 **Authentication**: Local token-based auth
 
-### 1. File System Operations (`/fs`)
+### 1. File system operations (`/fs`)
 
-#### Read File
+#### Read file
 
 ```typescript
 // Request
@@ -100,7 +100,7 @@ POST /fs/read
 }
 ```
 
-#### Write File
+#### Write file
 
 ```typescript
 // Request
@@ -118,7 +118,7 @@ POST /fs/write
 }
 ```
 
-#### List Directory
+#### List directory
 
 ```typescript
 // Request
@@ -137,9 +137,9 @@ POST /fs/ls
 }
 ```
 
-### 2. CLI Execution (`/cli`)
+### 2. CLI execution (`/cli`)
 
-#### Execute Command (Streaming)
+#### Execute command (streaming)
 
 ```typescript
 // Request (WebSocket)
@@ -164,7 +164,7 @@ POST /fs/ls
 }
 ```
 
-#### Execute Alias
+#### Execute alias
 
 ```typescript
 // Request
@@ -182,9 +182,9 @@ POST /cli/exec_alias
 }
 ```
 
-### 3. Git Operations (`/git`)
+### 3. Git operations (`/git`)
 
-#### Get Status
+#### Get status
 
 ```typescript
 // Request
@@ -201,7 +201,7 @@ POST /git/status
 }
 ```
 
-#### Get Diff
+#### Get diff
 
 ```typescript
 // Request
@@ -217,9 +217,9 @@ POST /git/diff
 }
 ```
 
-## AI Agent Workflows
+## AI agent workflows
 
-### Example 1: Implement Feature
+### Example 1: implement feature
 
 ```
 User: "Agent, create a new feature component in apps/web"
@@ -234,7 +234,7 @@ User: "Agent, create a new feature component in apps/web"
 3. Agent → User: "Feature component created and committed! 🚀"
 ```
 
-### Example 2: Fix Bug
+### Example 2: fix bug
 
 ```
 User: "Agent, there's a bug in App.tsx line 42"
@@ -254,7 +254,7 @@ User: "Agent, there's a bug in App.tsx line 42"
 5. Agent → User: "Bug fixed and build successful! ✅"
 ```
 
-### Example 3: Check Status
+### Example 3: check status
 
 ```
 User: "What are my uncommitted changes?"
@@ -267,9 +267,9 @@ User: "What are my uncommitted changes?"
    - README.md"
 ```
 
-## Implementation Roadmap
+## Implementation roadmap
 
-### Phase 1: Minimal Viable Bridge (MVP)
+### Phase 1: minimal viable bridge (MVP)
 
 - [ ] Basic WebSocket server (Node.js/Bun)
 - [ ] `/fs/read` and `/fs/write` endpoints
@@ -277,30 +277,30 @@ User: "What are my uncommitted changes?"
 - [ ] Extension connection UI
 - [ ] Security: Directory scope validation
 
-### Phase 2: Git Integration
+### Phase 2: Git integration
 
 - [ ] `/git/status` endpoint
 - [ ] `/git/diff` endpoint
 - [ ] Git status UI in extension
 - [ ] Alias execution (`/cli/exec_alias`)
 
-### Phase 3: Advanced Features
+### Phase 3: advanced features
 
 - [ ] File tree view with live updates
 - [ ] Terminal emulator in extension
 - [ ] Multi-workspace support
 - [ ] Remote bridge (SSH tunneling)
 
-### Phase 4: AI Workflows
+### Phase 4: AI workflows
 
 - [ ] Pre-built agent commands
 - [ ] Workflow templates
 - [ ] Code review agent
 - [ ] Automated testing agent
 
-## Technology Stack
+## Technology stack
 
-### Bridge Server
+### Bridge server
 
 - **Runtime**: Bun (fast, modern) or Node.js
 - **WebSocket**: `ws` library
@@ -308,13 +308,13 @@ User: "What are my uncommitted changes?"
 - **CLI Execution**: `child_process.spawn`
 - **Git**: `simple-git` library
 
-### Extension Client
+### Extension client
 
 - **Existing**: Your current Vex extension architecture
 - **WebSocket**: Existing `useWebSocket` hook
 - **UI**: React components (file tree, terminal, git status)
 
-## Security Considerations
+## Security considerations
 
 1. **Directory Whitelist**: Only allow access to approved directories
 2. **Command Whitelist**: Optionally restrict dangerous commands
@@ -322,7 +322,7 @@ User: "What are my uncommitted changes?"
 4. **Token Auth**: Shared secret between extension and bridge
 5. **User Confirmation**: Prompt for destructive operations
 
-## Why This Beats VS Code Extensions
+## Why this beats VS Code extensions
 
 1. **Contextual Intelligence**: Sees what you're doing in the browser
 2. **Zero Friction**: No app switching, instant overlay
@@ -330,7 +330,7 @@ User: "What are my uncommitted changes?"
 4. **AI-First**: Chat is the primary interface, not menus
 5. **Universal**: Works across all your browser tabs
 
-## Next Steps
+## Next steps
 
 1. **Create Bridge Server**: Start with basic WebSocket + `/fs/read`
 2. **Test Connection**: Extension → Bridge → File read
