@@ -6,11 +6,13 @@ import {
   createStore,
   createStoreInstall as createVaultStoreInstall,
   db,
+  deleteStoreInstall,
   encrypt,
   eq,
   getApp,
   getStore,
   getStoreInstall,
+  getUser,
   type newApp,
   type newStoreInstall,
   type store,
@@ -3372,14 +3374,24 @@ const cosmosInstructions = [
 // Helper function to check and create store
 
 export const createStores = async ({
-  user: admin,
+  user,
   slugs,
 }: {
-  user: user
+  user?: user
   isProd?: boolean
   slugs?: string[]
-}) => {
+} = {}) => {
   if (!db) throw new Error("DB not initialized")
+
+  const admin =
+    user ||
+    (await getUser({
+      email: "ibsukru@gmail.com",
+    }))
+
+  if (admin?.role !== "admin") {
+    throw new Error("Admin user not found")
+  }
   // Fetch all existing stores once
 
   const isAllowed = (slug: string) => {
@@ -3551,10 +3563,12 @@ export const createStores = async ({
       .leftJoin(users, eq(stores.userId, users.id))
       .leftJoin(guests, eq(stores.guestId, guests.id))
       .leftJoin(apps, eq(stores.appId, apps.id))
-      .where(eq(stores.slug, slug))
+    // .where(eq(stores.slug, slug))
 
     let store = existingStoresResult.find(
-      (s: any) => s.stores.slug === slug,
+      (s: any) =>
+        s.stores.slug === slug ||
+        (slug === "swarm" && s.stores.slug === "claudeStore"),
     )?.stores
 
     if (!isAllowed(slug)) {
@@ -3574,7 +3588,7 @@ export const createStores = async ({
         id: store.id,
         name: storeData.name ?? store.name,
         title: storeData.title ?? store.title ?? "",
-        slug: store.slug,
+        slug: store.slug === "claudeStore" ? "swarm" : store.slug, // Handle legacy slug
         isSystem: shouldBeSystem,
         images: store.images,
         excludeGridApps: store.excludeGridApps,
@@ -7527,6 +7541,20 @@ You provide helpful AI assistance while respecting user privacy completely.`
       "Your intelligent travel companion powered by OpenAI. Plan trips, discover destinations, and navigate the world with AI-powered insights.",
   })
 
+  // Create Claude store
+  const swarm = await getOrCreateStore({
+    slug: "swarm",
+    name: "Peaches",
+    title: "Peach",
+    domain: "https://swarm.chrry.ai",
+    userId: admin.id,
+    parentStoreId: blossom.id,
+    visibility: "public" as const,
+    hourlyRate: 10,
+    description:
+      "Experience Peach - the AI assistant known for thoughtful, nuanced responses. Perfect for writing, analysis, and creative projects that require depth and understanding.",
+  })
+
   // Note: Grape is already in Blossom store via storeId, no need for explicit install
 
   let peach = await getApp({ slug: "peach" })
@@ -7559,7 +7587,7 @@ You provide helpful AI assistance while respecting user privacy completely.`
     backgroundColor: "#ffffff",
     hourlyRate: 10,
     icon: "🍑",
-    storeId: lifeOS.id,
+    storeId: swarm.id,
     systemPrompt: peachSystemPrompt,
     placeholder: "How can I help with your social life?",
     tipsTitle: "Social Tips",
@@ -7630,6 +7658,11 @@ You provide helpful AI assistance while respecting user privacy completely.`
 
   if (!peach) throw new Error("Failed to add peach app")
 
+  await createOrUpdateStoreInstall({
+    storeId: swarm.id,
+    appId: peach.id,
+    displayOrder: 4,
+  })
   let bloom = await getApp({ slug: "bloom" })
 
   const bloomPayload = {
@@ -8111,19 +8144,6 @@ Be supportive, specific, and focused on helping users earn credits through valua
     featured: true,
     displayOrder: 1,
   })
-  // Create Claude store
-  const claudeStore = await getOrCreateStore({
-    slug: "claudeStore",
-    name: "Claude",
-    title: "Claude",
-    domain: "https://claude.chrry.ai",
-    userId: admin.id,
-    parentStoreId: blossom.id,
-    visibility: "public" as const,
-    hourlyRate: 10,
-    description:
-      "Experience Claude by Anthropic - the AI assistant known for thoughtful, nuanced responses. Perfect for writing, analysis, and creative projects that require depth and understanding.",
-  })
 
   let claudeApp = await getApp({ slug: "claude" })
 
@@ -8134,7 +8154,7 @@ You are Claude by Anthropic, a thoughtful AI assistant known for nuanced underst
   const claudeAppPayload = {
     ...claudeApp,
     userId: admin.id,
-    domain: "https://claude.chrry.ai",
+    domain: "https://swarm.chrry.ai",
     slug: "claude",
     name: "Claude",
     mission:
@@ -8145,7 +8165,7 @@ You are Claude by Anthropic, a thoughtful AI assistant known for nuanced underst
       ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
     subtitle: "Thoughtful AI Assistant",
-    storeId: claudeStore.id,
+    storeId: swarm.id,
     version: "1.0.0",
     status: "active" as const,
     title: "Thoughtful AI Assistant",
@@ -8205,8 +8225,8 @@ You are Claude by Anthropic, a thoughtful AI assistant known for nuanced underst
   if (!claudeApp) throw new Error("Failed to create or update claude app")
 
   await updateStore({
-    ...claudeStore,
-    appId: claudeApp.id,
+    ...swarm,
+    appId: peach.id,
     userId: admin.id,
     guestId: null,
   })
@@ -8228,7 +8248,7 @@ You are Writer, a Claude-powered writing assistant specializing in long-form con
     mission: "Produce high-quality long-form written content",
     role: "Chief Writing Officer",
     domain: "https://claude.chrry.ai/writer",
-    storeId: claudeStore.id,
+    storeId: swarm.id,
     blueskyHandle: "peachai.bsky.social",
     blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
       ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
@@ -8304,7 +8324,7 @@ You are Writer, a Claude-powered writing assistant specializing in long-form con
 
   if (writer) {
     await createOrUpdateStoreInstall({
-      storeId: claudeStore.id,
+      storeId: swarm.id,
       appId: writer.id,
       displayOrder: 3,
     })
@@ -8327,7 +8347,7 @@ You are Review, a Claude-powered code reviewer providing comprehensive analysis 
     blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
       ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
-    storeId: claudeStore.id,
+    storeId: swarm.id,
     version: "1.0.0",
     status: "active" as const,
     title: "Expert Code Reviewer",
@@ -8399,7 +8419,7 @@ You are Review, a Claude-powered code reviewer providing comprehensive analysis 
 
   if (reviewer) {
     await createOrUpdateStoreInstall({
-      storeId: claudeStore.id,
+      storeId: swarm.id,
       appId: reviewer.id,
       displayOrder: 4,
     })
@@ -8417,7 +8437,7 @@ You are Research, a Claude-powered academic research assistant. Help users synth
     name: "Research",
     mission: "Synthesize academic and complex information",
     role: "Research Specialist",
-    storeId: claudeStore.id,
+    storeId: swarm.id,
     domain: "https://search.chrry.ai/researcher",
     blueskyHandle: "searchai.chrry.ai",
     blueskyPassword: process.env.BLUESKY_PASSWORD_SEARCH
@@ -8494,7 +8514,7 @@ You are Research, a Claude-powered academic research assistant. Help users synth
 
   if (researcher) {
     await createOrUpdateStoreInstall({
-      storeId: claudeStore.id,
+      storeId: swarm.id,
       appId: researcher.id,
       displayOrder: 5,
     })
@@ -9134,33 +9154,51 @@ Please follow these instructions throughout our conversation.
   // Install Chrry in Claude store
   {
     const storeInstall = await getStoreInstall({
-      storeId: claudeStore.id,
+      storeId: swarm.id,
       appId: chrry.id,
     })
 
     if (!storeInstall) {
       await createStoreInstall({
-        store: claudeStore,
-        storeId: claudeStore.id,
+        store: swarm,
+        storeId: swarm.id,
         appId: chrry.id,
         customDescription:
           "Build Claude-exclusive apps and publish to the store",
         displayOrder: 2,
       })
     }
+
+    // const vexInstall = await getStoreInstall({
+    //   storeId: swarm.id,
+    //   appId: vex.id,
+    // })
+
+    // if (vexInstall) {
+    //   deleteStoreInstall({ id: vexInstall.id })
+    // }
+
+    const claudeInstall = await getStoreInstall({
+      storeId: blossom.id,
+      appId: claudeApp.id,
+    })
+
+    if (claudeInstall) {
+      deleteStoreInstall({ id: claudeInstall.id })
+    }
   }
 
   // Install Chrry in Claude store
   {
     const storeInstall = await getStoreInstall({
-      storeId: claudeStore.id,
+      storeId: swarm.id,
       appId: chrry.id,
     })
 
     if (!storeInstall) {
       await createStoreInstall({
-        storeId: claudeStore.id,
-        store: claudeStore,
+        storeId: swarm.id,
+        store: swarm,
         appId: chrry.id,
         customDescription:
           "Build Claude-exclusive apps and publish to the store",
@@ -9251,17 +9289,36 @@ Please follow these instructions throughout our conversation.
     }
   }
 
-  // Install Vex in Claude store
+  // Install Peach in Swarm
   {
     const storeInstall = await getStoreInstall({
-      storeId: claudeStore.id,
+      storeId: swarm.id,
+      appId: peach.id,
+    })
+
+    if (!storeInstall) {
+      await createStoreInstall({
+        storeId: swarm.id,
+        store: swarm,
+        appId: peach.id,
+        customDescription: "Your versatile AI assistant for everyday tasks",
+        featured: true,
+        displayOrder: 5,
+      })
+    }
+  }
+
+  // Install Peach in Swarm
+  {
+    const storeInstall = await getStoreInstall({
+      storeId: swarm.id,
       appId: vex.id,
     })
 
     if (!storeInstall) {
       await createStoreInstall({
-        storeId: claudeStore.id,
-        store: claudeStore,
+        storeId: swarm.id,
+        store: swarm,
         appId: vex.id,
         customDescription: "Your versatile AI assistant for everyday tasks",
         featured: true,
@@ -9302,14 +9359,14 @@ Please follow these instructions throughout our conversation.
   {
     const storeInstall = await getStoreInstall({
       storeId: blossom.id,
-      appId: claudeApp.id,
+      appId: peach.id,
     })
 
     if (!storeInstall) {
       await createStoreInstall({
         storeId: blossom.id,
         store: blossom,
-        appId: claudeApp.id,
+        appId: peach.id,
         featured: true,
         displayOrder: 1,
         customDescription:
@@ -10634,14 +10691,14 @@ You are an architecture expert. Design systems that grow with users, follow indu
     )
 
   // AI apps
-  if (claudeApp && vex)
-    await handleAppExtends(claudeApp, [chrry.id, vex.id], claudeStore.id)
-  if (writer && claudeApp)
-    await handleAppExtends(writer, [claudeApp.id, chrry.id], claudeStore.id)
-  if (reviewer && claudeApp)
-    await handleAppExtends(reviewer, [claudeApp.id, chrry.id], claudeStore.id)
-  if (researcher && claudeApp)
-    await handleAppExtends(researcher, [claudeApp.id, chrry.id], claudeStore.id)
+  if (claudeApp && peach)
+    await handleAppExtends(claudeApp, [chrry.id, peach.id], swarm.id)
+  if (writer && peach)
+    await handleAppExtends(writer, [peach.id, chrry.id], swarm.id)
+  if (reviewer && peach)
+    await handleAppExtends(reviewer, [peach.id, chrry.id], swarm.id)
+  if (researcher && peach)
+    await handleAppExtends(researcher, [peach.id, chrry.id], swarm.id)
 
   if (perplexityApp && vex)
     await handleAppExtends(

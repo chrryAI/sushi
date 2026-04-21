@@ -403,13 +403,15 @@ Return ONLY valid JSON matching this schema:
         runStructuredOutputWithFallback: m.runStructuredOutputWithFallback,
       })),
     )
-    const { createLayer } = yield* Effect.promise(() =>
+    const { getEffectModelLayer } = yield* Effect.promise(() =>
       import("./sushi/effectProvider").then((m) => ({
-        createLayer: m.createLayer,
+        getEffectModelLayer: m.getEffectModelLayer,
       })),
     )
 
-    const modelLayer = createLayer()
+    const { layer: modelLayer } = yield* Effect.promise(() =>
+      getEffectModelLayer({ source: "autonomous" }),
+    )
     const parsed = yield* Effect.tryPromise({
       try: () =>
         runStructuredOutputWithFallback(
