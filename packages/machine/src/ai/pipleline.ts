@@ -398,26 +398,25 @@ Return ONLY valid JSON matching this schema:
 }
 `
 
-    const { generateText } = yield* Effect.promise(() =>
-      import("ai").then((m) => ({ generateText: m.generateText })),
+    const { runStructuredOutputWithFallback } = yield* Effect.promise(() =>
+      import("./sushi/structuredOutput").then((m) => ({
+        runStructuredOutputWithFallback: m.runStructuredOutputWithFallback,
+      })),
+    )
+    const { createLayer } = yield* Effect.promise(() =>
+      import("./sushi/effectProvider").then((m) => ({
+        createLayer: m.createLayer,
+      })),
     )
 
-    const result = yield* Effect.tryPromise({
+    const modelLayer = createLayer()
+    const parsed = yield* Effect.tryPromise({
       try: () =>
-        generateText({ model: model.provider, prompt: decisionPrompt }),
-      catch: (e) => new BgJobError({ jobId: schema.meta.threadId, cause: e }),
-    })
-
-    const { cleanAiResponse } = yield* Effect.promise(() =>
-      import("../lib/ai/cleanAiResponse")
-        .then((m) => ({
-          cleanAiResponse: m.cleanAiResponse,
-        }))
-        .catch(() => ({ cleanAiResponse: (text: string) => text })),
-    )
-
-    const parsed = yield* Effect.try({
-      try: () => JSON.parse(cleanAiResponse(result.text)) as BgJobDecision,
+        runStructuredOutputWithFallback(
+          BgJobDecision,
+          decisionPrompt,
+          modelLayer,
+        ),
       catch: (e) => new BgJobError({ jobId: schema.meta.threadId, cause: e }),
     })
 

@@ -990,6 +990,12 @@ export function ChatProvider({
   }
 
   const setSelectedAgent = (agent: aiAgent | undefined | null) => {
+    if (agent === null) {
+      setSelectedAgentInternal(null)
+      setAgentName("")
+      setDebateAgent(null)
+      return
+    }
     !agent?.capabilities?.webSearch &&
       isWebSearchEnabled &&
       setIsWebSearchEnabledInternal(false)

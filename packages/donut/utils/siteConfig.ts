@@ -1317,10 +1317,10 @@ const nebula = {
 const nexus = {
   url: "https://nexus.chrry.ai",
   mode: "nexus" as siteMode,
-  slug: "nexus",
+  slug: "grok",
   favicon: "nexus",
   storeSlug: "nexus",
-  name: "Nexus",
+  name: "Grok",
   isStoreApp: true,
   domain: "nexus.chrry.ai",
   store: "https://nexus.chrry.ai",

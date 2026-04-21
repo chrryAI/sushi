@@ -57,7 +57,7 @@ const Img = memo(function Img({
 }: ImgProps) {
   const imgStyles = useImgStyles()
   const { src: fallbackSrc } = useWannathis()
-  const src = props.src?.includes("minio.chrry.dev") ? undefined : props.src
+  const src = props.src
   const [isLoaded, setIsLoaded] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -227,7 +227,7 @@ const Img = memo(function Img({
     )
   }
 
-  if (error)
+  if (error || !src)
     return (
       <>
         <PlatformImage

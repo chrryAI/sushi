@@ -8,7 +8,7 @@ import {
   db,
   encrypt,
   eq,
-  getPureApp,
+  getApp,
   getStore,
   getStoreInstall,
   type newApp,
@@ -3373,7 +3373,6 @@ const cosmosInstructions = [
 
 export const createStores = async ({
   user: admin,
-  isProd,
   slugs,
 }: {
   user: user
@@ -3382,12 +3381,6 @@ export const createStores = async ({
 }) => {
   if (!db) throw new Error("DB not initialized")
   // Fetch all existing stores once
-
-  const getApp = async ({ slug }: { slug: string }) => {
-    const app = await getPureApp({ slug })
-    // if (!app && isProd) throw new Error(`App ${slug} not found`)
-    return app
-  }
 
   const isAllowed = (slug: string) => {
     return slugs ? slugs?.includes(slug) : true

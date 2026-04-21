@@ -17,8 +17,8 @@ import { eq } from "drizzle-orm"
 import {
   createStore,
   db,
+  getApp,
   getEmbeddingProvider,
-  getPureApp,
   getStore,
   updateApp,
   updateStore,
@@ -119,7 +119,7 @@ export async function createCSuite({ userId }: { userId?: string } = {}) {
 
   // ── 3. Process each C-level role ─────────────────────────────────
   for (const role of CSUITE) {
-    const app = await getPureApp({ slug: role.appSlug, isSafe: false })
+    const app = await getApp({ slug: role.appSlug, isSafe: false })
 
     if (!app) {
       console.warn(`⚠️  App not found: ${role.appSlug} — skipping`)

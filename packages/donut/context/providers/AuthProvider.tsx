@@ -526,10 +526,7 @@ export function AuthProvider({
   thread?: { thread: thread; messages: paginatedMessages }
 }) {
   const [wasGifted, setWasGifted] = useState<boolean>(false)
-  const [session, setSession] = useLocalStorage<session | undefined>(
-    "session",
-    props.session,
-  )
+  const [session, setSession] = useState<session | undefined>(props.session)
 
   const {
     searchParams: sp,
