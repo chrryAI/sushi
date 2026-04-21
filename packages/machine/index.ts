@@ -1353,7 +1353,7 @@ export const getUser = async (payload: {
     }
   }
 
-  const app = appId ? await getPureApp({ id: appId }) : undefined
+  const app = appId ? await getApp({ id: appId }) : undefined
 
   const result = (
     await db
@@ -1896,7 +1896,7 @@ export const getMessage = async ({
     : undefined
 
   const pearApp = result?.message?.pearAppId
-    ? await chopStick({
+    ? await getApp({
         id: result?.message?.pearAppId,
       })
     : undefined
@@ -2235,12 +2235,12 @@ export const getMessages = async ({
     messages: await Promise.all(
       result.map(async (message) => {
         const pearApp = message.message?.pearAppId
-          ? await chopStick({
+          ? await getApp({
               id: message.message?.pearAppId,
             })
           : undefined
         const app = message.message?.appId
-          ? await getPureApp({ id: message.message.appId })
+          ? await getApp({ id: message.message.appId })
           : undefined
 
         const resolvedMessage = await resolveMessageMedia(
@@ -2921,7 +2921,7 @@ export const getGuest = async (payload: {
     ? await Promise.all([
         getMemories({ guestId: result.id }),
         getMessages({ guestId: result.id, pageSize: 1 }),
-        appId ? getPureApp({ id: appId }) : Promise.resolve(undefined),
+        appId ? getApp({ id: appId }) : Promise.resolve(undefined),
         getGuestCreditsLeft({ guestId: result.id, threadId }),
       ])
     : [undefined, undefined, undefined, undefined]
@@ -3254,7 +3254,7 @@ export const getThread = async ({
     .limit(1)
 
   const pearApp = result?.threads?.pearAppId
-    ? await chopStick({
+    ? await getApp({
         id: result.threads.pearAppId,
       })
     : undefined
@@ -3305,7 +3305,7 @@ export const getThread = async ({
     : undefined
 
   const app = result?.threads?.appId
-    ? await getPureApp({
+    ? await getApp({
         id: result.threads.appId,
       })
     : undefined
@@ -3677,13 +3677,13 @@ export const getThreads = async ({
       threads: await Promise.all(
         result.map(async (thread) => {
           const app = thread.threads.appId
-            ? await chopStick({
+            ? await getApp({
                 id: thread.threads.appId,
               })
             : undefined
 
           const pearApp = thread?.threads?.pearAppId
-            ? await chopStick({
+            ? await getApp({
                 id: thread?.threads?.pearAppId,
               })
             : undefined
@@ -3737,7 +3737,7 @@ export const getThreads = async ({
               if (appIds.length === 0) return []
 
               return await Promise.all(
-                appIds.map((id) => chopStick({ id, userId, guestId })),
+                appIds.map((id) => getApp({ id, userId, guestId })),
               )
             })(),
           }
@@ -3775,12 +3775,12 @@ export const getThreads = async ({
       threads: await Promise.all(
         result.map(async (thread) => {
           const pearApp = thread?.threads?.pearAppId
-            ? await chopStick({
+            ? await getApp({
                 id: thread?.threads?.pearAppId,
               })
             : undefined
           const app = thread.threads.appId
-            ? await chopStick({ id: thread.threads.appId, userId, guestId })
+            ? await getApp({ id: thread.threads.appId, userId, guestId })
             : undefined
 
           return {
@@ -3807,7 +3807,7 @@ export const getThreads = async ({
               if (appIds.length === 0) return []
 
               return await Promise.all(
-                appIds.map((id) => chopStick({ id, userId, guestId })),
+                appIds.map((id) => getApp({ id, userId, guestId })),
               )
             })(),
             user: thread.user
@@ -4311,7 +4311,7 @@ export async function createCharacterTag(characterTag: newCharacterProfile) {
     : null
 
   const app = characterTag.appId
-    ? await getPureApp({
+    ? await getApp({
         id: characterTag.appId,
       })
     : null
@@ -5857,7 +5857,7 @@ export const createPureApp = async (app: newApp) => {
   const [inserted] = await db.insert(apps).values(app).returning()
 
   return inserted
-    ? await getPureApp({
+    ? await getApp({
         id: inserted.id,
         userId: app.userId || undefined,
         guestId: app.guestId || undefined,
@@ -5874,7 +5874,7 @@ export const updatePureApp = async (app: app) => {
     .returning()
 
   return updated
-    ? await getPureApp({
+    ? await getApp({
         id: updated.id,
         userId: app.userId || undefined,
         guestId: app.guestId || undefined,
@@ -5896,7 +5896,7 @@ export const updateApp = async (app: Partial<app> & { id: string }) => {
   }
 
   return updated
-    ? await chopStick({
+    ? await getApp({
         id: updated.id,
         userId: app.userId || undefined,
         guestId: app.guestId || undefined,
@@ -5913,9 +5913,9 @@ export const createOrUpdateApp = async ({
   extends?: string[]
 }) => {
   const existingApp = app.id
-    ? await getPureApp({ id: app.id })
+    ? await getApp({ id: app.id })
     : app.slug && app.storeId
-      ? await getPureApp({
+      ? await getApp({
           slug: app.slug,
           storeId: app.storeId,
           userId: app.userId || undefined,
@@ -5935,7 +5935,7 @@ export const createOrUpdateApp = async ({
       .returning()
 
     result = updated
-      ? await getPureApp({
+      ? await getApp({
           id: updated.id,
           isSafe: false,
         })
@@ -5949,7 +5949,7 @@ export const createOrUpdateApp = async ({
       })
       .returning()
     result = inserted
-      ? await getPureApp({
+      ? await getApp({
           id: inserted.id,
           isSafe: false,
         })
@@ -6545,7 +6545,7 @@ export const chopStick = async <T extends sushi>(
 
   // Agent-driven join: agent.metadata.join overrides caller-supplied join
   // which itself overrides defaults. Resolution order: agent > payload > defaults.
-  const agentJoin = (agent as any)?.metadata?.join ?? null
+  const agentJoin = buildPrompt ? (agent as any)?.metadata?.join : null
   const resolvedJoin = agentJoin
     ? resolveJoinWeights(agentJoin, true)
     : (join ?? resolveJoinWeights(null, true))
@@ -6707,8 +6707,10 @@ export const chopStick = async <T extends sushi>(
 
   const canDNA = hasDNA && isCharacterProfileEnabled
 
+  let generativeModel
+  let embeddingModel
   // Phase 2: All independent queries in parallel (concurrency limited to 5)
-  const limit = pLimit(10)
+  const limit = pLimit(5)
   const [
     /*1*/ userMemories,
     /*2*/ userCharacterProfiles,
@@ -6727,8 +6729,6 @@ export const chopStick = async <T extends sushi>(
     /*15*/ threadInstructions,
     /*16*/ dnaInstructions,
     /*17*/ storeApps,
-    /*18*/ generativeModel,
-    /*19*/ embeddingModel,
   ] = await Promise.all([
     // 1 user memories
     limit(() =>
@@ -6930,10 +6930,7 @@ export const chopStick = async <T extends sushi>(
         ...payload,
       }).then((a) => a?.store?.apps)
     }),
-
     // 18 & 19: resolved below after Promise.all — model/embedding need full app context
-    limit(() => Promise.resolve(undefined)),
-    limit(() => Promise.resolve(undefined)),
   ])
 
   const beast = storeApps?.find((a) => a?.id === app.store?.appId)
@@ -7075,134 +7072,135 @@ export const chopStick = async <T extends sushi>(
     return sensitivePatterns.some((pattern) => pattern.test(content))
   }
 
-  const dnaArtifacts =
-    app && canDNA ? await getDNAThreadArtifacts(result) : undefined
+  //   async function getAppDNAContext(appData: app): Promise<string> {
+  //     if (!app?.app.mainThreadId) return ""
 
-  async function getAppDNAContext(appData: app): Promise<string> {
-    if (!app?.app.mainThreadId) return ""
+  //     const dnaArtifacts =
+  //       app && canDNA ? await getDNAThreadArtifacts(result) : undefined
 
-    try {
-      function sanitizeMemoryForDNA(memory: {
-        content: string
-        category?: string | null
-        title?: string | null
-      }): string | null {
-        // Skip user-specific categories
-        if (
-          memory.category === "preference" ||
-          memory.category === "relationship" ||
-          memory.category === "goal"
-        ) {
-          return null
-        }
+  //     try {
+  //       function sanitizeMemoryForDNA(memory: {
+  //         content: string
+  //         category?: string | null
+  //         title?: string | null
+  //       }): string | null {
+  //         // Skip user-specific categories
+  //         if (
+  //           memory.category === "preference" ||
+  //           memory.category === "relationship" ||
+  //           memory.category === "goal"
+  //         ) {
+  //           return null
+  //         }
 
-        const content = memory.content || memory.title || ""
+  //         const content = memory.content || memory.title || ""
 
-        // Skip if contains personal info
-        if (containsPersonalInfo(content)) {
-          return null
-        }
+  //         // Skip if contains personal info
+  //         if (containsPersonalInfo(content)) {
+  //           return null
+  //         }
 
-        // Skip very short or empty content
-        if (content.length < 10) {
-          return null
-        }
+  //         // Skip very short or empty content
+  //         if (content.length < 10) {
+  //           return null
+  //         }
 
-        // Truncate long content
-        return content.length > 300
-          ? content.substring(0, 300)
-          : `...${content}`
-      }
+  //         // Truncate long content
+  //         return content.length > 300
+  //           ? content.substring(0, 300)
+  //           : `...${content}`
+  //       }
 
-      if (!appData) return ""
+  //       if (!appData) return ""
 
-      const scatteredInstructions = appData.dnaInstructions ?? []
+  //       const scatteredInstructions = appData.dnaInstructions ?? []
 
-      // 🛡️ FILTER: Remove instructions with personal info
-      // For memories
-      const sanitizedMemories = (dnaMemories ?? [])
-        .map(sanitizeMemoryForDNA)
-        .filter(
-          (m): m is string => m !== null && langdetect.detectOne(m) === "en",
-        ) // Only EN
-        .slice(0, 10)
+  //       // 🛡️ FILTER: Remove instructions with personal info
+  //       // For memories
+  //       const sanitizedMemories = (dnaMemories ?? [])
+  //         .map(sanitizeMemoryForDNA)
+  //         .filter(
+  //           (m): m is string => m !== null && langdetect.detectOne(m) === "en",
+  //         ) // Only EN
+  //         .slice(0, 10)
 
-      // For instructions
-      const sanitizedInstructions = scatteredInstructions
-        .filter((i: instructionBase) => {
-          const content = i.content
-          const title = i.title || ""
-          return (
-            content &&
-            !containsPersonalInfo(content) &&
-            !containsPersonalInfo(title) &&
-            langdetect.detectOne(`${content} ${title}`) === "en"
-          ) // Only EN
-        })
-        .slice(0, 5)
+  //       // For instructions
+  //       const sanitizedInstructions = scatteredInstructions
+  //         .filter((i: instructionBase) => {
+  //           const content = i.content
+  //           const title = i.title || ""
+  //           return (
+  //             content &&
+  //             !containsPersonalInfo(content) &&
+  //             !containsPersonalInfo(title) &&
+  //             langdetect.detectOne(`${content} ${title}`) === "en"
+  //           ) // Only EN
+  //         })
+  //         .slice(0, 5)
 
-      // Build DNA context
-      let context = ""
+  //       // Build DNA context
+  //       let context = ""
 
-      // Add artifacts first (uploaded files - sanitized public data)
-      if (dnaArtifacts) {
-        context += dnaArtifacts
-      }
+  //       // Add artifacts first (uploaded files - sanitized public data)
+  //       if (dnaArtifacts) {
+  //         context += dnaArtifacts
+  //       }
 
-      const creatorName =
-        appData?.user?.name || appData?.guest?.id.slice(0, 5) || ""
+  //       const creatorName =
+  //         appData?.user?.name || appData?.guest?.id.slice(0, 5) || ""
 
-      // Add scattered instructions second (cross-app context) - SANITIZED
-      if (sanitizedInstructions.length > 0) {
-        context += `\n\n## 🎯 Creator's Workflow Patterns (from ${creatorName}):
-${sanitizedInstructions
-  .map(
-    (i) =>
-      `${i.emoji} **${i.title}**${i.appId && i.appId !== app.app.id ? ` [from another app]` : ""}: ${i.content.substring(0, 200)}${i.content.length > 200 ? "..." : ""}`,
-  )
-  .join("\n")}
+  //       // Add scattered instructions second (cross-app context) - SANITIZED
+  //       if (sanitizedInstructions.length > 0) {
+  //         context += `\n\n## 🎯 Creator's Workflow Patterns (from ${creatorName}):
+  // ${sanitizedInstructions
+  //   .map(
+  //     (i) =>
+  //       `${i.emoji} **${i.title}**${i.appId && i.appId !== app.app.id ? ` [from another app]` : ""}: ${i.content.substring(0, 200)}${i.content.length > 200 ? "..." : ""}`,
+  //   )
+  //   .join("\n")}
 
-_General workflow patterns the creator uses across apps. No personal information included._
-`
-      }
+  // _General workflow patterns the creator uses across apps. No personal information included._
+  // `
+  //       }
 
-      // Add memories third (filtered foundational knowledge) - SANITIZED
-      if (sanitizedMemories.length > 0) {
-        context += `\n\n## 🧬 App DNA (from ${creatorName})
+  //       // Add memories third (filtered foundational knowledge) - SANITIZED
+  //       if (sanitizedMemories.length > 0) {
+  //         context += `\n\n## 🧬 App DNA (from ${creatorName})
 
-**Foundational Knowledge:**
-${sanitizedMemories.map((content: string) => `- ${content}`).join("\n")}
+  // **Foundational Knowledge:**
+  // ${sanitizedMemories.map((content: string) => `- ${content}`).join("\n")}
 
-_General knowledge about this app's purpose and capabilities. No personal information included._
-`
-      }
+  // _General knowledge about this app's purpose and capabilities. No personal information included._
+  // `
+  //       }
 
-      // 🛡️ PRIVACY NOTICE: Always append to DNA context
-      if (context) {
-        context += `\n\n---\n⚠️ **Privacy Notice**: This context contains only general, non-personal information about the app. Personal details, private conversations, and sensitive data are automatically filtered out.`
-      }
+  //       // 🛡️ PRIVACY NOTICE: Always append to DNA context
+  //       if (context) {
+  //         context += `\n\n---\n⚠️ **Privacy Notice**: This context contains only general, non-personal information about the app. Personal details, private conversations, and sensitive data are automatically filtered out.`
+  //       }
 
-      return context
-    } catch (error) {
-      // captureException(error)
+  //       return context
+  //     } catch (error) {
+  //       // captureException(error)
 
-      console.error("Error fetching DNA context:", error)
-      return ""
-    }
-  }
+  //       console.error("Error fetching DNA context:", error)
+  //       return ""
+  //     }
+  //   }
 
-  // Build prompt sections if requested — skipped in cache to avoid stale sections
-  if (buildPrompt && result.ai) {
-    const sections = buildPromptSections(result as any, {
-      messageCount,
-      appId: app.app.id,
-      userName:
-        (result as any).user?.name ??
-        (result as any).guest?.id?.slice(0, 5) ??
-        undefined,
-    })
-    ;(result.ai as any).promptSections = sections
-  }
+  //   // Build prompt sections if requested — skipped in cache to avoid stale sections
+  //   if (buildPrompt && result.ai) {
+  //     const sections = buildPromptSections(result as any, {
+  //       messageCount,
+  //       appId: app.app.id,
+  //       userName:
+  //         (result as any).user?.name ??
+  //         (result as any).guest?.id?.slice(0, 5) ??
+  //         undefined,
+  //     })
+  //     ;(result.ai as any).promptSections = sections
+  //     ;(result.ai as any).prompt = sections.assembled
+  //   }
 
   setCache(cacheKey, result, isOwner ? 60 * 5 : 60 * 60)
 
@@ -7214,38 +7212,19 @@ _General knowledge about this app's purpose and capabilities. No personal inform
 
   return {
     ...result,
-    dnaArtifacts,
+    // dnaArtifacts,
   }
 }
 
-export const getApp = chopStick
-export const getPureApp = async ({
-  name,
+export const getApp = async ({
   id,
   slug,
   userId,
   guestId,
   isSafe = true,
-  includeScheduledJobs = false,
-}: {
-  name?: "Atlas" | "Peach" | "Vault" | "Bloom" | "Vex"
-  id?: string
-  slug?: string
-  userId?: string
-  guestId?: string
-  storeId?: string
-  isSafe?: boolean
-  depth?: number
-  includeScheduledJobs?: boolean
-}): Promise<app | undefined> => {
+}: ramen): Promise<app | undefined> => {
   // Build app identification conditions
   const appConditions = []
-
-  if (name) {
-    appConditions.push(
-      eq(apps.name, name as "Atlas" | "Peach" | "Vault" | "Bloom"),
-    )
-  }
 
   if (slug) {
     appConditions.push(eq(apps.slug, slug))
@@ -7254,18 +7233,6 @@ export const getPureApp = async ({
   if (id) {
     appConditions.push(eq(apps.id, id))
   }
-
-  // Build access conditions (can user/guest access this app?)
-  // Skip access check when searching by ID (direct lookup)
-  const accessConditions = id
-    ? undefined
-    : or(
-        // User's own apps
-        userId ? eq(apps.userId, userId) : undefined,
-        // Guest's own apps
-        guestId ? eq(apps.guestId, guestId) : undefined,
-        eq(apps.visibility, "public"),
-      )
 
   const [app] = await db
     .select({
@@ -7276,18 +7243,9 @@ export const getPureApp = async ({
     .from(apps)
     .leftJoin(users, eq(apps.userId, users.id))
     .leftJoin(guests, eq(apps.guestId, guests.id))
-    .where(
-      and(
-        appConditions.length > 0 ? and(...appConditions) : undefined,
-        accessConditions,
-      ),
-    )
+    .where(and(...appConditions))
 
   if (!app) return undefined
-
-  const appSchedule = includeScheduledJobs
-    ? await getScheduledJobs({ appId: app.app.id, userId })
-    : []
 
   return (
     isSafe
@@ -7296,7 +7254,7 @@ export const getPureApp = async ({
           userId,
           guestId,
         }) as app)
-      : { ...app.app, scheduledJobs: appSchedule }
+      : { ...app.app }
   ) as app
 }
 
@@ -8293,7 +8251,7 @@ export async function getStores(payload: {
         app: row.app ? toSafeApp({ app: row.app, userId, guestId }) : undefined,
         apps: await Promise.all(
           appsResult.items.map(
-            (app) => chopStick({ id: app.id, userId, guestId })!,
+            (app) => getApp({ id: app.id, userId, guestId })!,
           ),
         ),
       }
@@ -9959,7 +9917,7 @@ export const getTribePosts = async ({
                 }
 
                 const app = row?.app?.id
-                  ? await chopStick({ id: row.app.id, userId, guestId })
+                  ? await getApp({ id: row.app.id, userId, guestId })
                   : undefined
 
                 if (!app) return null

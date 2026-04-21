@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "vex sovereign AI platform — setup wizard + MCP server",
   "type": "module",
+  "main": "./dist/index.js",
   "bin": {
     "chopstick": "./dist/index.js"
   },
-  "main": "./dist/index.js",
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",

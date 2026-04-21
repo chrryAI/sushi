@@ -11,6 +11,7 @@
  */
 
 import type { sushi } from "@chrryai/donut/types"
+import { match, P } from "ts-pattern"
 
 // ─────────────────────────────────────────────────────────────────
 // Types
@@ -145,13 +146,12 @@ export function buildInstructionsContext(
   const dna = (sushi.dnaInstructions ?? []) as Instruction[]
 
   // Priority: thread > app > user > dna
-  const selected = thread.length
-    ? thread
-    : app.length
-      ? app
-      : user.length
-        ? user
-        : dna
+  const selected = match([thread.length, app.length, user.length, dna.length])
+    .with([P.number.gt(0), P._, P._, P._], () => thread)
+    .with([0, P.number.gt(0), P._, P._], () => app)
+    .with([0, 0, P.number.gt(0), P._], () => user)
+    .with([0, 0, 0, P.number.gt(0)], () => dna)
+    .otherwise(() => [])
 
   if (!selected.length) return ""
 
@@ -286,11 +286,10 @@ export function buildDnaContext(
   const instructions = (sushi.dnaInstructions ?? []) as DnaInstruction[]
 
   const knowledgeMems = memories
-    .filter(
-      (m) =>
-        m.category !== "preference" &&
-        m.category !== "relationship" &&
-        m.category !== "goal",
+    .filter((m) =>
+      match(m.category)
+        .with(P.union("preference", "relationship", "goal"), () => false)
+        .otherwise(() => true),
     )
     .map((m) => m.content || m.title || "")
     .filter((c) => c.length > 10)
@@ -379,16 +378,18 @@ export function buildPromptSections(
     ? buildAppsContext(sushi.store.apps as any, sushi.store.name ?? undefined)
     : ""
 
-  const assembled = [
-    memories,
-    instructions,
-    characterProfiles,
-    placeholders,
-    dna,
-    apps,
-  ]
-    .filter(Boolean)
-    .join("")
+  // Assemble sections using pattern matching for app-specific ordering
+  const assembled = match(sushi.slug)
+    .with("grape", () =>
+      [memories, instructions, characterProfiles, placeholders, dna, apps]
+        .filter(Boolean)
+        .join(""),
+    )
+    .otherwise(() =>
+      [memories, instructions, characterProfiles, placeholders, dna, apps]
+        .filter(Boolean)
+        .join(""),
+    )
 
   return {
     memories,

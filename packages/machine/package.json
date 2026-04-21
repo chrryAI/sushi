@@ -1,19 +1,21 @@
 {
   "name": "@chrryai/machine",
-  "version": "2.4.94",
+  "version": "2.4.96",
   "description": "",
   "keywords": [],
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "./index.ts",
   "exports": {
     ".": "./index.ts",
     "./src/*": "./src/*.ts",
     "./src/schema": "./src/schema.ts",
     "./ai/vault": "./src/ai/vault/index.ts",
-    "./ai/sushi": "./src/ai/sushi/provider.ts"
+    "./ai/sushi": "./src/ai/sushi/provider.ts",
+    "./ai/sushi/effectProvider": "./src/ai/sushi/effectProvider.ts",
+    "./ai/sushi/structuredOutput": "./src/ai/sushi/structuredOutput.ts"
   },
+  "main": "./index.ts",
   "scripts": {
     "check-types": "tsc --noEmit -p tsconfig.check.json",
     "clear": "CLEAR=true pnpm exec tsx seed.ts",
@@ -79,6 +81,7 @@
     "slug": "^11.0.1",
     "stripe": "^20.4.1",
     "ts-node": "^10.9.2",
+    "ts-pattern": "^5.9.0",
     "tsx": "^4.21.0",
     "uuid": "^13.0.0",
     "vitest": "catalog:"

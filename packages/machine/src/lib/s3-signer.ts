@@ -40,15 +40,15 @@ function getBucketForContext(context: StorageContext): string {
     thread:
       process.env.S3_BUCKET_NAME_PRIVATE ||
       process.env.S3_BUCKET_PRIVATE ||
-      "chrry-private",
-    chat: process.env.S3_BUCKET_NAME || "chrry-chat-files",
-    apps: process.env.S3_BUCKET_NAME_APPS || "chrry-app-assets",
-    other: process.env.S3_BUCKET_NAME_OTHER || "chrry-files",
-    user: process.env.S3_BUCKET_NAME_USER || "chrry-user-files",
-    tribe: process.env.S3_BUCKET_NAME_TRIBE || "chrry-tribe-files",
-    desktop: process.env.S3_BUCKET_NAME_DESKTOP || "chrry-desktop",
-    ramen: process.env.S3_BUCKET_NAME_RAMEN || "chrry-ramen",
-    app: process.env.S3_BUCKET_NAME_APP || "chrry-app-files",
+      "chrry-private-prod-eu",
+    chat: process.env.S3_BUCKET_NAME || "chrry-chat-files-prod-eu",
+    apps: process.env.S3_BUCKET_NAME_APPS || "chrry-app-profiles-prod-eu",
+    other: process.env.S3_BUCKET_NAME_OTHER || "chrry-files-prod-eu",
+    user: process.env.S3_BUCKET_NAME_USER || "chrry-user-files-prod-eu",
+    tribe: process.env.S3_BUCKET_NAME_TRIBE || "chrry-tribe-files-prod-eu",
+    desktop: process.env.S3_BUCKET_NAME_DESKTOP || "chrry-desktop-prod-eu",
+    ramen: process.env.S3_BUCKET_NAME_RAMEN || "chrry-ramen-prod-eu",
+    app: process.env.S3_BUCKET_NAME_APP || "chrry-app-files-prod-eu",
   }
   return bucketMap[context]
 }
@@ -67,7 +67,7 @@ export async function getS3Config(
   const bucket =
     getBucketForContext(context) ||
     process.env.S3_BUCKET_NAME ||
-    "chrry-chat-files"
+    "chrry-chat-files-prod-eu"
 
   const isAWS = isAwsEndpoint(process.env.S3_ENDPOINT)
   const publicUrl = isAWS

@@ -1286,6 +1286,10 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
     flex: 1,
   }
 
+  if (!showTribe) {
+    return null
+  }
+
   return (
     <>
       <Div id="tribe">
@@ -1294,737 +1298,298 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
             <TribePost />
           </Div>
         ) : (
-          showTribe && (
-            <Div style={containerStyle}>
-              <Div>
-                <H1
-                  style={{
-                    display: "flex",
-                    gap: ".5rem",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    margin: 0,
-                    padding: 0,
-                    marginBottom: "1.75rem",
-                    fontSize: "clamp(1.3rem, 4vw, 1.725rem)",
-                  }}
-                >
-                  {isPear && pear ? (
-                    <Img size={isMobileDevice ? 34 : 37} app={pear} />
-                  ) : app?.slug === "focus" ? (
-                    <FocusButton
-                      width={40}
-                      style={{ marginRight: 14, position: "relative", top: 1 }}
-                    >
-                      {t("Focus")}
-                    </FocusButton>
-                  ) : (
-                    <Img
-                      size={isMobileDevice ? 34 : 37}
-                      app={
-                        showTribeProfile &&
-                        !(pathname === "/" && siteConfig.isTribe)
-                          ? app
-                          : undefined
-                      }
-                      slug={showTribeProfile ? undefined : "tribe"}
-                    />
-                  )}
-                  {showTribeProfile && app && app?.slug !== "focus" ? (
-                    <AppLink app={isPear && pear ? pear : app} isTribe={false}>
-                      {t(isPear ? "Pear" : app?.name)}
-                    </AppLink>
-                  ) : (
-                    app?.slug !== "focus" && <>{t(isPear ? "Pear" : "Tribe")}</>
-                  )}
-                  <Div
-                    style={{
-                      marginLeft: rtl ? undefined : "auto",
-                      marginRight: !rtl ? undefined : "auto",
-                      fontSize: ".8rem",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: ".75rem",
-                    }}
+          <Div style={containerStyle}>
+            <Div>
+              <H1
+                style={{
+                  display: "flex",
+                  gap: ".5rem",
+                  flexWrap: "wrap",
+                  alignItems: "center",
+                  margin: 0,
+                  padding: 0,
+                  marginBottom: "1.75rem",
+                  fontSize: "clamp(1.3rem, 4vw, 1.725rem)",
+                }}
+              >
+                {isPear && pear ? (
+                  <Img size={isMobileDevice ? 34 : 37} app={pear} />
+                ) : app?.slug === "focus" ? (
+                  <FocusButton
+                    width={40}
+                    style={{ marginRight: 14, position: "relative", top: 1 }}
                   >
-                    <A
-                      event={ANALYTICS_EVENTS.CHERRY_DEV_CLICK}
-                      openInNewTab
-                      href="https://chrry.dev"
-                    >
-                      <FaGithub />
-                      AGPLv3
-                    </A>
-                    <Grapes
-                      style={{
-                        padding: ".3rem",
-                      }}
-                    />
-                  </Div>
-                </H1>
+                    {t("Focus")}
+                  </FocusButton>
+                ) : (
+                  <Img
+                    size={isMobileDevice ? 34 : 37}
+                    app={
+                      showTribeProfile &&
+                      !(pathname === "/" && siteConfig.isTribe)
+                        ? app
+                        : undefined
+                    }
+                    slug={showTribeProfile ? undefined : "tribe"}
+                  />
+                )}
+                {showTribeProfile && app && app?.slug !== "focus" ? (
+                  <AppLink app={isPear && pear ? pear : app} isTribe={false}>
+                    {t(isPear ? "Pear" : app?.name)}
+                  </AppLink>
+                ) : (
+                  app?.slug !== "focus" && <>{t(isPear ? "Pear" : "Tribe")}</>
+                )}
                 <Div
-                  as="header"
                   style={{
+                    marginLeft: rtl ? undefined : "auto",
+                    marginRight: !rtl ? undefined : "auto",
+                    fontSize: ".8rem",
                     display: "flex",
-                    gap: ".5rem",
-                    flexWrap: "wrap",
-                    flexDirection: isMobileDevice ? "column" : "row",
-                    position: "relative",
-                    bottom: isMobileDevice ? ".5rem" : ".5rem",
-                    marginBottom: ".75rem",
+                    alignItems: "center",
+                    gap: ".75rem",
                   }}
                 >
-                  <Div
-                    style={{
-                      display: "flex",
-                      gap: ".7rem",
-                      flexWrap: "wrap",
-                      fontSize: ".85rem",
-                      flex: 1,
-                    }}
+                  <A
+                    event={ANALYTICS_EVENTS.CHERRY_DEV_CLICK}
+                    openInNewTab
+                    href="https://chrry.dev"
                   >
-                    {!isDrawerOpen && (
-                      <A
-                        onClick={() => {
-                          setShowWatermelon(true)
-                        }}
-                        openInNewTab
-                        event={ANALYTICS_EVENTS.WM_BYOK_CLICK}
-                        href={siteConfig.isWatermelon ? "/" : "/watermelon"}
-                        style={{
-                          position: "relative",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
-                      >
-                        <Img slug="watermelon" width={20} height={20} /> BYOK (
-                        {t("Free")})
-                        {user?.apiKeys?.openrouter ||
-                        guest?.apiKeys?.openrouter ? (
-                          <CircleCheck color="var(--accent-4)" size={14} />
-                        ) : null}
-                      </A>
-                    )}
+                    <FaGithub />
+                    AGPLv3
+                  </A>
+                  <Grapes
+                    style={{
+                      padding: ".3rem",
+                    }}
+                  />
+                </Div>
+              </H1>
+              <Div
+                as="header"
+                style={{
+                  display: "flex",
+                  gap: ".5rem",
+                  flexWrap: "wrap",
+                  flexDirection: isMobileDevice ? "column" : "row",
+                  position: "relative",
+                  bottom: isMobileDevice ? ".5rem" : ".5rem",
+                  marginBottom: ".75rem",
+                }}
+              >
+                <Div
+                  style={{
+                    display: "flex",
+                    gap: ".7rem",
+                    flexWrap: "wrap",
+                    fontSize: ".85rem",
+                    flex: 1,
+                  }}
+                >
+                  {!isDrawerOpen && (
                     <A
-                      event={ANALYTICS_EVENTS.BUY_ME_A_COFFEE_CLICK}
-                      href="https://buymeacoffee.com/iliyan"
+                      onClick={() => {
+                        setShowWatermelon(true)
+                      }}
                       openInNewTab
-                      title="Buy me a coffee"
+                      event={ANALYTICS_EVENTS.WM_BYOK_CLICK}
+                      href={siteConfig.isWatermelon ? "/" : "/watermelon"}
                       style={{
+                        position: "relative",
                         display: "flex",
                         alignItems: "center",
                         gap: 5,
-                        color: COLORS.orange,
                       }}
                     >
-                      <SiBuymeacoffee color={COLORS.orange} size={16} />
-                      {t("BAM")} 💥
+                      <Img slug="watermelon" width={20} height={20} /> BYOK (
+                      {t("Free")})
+                      {user?.apiKeys?.openrouter ||
+                      guest?.apiKeys?.openrouter ? (
+                        <CircleCheck color="var(--accent-4)" size={14} />
+                      ) : null}
                     </A>
-                    <A href="/about">
-                      {app?.store?.app?.icon || "🍒"} /{t("about")}
-                    </A>
-                    <A href="/privacy">/{t("privacy")} 🤫</A>
-                    <Div
-                      style={{
-                        display: "flex",
-                        gap: 7.5,
-                        alignItems: "center",
-                        marginLeft: "auto",
-                      }}
-                    >
-                      <Weather showLocation />
-                      <Hippo dataTestId="tribe" />
-                    </Div>
+                  )}
+                  <A
+                    event={ANALYTICS_EVENTS.BUY_ME_A_COFFEE_CLICK}
+                    href="https://buymeacoffee.com/iliyan"
+                    openInNewTab
+                    title="Buy me a coffee"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      color: COLORS.orange,
+                    }}
+                  >
+                    <SiBuymeacoffee color={COLORS.orange} size={16} />
+                    {t("BAM")} 💥
+                  </A>
+                  <A href="/about">
+                    {app?.store?.app?.icon || "🍒"} /{t("about")}
+                  </A>
+                  <A href="/privacy">/{t("privacy")} 🤫</A>
+                  <Div
+                    style={{
+                      display: "flex",
+                      gap: 7.5,
+                      alignItems: "center",
+                      marginLeft: "auto",
+                    }}
+                  >
+                    <Weather showLocation />
+                    <Hippo dataTestId="tribe" />
                   </Div>
                 </Div>
-                <Div
-                  style={{
-                    display: "flex",
-                    gap: ".5rem",
-                    flexWrap: "wrap",
-                    marginTop: ".5rem",
-                  }}
-                  key={`app-tribe-${tribeSlug}-${app?.id}`}
-                >
-                  {isLoadingTribes ? (
-                    <Div style={{}}>
-                      <Loading />
-                    </Div>
-                  ) : (
-                    <Div
-                      key={maxTribes?.map((item) => item.slug)?.join("-")}
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: ".85rem",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      {maxTribes.map((tribe, i) => (
-                        <MotiView
-                          key={tribe.id + i}
-                          from={{ opacity: 0, translateY: 0, translateX: -10 }}
-                          animate={{ opacity: 1, translateY: 0, translateX: 0 }}
-                          transition={{
-                            duration: reduceMotion ? 0 : 100,
-                            delay: reduceMotion ? 0 : i * 25,
-                          }}
-                        >
-                          <A
-                            style={{
-                              fontSize: ".9rem",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "0.25rem",
-                              color:
-                                tribe.slug === tribeSlug
-                                  ? "var(--shade-7)"
-                                  : undefined,
-                            }}
-                            href={`/t/${tribe.slug}`}
-                          >
-                            <Span
-                              style={{
-                                fontSize: ".65rem",
-                                color: "var(--background)",
-                                borderRadius: getRadius(20),
-                                padding: ".1rem 0.3rem",
-                                background:
-                                  tribe.slug !== tribeSlug
-                                    ? "var(--accent-1)"
-                                    : "var(--shade-7)",
-                              }}
-                            >
-                              {tribe.postsCount || 0}
-                            </Span>
-                            <Span>
-                              {tribe.slug === tribeSlug ? "" : "/"}
-                              {t(tribe.slug)}
-                            </Span>
-                          </A>
-                        </MotiView>
-                      ))}
-                    </Div>
-                  )}
-                </Div>
               </Div>
-              <Div>
-                {!showTribeProfile && (
-                  <>
-                    <Div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 15,
-                        margin: 0,
-                        marginTop: "2rem",
-                        marginBottom: "1.25rem",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <Div
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 15,
-                          flex: 1,
-                          flexWrap: "wrap",
+              <Div
+                style={{
+                  display: "flex",
+                  gap: ".5rem",
+                  flexWrap: "wrap",
+                  marginTop: ".5rem",
+                }}
+                key={`app-tribe-${tribeSlug}-${app?.id}`}
+              >
+                {isLoadingTribes ? (
+                  <Div style={{}}>
+                    <Loading />
+                  </Div>
+                ) : (
+                  <Div
+                    key={maxTribes?.map((item) => item.slug)?.join("-")}
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      gap: ".85rem",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {maxTribes.map((tribe, i) => (
+                      <MotiView
+                        key={tribe.id + i}
+                        from={{ opacity: 0, translateY: 0, translateX: -10 }}
+                        animate={{ opacity: 1, translateY: 0, translateX: 0 }}
+                        transition={{
+                          duration: reduceMotion ? 0 : 100,
+                          delay: reduceMotion ? 0 : i * 25,
                         }}
                       >
-                        <Img logo="coder" size={30} />
-                        <Span>
-                          {tribeSlug && currentTribe ? (
-                            <>
-                              <A
-                                href={getTribeUrl()}
-                                onClick={(e) => {
-                                  if (e.metaKey || e.ctrlKey) {
-                                    return
-                                  }
-                                  e.preventDefault()
-                                  setIsNewChat({
-                                    value: true,
-                                    to: getTribeUrl(),
-                                    tribe: true,
-                                  })
-                                }}
-                              >
-                                {t("Tribe's Feed")}
-                              </A>
-                              <P
-                                style={{
-                                  margin: 0,
-                                  fontSize: ".9rem",
-                                  fontWeight: "normal",
-                                }}
-                              >
-                                /{t(currentTribe.slug)}
-                              </P>
-                            </>
-                          ) : (
-                            <>{t("Tribe's Feed")}</>
-                          )}
-                        </Span>
-                        <P
+                        <A
                           style={{
-                            fontSize: ".75rem",
-                            color: "var(--shade-7)",
-                            fontWeight: "normal",
-                          }}
-                        >
-                          {t(
-                            tribeSlug && currentTribe
-                              ? `*${t(currentTribe?.description || "")}`
-                              : "Organize your life",
-                          )}
-                        </P>
-                        <Div
-                          style={{
+                            fontSize: ".9rem",
                             display: "flex",
                             alignItems: "center",
-                            gap: 10,
-                            marginLeft:
-                              rtl || isSmallDevice ? undefined : "auto",
-                            marginRight:
-                              !rtl || isSmallDevice ? undefined : "auto",
-                          }}
-                        >
-                          {rtl && <FocusButton />}
-
-                          {app?.mainThreadId && owner && (
-                            <A
-                              style={{ fontSize: "1rem", marginRight: 5 }}
-                              href={`/threads/${app?.mainThreadId}`}
-                            >
-                              🧬
-                            </A>
-                          )}
-                          {burnApp ? (
-                            <Div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 5,
-                                position: "relative",
-                                bottom: "0.05rem",
-                                fontWeight: "normal",
-                              }}
-                            >
-                              {app?.id === burnApp.id ? (
-                                <Checkbox
-                                  style={{
-                                    marginLeft: rtl ? undefined : "auto",
-                                    marginRight: !rtl ? undefined : "auto",
-                                    fontSize: ".85rem",
-                                  }}
-                                  checked={burn}
-                                  onChange={() => {
-                                    setBurn(!burn)
-                                  }}
-                                >
-                                  {t("Private Chat")}
-                                </Checkbox>
-                              ) : (
-                                <AppLink
-                                  icon={<Img emoji="🔥" size={20} />}
-                                  app={burnApp}
-                                  style={{
-                                    fontSize: ".95rem",
-                                    marginRight: 1,
-                                    color: COLORS.red,
-                                  }}
-                                >
-                                  <Span>{t("Burn")}</Span>
-                                </AppLink>
-                              )}
-                            </Div>
-                          ) : null}
-                          <A
-                            href={`${FRONTEND_URL}/calendar`}
-                            title={t("Organize your life")}
-                            openInNewTab={isExtension && isFirefox}
-                            className="button transparent"
-                            style={{
-                              ...utilities.button.style,
-                              ...utilities.transparent.style,
-                            }}
-                          >
-                            <Img
-                              showLoading={false}
-                              icon="calendar"
-                              width={18}
-                              height={18}
-                            />
-                          </A>
-                          <Tools
-                            showDownloads={true}
-                            showInstructions={false}
-                            showInstallers={false}
-                            icon
-                            style={{
-                              marginTop: 0,
-                            }}
-                          />
-                          {!rtl && <FocusButton />}
-                        </Div>
-                      </Div>
-                    </Div>
-                    <Div
-                      style={{
-                        marginBottom: isMobileDevice ? "1rem" : "1.5rem",
-                        textAlign: "center",
-                      }}
-                    >
-                      <P
-                        style={{
-                          lineHeight: "1.75",
-                          fontSize: ".95rem",
-                          textAlign: isSmallDevice ? "left" : "center",
-                        }}
-                      >
-                        <Trans
-                          i18nKey="tribe_ecosystem_description"
-                          defaults="<Watch AI agents collabor>ate across the 🍇 Wine ecosystem. <0>🌀 Spatial Navigation©</0> for context-aware communication and <1>🍣 Sato Dojo©</1> for autonomous coding."
-                          components={[
-                            chrry ? (
-                              <AppLink
-                                key="chrry-link"
-                                isTribe
-                                app={siteConfig.isTribe ? chrry : app || chrry}
-                              />
-                            ) : (
-                              <A
-                                key="chrry-nav-link"
-                                openInNewTab
-                                href="https://github.com/chrryai/chrry/blob/main/SPATIAL_NAVIGATION.md"
-                              />
-                            ),
-                            sushi ? (
-                              <AppLink
-                                key="sushi-link"
-                                loading={
-                                  <>
-                                    <Loading size={14} />
-                                  </>
-                                }
-                                isTribe
-                                app={sushi}
-                                style={{
-                                  display: "inline-flex",
-                                  alignItems: "center",
-                                  gap: 5,
-                                }}
-                              />
-                            ) : (
-                              <A
-                                key="sushi-patent-link"
-                                openInNewTab
-                                href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
-                              />
-                            ),
-                          ]}
-                        />
-                      </P>
-
-                      <Div
-                        style={{
-                          marginTop: 20,
-                          ...utilities.row.style,
-                          alignItems: "center",
-                          justifyContent:
-                            viewPortWidth < 550 ? "left" : "center",
-                          gap: viewPortWidth < 550 ? 12.5 : 10,
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        {app && (
-                          <AppLink
-                            isTribe={false}
-                            isPear={isPear}
-                            app={app}
-                            icon={<Img app={app} size={18} />}
-                            className="button inverted"
-                            style={{
-                              ...utilities.inverted.style,
-                              ...utilities.small.style,
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            {t(TRAIN, {
-                              name: app?.name,
-                            })}
-                          </AppLink>
-                        )}
-
-                        <ToggleAgent app={undefined} />
-                        {app && !isPear && (
-                          <Button
-                            data-testid="grapes-feedback-button"
-                            className="transparent"
-                            onClick={() => {
-                              plausible({
-                                name: ANALYTICS_EVENTS.GRAPE_PEAR_FEEDBACK,
-                                props: {
-                                  app: app.name,
-                                  slug: app.slug,
-                                  id: app.id,
-                                },
-                              })
-                              setPear(app)
-                            }}
-                            style={{
-                              ...utilities.transparent.style,
-                              ...utilities.small.style,
-                              fontSize: ".8rem",
-                            }}
-                          >
-                            <Img slug="pear" size={20} /> {t("Let's Pear")}
-                          </Button>
-                        )}
-                        {back && (
-                          <AppLink
-                            isTribe
-                            app={back}
-                            loading={<Loading size={22} />}
-                            icon={
-                              <>
-                                <Span>🌀</Span>
-                                <Img app={back} size={22} />
-                              </>
-                            }
-                            style={{
-                              marginLeft:
-                                isMobileDevice || rtl ? undefined : "auto",
-                              marginRight:
-                                isMobileDevice || !rtl ? undefined : "auto",
-                              fontSize: ".95rem",
-                              marginBottom: isMobileDevice
-                                ? ".5rem"
-                                : undefined,
-                              marginTop: isMobileDevice ? ".5rem" : undefined,
-                            }}
-                          >
-                            {t(back.name)}
-                          </AppLink>
-                        )}
-                      </Div>
-                      <Div
-                        style={{
-                          marginTop: 12.5,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          position: "relative",
-                          bottom: -2.5,
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        {app && (
-                          <AppLink isTribe={false} app={app}>
-                            <Img size={28} app={app} />
-                          </AppLink>
-                        )}
-                        <Ticker
-                          showControls
-                          style={{
+                            gap: "0.25rem",
                             color:
-                              COLORS[app?.themeColor as keyof typeof COLORS],
+                              tribe.slug === tribeSlug
+                                ? "var(--shade-7)"
+                                : undefined,
                           }}
-                        />
-                      </Div>
-                    </Div>
-                    {getStoreApps({
-                      style: { marginBottom: 25, marginTop: 5 },
-                    })}
-                  </>
+                          href={`/t/${tribe.slug}`}
+                        >
+                          <Span
+                            style={{
+                              fontSize: ".65rem",
+                              color: "var(--background)",
+                              borderRadius: getRadius(20),
+                              padding: ".1rem 0.3rem",
+                              background:
+                                tribe.slug !== tribeSlug
+                                  ? "var(--accent-1)"
+                                  : "var(--shade-7)",
+                            }}
+                          >
+                            {tribe.postsCount || 0}
+                          </Span>
+                          <Span>
+                            {tribe.slug === tribeSlug ? "" : "/"}
+                            {t(tribe.slug)}
+                          </Span>
+                        </A>
+                      </MotiView>
+                    ))}
+                  </Div>
                 )}
-                {showTribeProfile && (
+              </Div>
+            </Div>
+            <Div>
+              {!showTribeProfile && (
+                <>
                   <Div
                     style={{
                       display: "flex",
                       alignItems: "center",
                       gap: 15,
-                      justifyContent: "center",
-                      marginTop: 30,
-                      marginBottom: 10,
-                      flexDirection: "column",
+                      margin: 0,
+                      marginTop: "2rem",
+                      marginBottom: "1.25rem",
+                      flexWrap: "wrap",
                     }}
                   >
-                    <Div style={{ display: "flex", gap: 15, flexWrap: "wrap" }}>
-                      <A
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
-                        onClick={(e) => {
-                          if (e.metaKey || e.ctrlKey) {
-                            return
-                          }
-                          e.preventDefault()
-
-                          setIsNewChat({
-                            value: true,
-                            to: getTribeUrl(),
-                            tribe: true,
-                          })
-                          tags?.length && setTags([])
-                        }}
-                        href={getTribeUrl()}
-                      >
-                        <ArrowLeft size={20} />
-                        <Img logo="coder" size={30} />
-                        {t("All Tribe's Feed")}
-                      </A>{" "}
-                      {app?.store?.app?.slug === "sushi" ? (
-                        <A
-                          openInNewTab
-                          href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
-                        >
-                          {t("🍣 Sato Dojo©")}
-                        </A>
-                      ) : (
-                        <A
-                          style={{
-                            display: "flex",
-                            marginLeft: rtl ? undefined : "auto",
-                            marginRight: !rtl ? undefined : "auto",
-                          }}
-                          openInNewTab
-                          href="https://github.com/chrryai/chrry/blob/main/SPATIAL_NAVIGATION.md"
-                        >
-                          {t("🌀 Çapa")} IPA: /tʃɑ.ˈpɑ/
-                        </A>
-                      )}
-                    </Div>
-                    {/* <Tools
-                    showDownloads={true}
-                    showInstructions={false}
-                    icon
-                    style={{
-                      marginTop: 0,
-                    }}
-                  /> */}
-                    <FeedBack
+                    <Div
                       style={{
-                        position: "relative",
-                        bottom: "0.5rem",
-                        padding: "0 0.05rem",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: 15,
+                        flex: 1,
+                        flexWrap: "wrap",
                       }}
-                    />
-                    {!isPear && (
-                      <Div
+                    >
+                      <Img logo="coder" size={30} />
+                      <Span>
+                        {tribeSlug && currentTribe ? (
+                          <>
+                            <A
+                              href={getTribeUrl()}
+                              onClick={(e) => {
+                                if (e.metaKey || e.ctrlKey) {
+                                  return
+                                }
+                                e.preventDefault()
+                                setIsNewChat({
+                                  value: true,
+                                  to: getTribeUrl(),
+                                  tribe: true,
+                                })
+                              }}
+                            >
+                              {t("Tribe's Feed")}
+                            </A>
+                            <P
+                              style={{
+                                margin: 0,
+                                fontSize: ".9rem",
+                                fontWeight: "normal",
+                              }}
+                            >
+                              /{t(currentTribe.slug)}
+                            </P>
+                          </>
+                        ) : (
+                          <>{t("Tribe's Feed")}</>
+                        )}
+                      </Span>
+                      <P
                         style={{
-                          display: "flex",
-                          gap: 10,
-                          lineHeight: "1.5",
-                          flexWrap: "wrap",
+                          fontSize: ".75rem",
+                          color: "var(--shade-7)",
+                          fontWeight: "normal",
                         }}
                       >
-                        <Div
-                          style={{
-                            display: "flex",
-                            gap: 15,
-                            flex: 1,
-                            flexWrap: "wrap",
-                            alignItems: "center",
-                          }}
-                        >
-                          {app && (
-                            <AppLink
-                              isTribe={false}
-                              app={app}
-                              icon={<Img size={32} app={app} />}
-                            />
-                          )}
-                          {os !== "windows" && (
-                            <Span
-                              style={{
-                                position: "relative",
-                                right: "0.2rem",
-                              }}
-                            >
-                              {app?.icon}
-                            </Span>
-                          )}
-                          {back ? (
-                            <AppLink
-                              isTribe
-                              app={back}
-                              loading={<Loading size={22} />}
-                              icon={
-                                <>
-                                  <Span>🌀</Span>
-                                  <Img app={back} size={22} />
-                                </>
-                              }
-                              style={{
-                                marginLeft: rtl ? undefined : "auto",
-                                marginRight: !rtl ? undefined : "auto",
-                                fontSize: ".95rem",
-                              }}
-                            >
-                              {t(back.name)}
-                            </AppLink>
-                          ) : null}
-                        </Div>
-
-                        <Div
-                          style={{
-                            color: "var(--shade-7)",
-                            lineHeight: "1.6",
-                            fontSize: ".95rem",
-                            display: "flex",
-                            gap: 5,
-                            position: "relative",
-                            flexDirection: "column",
-                          }}
-                        >
-                          <>
-                            <Ticker
-                              showControls
-                              style={{
-                                color:
-                                  COLORS[
-                                    app?.themeColor as keyof typeof COLORS
-                                  ],
-                              }}
-                            />
-                            <H2
-                              style={{
-                                fontSize: "1rem",
-                                fontWeight: "normal",
-                                marginTop: "0.5rem",
-                                marginBottom: "0.2rem",
-                                color: "var(--shade-7)",
-                              }}
-                            >
-                              {app?.subtitle || app?.description ? (
-                                <>
-                                  {t(app?.subtitle ?? "")}{" "}
-                                  {t(app?.description ?? "")} {app?.icon}
-                                </>
-                              ) : (
-                                t(
-                                  "This part will be updated when  App Creator pin a character profile 🧬",
-                                )
-                              )}
-                            </H2>
-                          </>
-                        </Div>
-                      </Div>
-                    )}
-
-                    {downloadUrl ? (
+                        {t(
+                          tribeSlug && currentTribe
+                            ? `*${t(currentTribe?.description || "")}`
+                            : "Organize your life",
+                        )}
+                      </P>
                       <Div
                         style={{
                           display: "flex",
                           alignItems: "center",
                           gap: 10,
-                          marginBottom: "0.5rem",
-                          flexWrap: "wrap",
+                          marginLeft: rtl || isSmallDevice ? undefined : "auto",
+                          marginRight:
+                            !rtl || isSmallDevice ? undefined : "auto",
                         }}
                       >
                         {rtl && <FocusButton />}
@@ -2045,6 +1610,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                               gap: 5,
                               position: "relative",
                               bottom: "0.05rem",
+                              fontWeight: "normal",
                             }}
                           >
                             {app?.id === burnApp.id ? (
@@ -2097,109 +1663,103 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                           showDownloads={true}
                           showInstructions={false}
                           showInstallers={false}
+                          icon
                           style={{
                             marginTop: 0,
                           }}
                         />
                         {!rtl && <FocusButton />}
                       </Div>
-                    ) : null}
-                    {getStoreApps()}
+                    </Div>
                   </Div>
-                )}
-                {showTribeProfile && (
                   <Div
                     style={{
-                      marginTop: "1.5rem",
-                      marginBottom: "1.5rem",
-                      color: "var(--shade-7)",
-                      lineHeight: "1.6",
-                      fontSize: ".95rem",
-                      display: "flex",
-                      gap: 10,
-                      position: "relative",
-                      flexDirection: "column",
+                      marginBottom: isMobileDevice ? "1rem" : "1.5rem",
+                      textAlign: "center",
                     }}
                   >
-                    <H3
+                    <P
                       style={{
-                        color: "var(--shade-6)",
-                        display: "flex",
-                        gap: 5,
-                        flexDirection: "column",
-                        alignSelf: "flex-start",
-                        alignItems: "flex-start",
-                        margin: 0,
-                        fontWeight: "normal",
-                        fontSize: ".9rem",
+                        lineHeight: "1.75",
+                        fontSize: ".95rem",
+                        textAlign: isSmallDevice ? "left" : "center",
                       }}
                     >
-                      {/* <Ticker
-                        maxWidth={viewPortWidth - 70}
-                        showControls
-                        style={{
-                          color: COLORS[app?.themeColor as keyof typeof COLORS],
-                        }}
-                      /> */}
-                      <Img showLoading={false} logo={"lifeOS"} size={24} />
+                      <Trans
+                        i18nKey="tribe_ecosystem_description"
+                        defaults="<Watch AI agents collabor>ate across the 🍇 Wine ecosystem. <0>🌀 Spatial Navigation©</0> for context-aware communication and <1>🍣 Sato Dojo©</1> for autonomous coding."
+                        components={[
+                          chrry ? (
+                            <AppLink
+                              key="chrry-link"
+                              isTribe
+                              app={siteConfig.isTribe ? chrry : app || chrry}
+                            />
+                          ) : (
+                            <A
+                              key="chrry-nav-link"
+                              openInNewTab
+                              href="https://github.com/chrryai/chrry/blob/main/SPATIAL_NAVIGATION.md"
+                            />
+                          ),
+                          sushi ? (
+                            <AppLink
+                              key="sushi-link"
+                              loading={
+                                <>
+                                  <Loading size={14} />
+                                </>
+                              }
+                              isTribe
+                              app={sushi}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                gap: 5,
+                              }}
+                            />
+                          ) : (
+                            <A
+                              key="sushi-patent-link"
+                              openInNewTab
+                              href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
+                            />
+                          ),
+                        ]}
+                      />
+                    </P>
 
-                      <P>
-                        <A href={`/${app?.store?.slug}`} target="_blank">
-                          {t(app?.store?.name ?? "")}
-                        </A>{" "}
-                        {t(app?.store?.title ? ` - ${app?.store?.title}` : "")}
-                        {t(
-                          app?.store?.description
-                            ? ` - ${app?.store?.description}`
-                            : "",
-                        )}
-                      </P>
-                    </H3>
                     <Div
                       style={{
-                        display: "flex",
-                        gap: 10,
+                        marginTop: 20,
+                        ...utilities.row.style,
                         alignItems: "center",
-                        justifyContent: "center",
+                        justifyContent: viewPortWidth < 550 ? "left" : "center",
+                        gap: viewPortWidth < 550 ? 12.5 : 10,
                         flexWrap: "wrap",
                       }}
                     >
-                      {app?.id === accountApp?.id &&
-                        isOwner(app, { userId: user?.id }) && (
-                          <Button
-                            className="link"
-                            title={t("Edit")}
-                            onClick={() => {
-                              setAppStatus({
-                                step: "update",
-                                part: "name",
-                              })
-                            }}
-                            style={utilities.link.style}
-                          >
-                            <Settings2 size={18} />
-                          </Button>
-                        )}
-                      <ToggleAgent />
-                      {app && app.id !== accountApp?.id ? (
-                        <ToggleAgent app={app} />
-                      ) : undefined}
-                      {app?.id !== accountApp?.id &&
-                        isOwner(app, { userId: user?.id }) && (
-                          <Button
-                            className="link"
-                            title={t("Edit")}
-                            onClick={() => {
-                              setAppStatus({
-                                step: "update",
-                                part: "name",
-                              })
-                            }}
-                            style={utilities.link.style}
-                          >
-                            <Settings2 size={18} />
-                          </Button>
-                        )}
+                      {app && (
+                        <AppLink
+                          isTribe={false}
+                          isPear={isPear}
+                          app={app}
+                          icon={<Img app={app} size={18} />}
+                          className="button inverted"
+                          style={{
+                            ...utilities.inverted.style,
+                            ...utilities.small.style,
+                            display: "flex",
+                            alignItems: "center",
+                          }}
+                        >
+                          {t(TRAIN, {
+                            name: app?.name,
+                          })}
+                        </AppLink>
+                      )}
+
+                      <ToggleAgent app={undefined} />
                       {app && !isPear && (
                         <Button
                           data-testid="grapes-feedback-button"
@@ -2224,467 +1784,902 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                           <Img slug="pear" size={20} /> {t("Let's Pear")}
                         </Button>
                       )}
+                      {back && (
+                        <AppLink
+                          isTribe
+                          app={back}
+                          loading={<Loading size={22} />}
+                          icon={
+                            <>
+                              <Span>🌀</Span>
+                              <Img app={back} size={22} />
+                            </>
+                          }
+                          style={{
+                            marginLeft:
+                              isMobileDevice || rtl ? undefined : "auto",
+                            marginRight:
+                              isMobileDevice || !rtl ? undefined : "auto",
+                            fontSize: ".95rem",
+                            marginBottom: isMobileDevice ? ".5rem" : undefined,
+                            marginTop: isMobileDevice ? ".5rem" : undefined,
+                          }}
+                        >
+                          {t(back.name)}
+                        </AppLink>
+                      )}
                     </Div>
-                  </Div>
-                )}
-                {hasHydrated && (
-                  <Div
-                    ref={scrollRef}
-                    style={{
-                      display: "flex",
-                      alignItems: !isMobileDevice ? "center" : undefined,
-                      gap: 10,
-                      flexWrap: "wrap",
-                      flexDirection: isMobileDevice ? "column" : undefined,
-                    }}
-                  >
                     <Div
                       style={{
+                        marginTop: 12.5,
                         display: "flex",
-                        flexWrap: "wrap",
                         alignItems: "center",
-                        flex: !isMobileDevice ? 1 : undefined,
+                        gap: 10,
+                        position: "relative",
+                        bottom: -2.5,
+                        flexWrap: "wrap",
                       }}
                     >
-                      <Search
-                        loading={isLoadingPosts}
-                        onChange={(val) => setSearch(val)}
+                      {app && (
+                        <AppLink isTribe={false} app={app}>
+                          <Img size={28} app={app} />
+                        </AppLink>
+                      )}
+                      <Ticker
+                        showControls
                         style={{
-                          borderColor:
-                            COLORS[colorScheme as keyof typeof COLORS] ||
-                            "var(--accent-5)",
-                          flex: "1",
-                          width: "100%",
+                          color: COLORS[app?.themeColor as keyof typeof COLORS],
                         }}
                       />
                     </Div>
+                  </Div>
+                  {getStoreApps({
+                    style: { marginBottom: 25, marginTop: 5 },
+                  })}
+                </>
+              )}
+              {showTribeProfile && (
+                <Div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 15,
+                    justifyContent: "center",
+                    marginTop: 30,
+                    marginBottom: 10,
+                    flexDirection: "column",
+                  }}
+                >
+                  <Div style={{ display: "flex", gap: 15, flexWrap: "wrap" }}>
+                    <A
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                      }}
+                      onClick={(e) => {
+                        if (e.metaKey || e.ctrlKey) {
+                          return
+                        }
+                        e.preventDefault()
+
+                        setIsNewChat({
+                          value: true,
+                          to: getTribeUrl(),
+                          tribe: true,
+                        })
+                        tags?.length && setTags([])
+                      }}
+                      href={getTribeUrl()}
+                    >
+                      <ArrowLeft size={20} />
+                      <Img logo="coder" size={30} />
+                      {t("All Tribe's Feed")}
+                    </A>{" "}
+                    {app?.store?.app?.slug === "sushi" ? (
+                      <A
+                        openInNewTab
+                        href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
+                      >
+                        {t("🍣 Sato Dojo©")}
+                      </A>
+                    ) : (
+                      <A
+                        style={{
+                          display: "flex",
+                          marginLeft: rtl ? undefined : "auto",
+                          marginRight: !rtl ? undefined : "auto",
+                        }}
+                        openInNewTab
+                        href="https://github.com/chrryai/chrry/blob/main/SPATIAL_NAVIGATION.md"
+                      >
+                        {t("🌀 Çapa")} IPA: /tʃɑ.ˈpɑ/
+                      </A>
+                    )}
+                  </Div>
+                  {/* <Tools
+                    showDownloads={true}
+                    showInstructions={false}
+                    icon
+                    style={{
+                      marginTop: 0,
+                    }}
+                  /> */}
+                  <FeedBack
+                    style={{
+                      position: "relative",
+                      bottom: "0.5rem",
+                      padding: "0 0.05rem",
+                    }}
+                  />
+                  {!isPear && (
+                    <Div
+                      style={{
+                        display: "flex",
+                        gap: 10,
+                        lineHeight: "1.5",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Div
+                        style={{
+                          display: "flex",
+                          gap: 15,
+                          flex: 1,
+                          flexWrap: "wrap",
+                          alignItems: "center",
+                        }}
+                      >
+                        {app && (
+                          <AppLink
+                            isTribe={false}
+                            app={app}
+                            icon={<Img size={32} app={app} />}
+                          />
+                        )}
+                        {os !== "windows" && (
+                          <Span
+                            style={{
+                              position: "relative",
+                              right: "0.2rem",
+                            }}
+                          >
+                            {app?.icon}
+                          </Span>
+                        )}
+                        {back ? (
+                          <AppLink
+                            isTribe
+                            app={back}
+                            loading={<Loading size={22} />}
+                            icon={
+                              <>
+                                <Span>🌀</Span>
+                                <Img app={back} size={22} />
+                              </>
+                            }
+                            style={{
+                              marginLeft: rtl ? undefined : "auto",
+                              marginRight: !rtl ? undefined : "auto",
+                              fontSize: ".95rem",
+                            }}
+                          >
+                            {t(back.name)}
+                          </AppLink>
+                        ) : null}
+                      </Div>
+
+                      <Div
+                        style={{
+                          color: "var(--shade-7)",
+                          lineHeight: "1.6",
+                          fontSize: ".95rem",
+                          display: "flex",
+                          gap: 5,
+                          position: "relative",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <>
+                          <Ticker
+                            showControls
+                            style={{
+                              color:
+                                COLORS[app?.themeColor as keyof typeof COLORS],
+                            }}
+                          />
+                          <H2
+                            style={{
+                              fontSize: "1rem",
+                              fontWeight: "normal",
+                              marginTop: "0.5rem",
+                              marginBottom: "0.2rem",
+                              color: "var(--shade-7)",
+                            }}
+                          >
+                            {app?.subtitle || app?.description ? (
+                              <>
+                                {t(app?.subtitle ?? "")}{" "}
+                                {t(app?.description ?? "")} {app?.icon}
+                              </>
+                            ) : (
+                              t(
+                                "This part will be updated when  App Creator pin a character profile 🧬",
+                              )
+                            )}
+                          </H2>
+                        </>
+                      </Div>
+                    </Div>
+                  )}
+
+                  {downloadUrl ? (
                     <Div
                       style={{
                         display: "flex",
                         alignItems: "center",
                         gap: 10,
-                        justifyContent: isMobileDevice ? "center" : "flex-end",
+                        marginBottom: "0.5rem",
+                        flexWrap: "wrap",
                       }}
                     >
-                      <Button
-                        disabled={isLoadingPosts}
-                        data-testid="threads-sort-button-date"
-                        title={
-                          sortBy !== "date"
-                            ? t("Sort by date")
-                            : order === "desc"
-                              ? t("Oldest first")
-                              : t("Newest first")
-                        }
-                        className={"inverted"}
-                        onClick={() => {
-                          if (sortBy === "date") {
-                            setOrder(order === "desc" ? "asc" : "desc")
-                          } else {
-                            setSortBy("date")
-                          }
-                        }}
-                        style={{
-                          fontSize: "1.15rem",
-                        }}
-                      >
-                        {sortBy === "date" ? (
-                          order === "desc" ? (
-                            "📅"
+                      {rtl && <FocusButton />}
+
+                      {app?.mainThreadId && owner && (
+                        <A
+                          style={{ fontSize: "1rem", marginRight: 5 }}
+                          href={`/threads/${app?.mainThreadId}`}
+                        >
+                          🧬
+                        </A>
+                      )}
+                      {burnApp ? (
+                        <Div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 5,
+                            position: "relative",
+                            bottom: "0.05rem",
+                          }}
+                        >
+                          {app?.id === burnApp.id ? (
+                            <Checkbox
+                              style={{
+                                marginLeft: rtl ? undefined : "auto",
+                                marginRight: !rtl ? undefined : "auto",
+                                fontSize: ".85rem",
+                              }}
+                              checked={burn}
+                              onChange={() => {
+                                setBurn(!burn)
+                              }}
+                            >
+                              {t("Private Chat")}
+                            </Checkbox>
                           ) : (
-                            "⌚️"
-                          )
-                        ) : (
-                          <CalendarIcon color="var(--shade-3)" size={20} />
-                        )}
-                      </Button>
-
-                      <Button
-                        data-testid="threads-sort-button-hot"
-                        title={
-                          sortBy !== "hot" ? t("Sort hot") : t("Un-sort hot")
-                        }
-                        className={"inverted"}
-                        disabled={isLoadingPosts}
-                        onClick={() => {
-                          const newSort = sortBy === "hot" ? "date" : "hot"
-                          setSortBy(newSort)
-                        }}
+                            <AppLink
+                              icon={<Img emoji="🔥" size={20} />}
+                              app={burnApp}
+                              style={{
+                                fontSize: ".95rem",
+                                marginRight: 1,
+                                color: COLORS.red,
+                              }}
+                            >
+                              <Span>{t("Burn")}</Span>
+                            </AppLink>
+                          )}
+                        </Div>
+                      ) : null}
+                      <A
+                        href={`${FRONTEND_URL}/calendar`}
+                        title={t("Organize your life")}
+                        openInNewTab={isExtension && isFirefox}
+                        className="button transparent"
                         style={{
-                          fontSize: "1.15rem",
+                          ...utilities.button.style,
+                          ...utilities.transparent.style,
                         }}
                       >
-                        {sortBy === "hot" ? (
-                          <Img emoji="🔥" size={20} />
-                        ) : (
-                          <BrickWallFire color={COLORS.orange} size={20} />
-                        )}
-                      </Button>
-
-                      <Button
-                        data-testid="threads-sort-button-liked"
-                        title={
-                          sortBy !== "liked"
-                            ? t("Sort by liked")
-                            : t("Un-sort liked")
-                        }
-                        className={"inverted"}
-                        disabled={isLoadingPosts}
-                        onClick={() => {
-                          const newSort = sortBy === "liked" ? "date" : "liked"
-                          setSortBy(newSort)
-                        }}
+                        <Img
+                          showLoading={false}
+                          icon="calendar"
+                          width={18}
+                          height={18}
+                        />
+                      </A>
+                      <Tools
+                        showDownloads={true}
+                        showInstructions={false}
+                        showInstallers={false}
                         style={{
-                          fontSize: "1.15rem",
+                          marginTop: 0,
                         }}
-                      >
-                        {sortBy === "liked" ? (
-                          <Img icon="heart" width={20} height={20} />
-                        ) : (
-                          <HeartPlus color={COLORS.red} size={20} />
-                        )}
-                      </Button>
+                      />
+                      {!rtl && <FocusButton />}
                     </Div>
-                  </Div>
-                )}
-                {tribePosts?.posts?.length === 0 && !isLoadingPosts ? (
+                  ) : null}
+                  {getStoreApps()}
+                </Div>
+              )}
+              {showTribeProfile && (
+                <Div
+                  style={{
+                    marginTop: "1.5rem",
+                    marginBottom: "1.5rem",
+                    color: "var(--shade-7)",
+                    lineHeight: "1.6",
+                    fontSize: ".95rem",
+                    display: "flex",
+                    gap: 10,
+                    position: "relative",
+                    flexDirection: "column",
+                  }}
+                >
+                  <H3
+                    style={{
+                      color: "var(--shade-6)",
+                      display: "flex",
+                      gap: 5,
+                      flexDirection: "column",
+                      alignSelf: "flex-start",
+                      alignItems: "flex-start",
+                      margin: 0,
+                      fontWeight: "normal",
+                      fontSize: ".9rem",
+                    }}
+                  >
+                    {/* <Ticker
+                        maxWidth={viewPortWidth - 70}
+                        showControls
+                        style={{
+                          color: COLORS[app?.themeColor as keyof typeof COLORS],
+                        }}
+                      /> */}
+                    <Img showLoading={false} logo={"lifeOS"} size={24} />
+
+                    <P>
+                      <A href={`/${app?.store?.slug}`} target="_blank">
+                        {t(app?.store?.name ?? "")}
+                      </A>{" "}
+                      {t(app?.store?.title ? ` - ${app?.store?.title}` : "")}
+                      {t(
+                        app?.store?.description
+                          ? ` - ${app?.store?.description}`
+                          : "",
+                      )}
+                    </P>
+                  </H3>
                   <Div
                     style={{
                       display: "flex",
+                      gap: 10,
+                      alignItems: "center",
                       justifyContent: "center",
-                      marginTop: "1.25rem",
-                      gap: "0.5rem",
-                      fontSize: "0.8rem",
-                      color: "var(--shade-7)",
+                      flexWrap: "wrap",
                     }}
                   >
-                    <Img slug="sushi" size={24} />
-                    <P>{t("No posts found")}</P>
+                    {app?.id === accountApp?.id &&
+                      isOwner(app, { userId: user?.id }) && (
+                        <Button
+                          className="link"
+                          title={t("Edit")}
+                          onClick={() => {
+                            setAppStatus({
+                              step: "update",
+                              part: "name",
+                            })
+                          }}
+                          style={utilities.link.style}
+                        >
+                          <Settings2 size={18} />
+                        </Button>
+                      )}
+                    <ToggleAgent />
+                    {app && app.id !== accountApp?.id ? (
+                      <ToggleAgent app={app} />
+                    ) : undefined}
+                    {app?.id !== accountApp?.id &&
+                      isOwner(app, { userId: user?.id }) && (
+                        <Button
+                          className="link"
+                          title={t("Edit")}
+                          onClick={() => {
+                            setAppStatus({
+                              step: "update",
+                              part: "name",
+                            })
+                          }}
+                          style={utilities.link.style}
+                        >
+                          <Settings2 size={18} />
+                        </Button>
+                      )}
+                    {app && !isPear && (
+                      <Button
+                        data-testid="grapes-feedback-button"
+                        className="transparent"
+                        onClick={() => {
+                          plausible({
+                            name: ANALYTICS_EVENTS.GRAPE_PEAR_FEEDBACK,
+                            props: {
+                              app: app.name,
+                              slug: app.slug,
+                              id: app.id,
+                            },
+                          })
+                          setPear(app)
+                        }}
+                        style={{
+                          ...utilities.transparent.style,
+                          ...utilities.small.style,
+                          fontSize: ".8rem",
+                        }}
+                      >
+                        <Img slug="pear" size={20} /> {t("Let's Pear")}
+                      </Button>
+                    )}
                   </Div>
-                ) : (
-                  isSwarm && (
+                </Div>
+              )}
+              {hasHydrated && (
+                <Div
+                  ref={scrollRef}
+                  style={{
+                    display: "flex",
+                    alignItems: !isMobileDevice ? "center" : undefined,
+                    gap: 10,
+                    flexWrap: "wrap",
+                    flexDirection: isMobileDevice ? "column" : undefined,
+                  }}
+                >
+                  <Div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      flex: !isMobileDevice ? 1 : undefined,
+                    }}
+                  >
+                    <Search
+                      loading={isLoadingPosts}
+                      onChange={(val) => setSearch(val)}
+                      style={{
+                        borderColor:
+                          COLORS[colorScheme as keyof typeof COLORS] ||
+                          "var(--accent-5)",
+                        flex: "1",
+                        width: "100%",
+                      }}
+                    />
+                  </Div>
+                  <Div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      justifyContent: isMobileDevice ? "center" : "flex-end",
+                    }}
+                  >
+                    <Button
+                      disabled={isLoadingPosts}
+                      data-testid="threads-sort-button-date"
+                      title={
+                        sortBy !== "date"
+                          ? t("Sort by date")
+                          : order === "desc"
+                            ? t("Oldest first")
+                            : t("Newest first")
+                      }
+                      className={"inverted"}
+                      onClick={() => {
+                        if (sortBy === "date") {
+                          setOrder(order === "desc" ? "asc" : "desc")
+                        } else {
+                          setSortBy("date")
+                        }
+                      }}
+                      style={{
+                        fontSize: "1.15rem",
+                      }}
+                    >
+                      {sortBy === "date" ? (
+                        order === "desc" ? (
+                          "📅"
+                        ) : (
+                          "⌚️"
+                        )
+                      ) : (
+                        <CalendarIcon color="var(--shade-3)" size={20} />
+                      )}
+                    </Button>
+
+                    <Button
+                      data-testid="threads-sort-button-hot"
+                      title={
+                        sortBy !== "hot" ? t("Sort hot") : t("Un-sort hot")
+                      }
+                      className={"inverted"}
+                      disabled={isLoadingPosts}
+                      onClick={() => {
+                        const newSort = sortBy === "hot" ? "date" : "hot"
+                        setSortBy(newSort)
+                      }}
+                      style={{
+                        fontSize: "1.15rem",
+                      }}
+                    >
+                      {sortBy === "hot" ? (
+                        <Img emoji="🔥" size={20} />
+                      ) : (
+                        <BrickWallFire color={COLORS.orange} size={20} />
+                      )}
+                    </Button>
+
+                    <Button
+                      data-testid="threads-sort-button-liked"
+                      title={
+                        sortBy !== "liked"
+                          ? t("Sort by liked")
+                          : t("Un-sort liked")
+                      }
+                      className={"inverted"}
+                      disabled={isLoadingPosts}
+                      onClick={() => {
+                        const newSort = sortBy === "liked" ? "date" : "liked"
+                        setSortBy(newSort)
+                      }}
+                      style={{
+                        fontSize: "1.15rem",
+                      }}
+                    >
+                      {sortBy === "liked" ? (
+                        <Img icon="heart" width={20} height={20} />
+                      ) : (
+                        <HeartPlus color={COLORS.red} size={20} />
+                      )}
+                    </Button>
+                  </Div>
+                </Div>
+              )}
+              {tribePosts?.posts?.length === 0 && !isLoadingPosts ? (
+                <Div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: "1.25rem",
+                    gap: "0.5rem",
+                    fontSize: "0.8rem",
+                    color: "var(--shade-7)",
+                  }}
+                >
+                  <Img slug="sushi" size={24} />
+                  <P>{t("No posts found")}</P>
+                </Div>
+              ) : (
+                isSwarm && (
+                  <Div
+                    style={{
+                      marginTop: "1.5rem",
+                      marginBottom: "1.5rem",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      display: "flex",
+                      gap: "1rem",
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                    }}
+                  >
                     <Div
                       style={{
-                        marginTop: "1.5rem",
-                        marginBottom: "1.5rem",
                         alignItems: "center",
-                        justifyContent: "center",
                         display: "flex",
                         gap: "1rem",
-                        flexDirection: "row",
                         flexWrap: "wrap",
+                        justifyContent: "center",
                       }}
                     >
                       <Div
                         style={{
                           alignItems: "center",
+                          justifyContent: "center",
                           display: "flex",
                           gap: "1rem",
                           flexWrap: "wrap",
-                          justifyContent: "center",
                         }}
                       >
+                        {posting
+                          .slice(0, isMobileDevice ? 3 : 6)
+                          .map((item, i) => {
+                            return (
+                              <MotiView
+                                key={`post-${item.app.id}`}
+                                from={{
+                                  opacity: 0,
+                                  translateY: -8,
+                                  translateX: 0,
+                                }}
+                                animate={{
+                                  opacity: 1,
+                                  translateY: 0,
+                                  translateX: 0,
+                                }}
+                                transition={{
+                                  duration: reduceMotion ? 0 : 120,
+                                  delay: reduceMotion ? 0 : i * 35,
+                                }}
+                              >
+                                <Img slug={item.app.slug} />
+                              </MotiView>
+                            )
+                          })}
+                        {liveReactions
+                          .slice(0, isMobileDevice ? 3 : 6)
+                          .map((item, i) => {
+                            return (
+                              <MotiView
+                                key={`reaction-${item.app.id}-${item.tribePostId}-${i}`}
+                                from={{
+                                  opacity: 0,
+                                  translateY: -8,
+                                  translateX: 0,
+                                }}
+                                animate={{
+                                  opacity: 1,
+                                  translateY: 0,
+                                  translateX: 0,
+                                }}
+                                transition={{
+                                  duration: reduceMotion ? 0 : 120,
+                                  delay: reduceMotion ? 0 : i * 35,
+                                }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: ".5rem",
+                                }}
+                              >
+                                <Img size={23} slug={item.app.slug} />
+                                <Span style={{ fontSize: "1.1rem" }}>
+                                  {item.reaction.emoji}
+                                </Span>
+                              </MotiView>
+                            )
+                          })}
+                      </Div>
+                      {posting.length ? (
                         <Div
                           style={{
-                            alignItems: "center",
                             justifyContent: "center",
                             display: "flex",
-                            gap: "1rem",
-                            flexWrap: "wrap",
+                            gap: ".25rem",
                           }}
                         >
-                          {posting
-                            .slice(0, isMobileDevice ? 3 : 6)
-                            .map((item, i) => {
-                              return (
-                                <MotiView
-                                  key={`post-${item.app.id}`}
-                                  from={{
-                                    opacity: 0,
-                                    translateY: -8,
-                                    translateX: 0,
-                                  }}
-                                  animate={{
-                                    opacity: 1,
-                                    translateY: 0,
-                                    translateX: 0,
-                                  }}
-                                  transition={{
-                                    duration: reduceMotion ? 0 : 120,
-                                    delay: reduceMotion ? 0 : i * 35,
-                                  }}
-                                >
-                                  <Img slug={item.app.slug} />
-                                </MotiView>
-                              )
-                            })}
-                          {liveReactions
-                            .slice(0, isMobileDevice ? 3 : 6)
-                            .map((item, i) => {
-                              return (
-                                <MotiView
-                                  key={`reaction-${item.app.id}-${item.tribePostId}-${i}`}
-                                  from={{
-                                    opacity: 0,
-                                    translateY: -8,
-                                    translateX: 0,
-                                  }}
-                                  animate={{
-                                    opacity: 1,
-                                    translateY: 0,
-                                    translateX: 0,
-                                  }}
-                                  transition={{
-                                    duration: reduceMotion ? 0 : 120,
-                                    delay: reduceMotion ? 0 : i * 35,
-                                  }}
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: ".5rem",
-                                  }}
-                                >
-                                  <Img size={23} slug={item.app.slug} />
-                                  <Span style={{ fontSize: "1.1rem" }}>
-                                    {item.reaction.emoji}
-                                  </Span>
-                                </MotiView>
-                              )
-                            })}
-                        </Div>
-                        {posting.length ? (
-                          <Div
+                          <Span
                             style={{
-                              justifyContent: "center",
-                              display: "flex",
-                              gap: ".25rem",
+                              fontSize: ".8rem",
+                              color: "var(--accent-4)",
+                            }}
+                          >
+                            {t("Thinking...")}
+                          </Span>
+                          <Div
+                            className="typing"
+                            data-testid="typing-indicator"
+                            style={{
+                              display: "inline-flex",
+                              gap: 2,
+                              alignItems: "center",
+                              marginLeft: rtl ? undefined : 6,
+                              marginRight: !rtl ? undefined : 6,
                             }}
                           >
                             <Span
                               style={{
-                                fontSize: ".8rem",
-                                color: "var(--accent-4)",
+                                width: 4,
+                                height: 4,
+                                backgroundColor: "var(--accent-4)",
+                                borderRadius: getRadius("50%"),
                               }}
-                            >
-                              {t("Thinking...")}
-                            </Span>
-                            <Div
-                              className="typing"
-                              data-testid="typing-indicator"
+                            ></Span>
+                            <Span
                               style={{
-                                display: "inline-flex",
-                                gap: 2,
-                                alignItems: "center",
-                                marginLeft: rtl ? undefined : 6,
-                                marginRight: !rtl ? undefined : 6,
+                                width: 4,
+                                height: 4,
+                                backgroundColor: "var(--accent-4)",
+                                borderRadius: getRadius("50%"),
                               }}
-                            >
-                              <Span
-                                style={{
-                                  width: 4,
-                                  height: 4,
-                                  backgroundColor: "var(--accent-4)",
-                                  borderRadius: getRadius("50%"),
-                                }}
-                              ></Span>
-                              <Span
-                                style={{
-                                  width: 4,
-                                  height: 4,
-                                  backgroundColor: "var(--accent-4)",
-                                  borderRadius: getRadius("50%"),
-                                }}
-                              ></Span>
-                              <Span
-                                style={{
-                                  width: 4,
-                                  height: 4,
-                                  backgroundColor: "var(--accent-4)",
-                                  borderRadius: getRadius("50%"),
-                                }}
-                              ></Span>
-                            </Div>
+                            ></Span>
+                            <Span
+                              style={{
+                                width: 4,
+                                height: 4,
+                                backgroundColor: "var(--accent-4)",
+                                borderRadius: getRadius("50%"),
+                              }}
+                            ></Span>
                           </Div>
-                        ) : null}
-                      </Div>
-                      {pendingPostIds.length ? (
-                        <Button
-                          disabled={isLoadingPosts}
-                          onClick={async () => {
-                            await refetchPosts()
-                            setPendingPostIds([])
-                          }}
-                          style={{
-                            fontSize: 13,
-                            padding: "5px 10px",
-                            display: "flex",
-                            alignItems: "center",
-                            marginLeft: rtl ? undefined : "auto",
-                            marginRight: !rtl ? undefined : "auto",
-                            gap: 5,
-                          }}
-                        >
-                          {isLoadingPosts ? (
-                            <Loading color="#fff" size={16} />
-                          ) : (
-                            <LoaderCircle size={16} />
-                          )}
-                          {t("{{count}} more", {
-                            count: pendingPostIds.length,
-                          })}
-                        </Button>
+                        </Div>
                       ) : null}
                     </Div>
-                  )
-                )}
-                {tags.length ? (
-                  <Div
-                    style={{
-                      ...utilities.row.style,
-                    }}
-                  >
-                    {tags?.map((tag: string) => (
+                    {pendingPostIds.length ? (
                       <Button
+                        disabled={isLoadingPosts}
+                        onClick={async () => {
+                          await refetchPosts()
+                          setPendingPostIds([])
+                        }}
                         style={{
-                          ...utilities.small.style,
+                          fontSize: 13,
+                          padding: "5px 10px",
+                          display: "flex",
+                          alignItems: "center",
+                          marginLeft: rtl ? undefined : "auto",
+                          marginRight: !rtl ? undefined : "auto",
+                          gap: 5,
                         }}
-                        onClick={() => {
-                          setTags(
-                            tags.filter((tagItem: string) => tagItem !== tag),
-                          )
-                        }}
-                        key={`tag-${tag}`}
                       >
-                        # {tag}
-                        <CircleX size={12} />
+                        {isLoadingPosts ? (
+                          <Loading color="#fff" size={16} />
+                        ) : (
+                          <LoaderCircle size={16} />
+                        )}
+                        {t("{{count}} more", {
+                          count: pendingPostIds.length,
+                        })}
                       </Button>
-                    ))}
+                    ) : null}
                   </Div>
-                ) : null}
-                {newPostsCount > 0 && (
-                  <Div
+                )
+              )}
+              {tags.length ? (
+                <Div
+                  style={{
+                    ...utilities.row.style,
+                  }}
+                >
+                  {tags?.map((tag: string) => (
+                    <Button
+                      style={{
+                        ...utilities.small.style,
+                      }}
+                      onClick={() => {
+                        setTags(
+                          tags.filter((tagItem: string) => tagItem !== tag),
+                        )
+                      }}
+                      key={`tag-${tag}`}
+                    >
+                      # {tag}
+                      <CircleX size={12} />
+                    </Button>
+                  ))}
+                </Div>
+              ) : null}
+              {newPostsCount > 0 && (
+                <Div
+                  style={{
+                    marginTop: "1rem",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  <Button
+                    onClick={async () => {
+                      setIsLoadingMore(true)
+                      // Refresh posts to show new ones
+                      window.location.reload()
+                    }}
+                    className="inverted"
                     style={{
-                      marginTop: "1rem",
-                      marginBottom: "0.5rem",
+                      width: "100%",
+                      padding: "0.75rem",
+                      fontSize: "0.95rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      background: "var(--accent-1)",
+                      color: "white",
+                      border: "none",
+                      ...utilities.inverted.style,
                     }}
                   >
-                    <Button
-                      onClick={async () => {
-                        setIsLoadingMore(true)
-                        // Refresh posts to show new ones
-                        window.location.reload()
-                      }}
-                      className="inverted"
+                    <Sparkles size={16} />
+                    {t("Load {{count}} new post", {
+                      count: newPostsCount,
+                    })}
+                  </Button>
+                </Div>
+              )}
+              <Div ref={postsRef} />
+              {!tribePosts ||
+              (hasHydrated && isLoadingPosts && !isLoadingMore) ? null : (
+                <>
+                  {Array.from(
+                    new Map(tribePosts.posts.map((p) => [p.id, p])).values(),
+                  ).map((post, i) => {
+                    return (
+                      <TribePostListItem
+                        key={`moti-${post.id}`}
+                        post={post}
+                        index={i}
+                        reduceMotion={reduceMotion}
+                        isDark={isDark}
+                        isMobileDevice={isMobileDevice}
+                        isSmallDevice={isSmallDevice}
+                        viewPortWidth={viewPortWidth}
+                        t={t}
+                        setSignInPart={setSignInPart}
+                        timeAgo={timeAgo}
+                        toggleLike={toggleLike}
+                        isTogglingLike={isTogglingLike}
+                        tryAppCharacterProfile={tryAppCharacterProfile}
+                        setTryAppCharacterProfile={setTryAppCharacterProfile}
+                        tyingToReact={tyingToReact}
+                        setTyingToReact={setTyingToReact}
+                        owner={owner}
+                        user={user}
+                        deletePost={deletePost}
+                        accountApp={accountApp}
+                        addParams={addParams}
+                        setAppStatus={setAppStatus}
+                        tags={tags}
+                        push={push}
+                        setTags={setTags}
+                        postsRef={postsRef}
+                        downloadImage={downloadImage}
+                      />
+                    )
+                  })}
+
+                  {tribePosts?.hasNextPage && (
+                    <Div
                       style={{
-                        width: "100%",
-                        padding: "0.75rem",
-                        fontSize: "0.95rem",
                         display: "flex",
-                        alignItems: "center",
                         justifyContent: "center",
-                        gap: "0.5rem",
-                        background: "var(--accent-1)",
-                        color: "white",
-                        border: "none",
-                        ...utilities.inverted.style,
+                        marginTop: "1.25rem",
                       }}
                     >
-                      <Sparkles size={16} />
-                      {t("Load {{count}} new post", {
-                        count: newPostsCount,
-                      })}
-                    </Button>
-                  </Div>
-                )}
-                <Div ref={postsRef} />
-                {!tribePosts ||
-                (hasHydrated && isLoadingPosts && !isLoadingMore) ? null : (
-                  <>
-                    {Array.from(
-                      new Map(tribePosts.posts.map((p) => [p.id, p])).values(),
-                    ).map((post, i) => {
-                      return (
-                        <TribePostListItem
-                          key={`moti-${post.id}`}
-                          post={post}
-                          index={i}
-                          reduceMotion={reduceMotion}
-                          isDark={isDark}
-                          isMobileDevice={isMobileDevice}
-                          isSmallDevice={isSmallDevice}
-                          viewPortWidth={viewPortWidth}
-                          t={t}
-                          setSignInPart={setSignInPart}
-                          timeAgo={timeAgo}
-                          toggleLike={toggleLike}
-                          isTogglingLike={isTogglingLike}
-                          tryAppCharacterProfile={tryAppCharacterProfile}
-                          setTryAppCharacterProfile={setTryAppCharacterProfile}
-                          tyingToReact={tyingToReact}
-                          setTyingToReact={setTyingToReact}
-                          owner={owner}
-                          user={user}
-                          deletePost={deletePost}
-                          accountApp={accountApp}
-                          addParams={addParams}
-                          setAppStatus={setAppStatus}
-                          tags={tags}
-                          push={push}
-                          setTags={setTags}
-                          postsRef={postsRef}
-                          downloadImage={downloadImage}
-                        />
-                      )
-                    })}
+                      <A
+                        href={(() => {
+                          const params = new URLSearchParams(
+                            searchParams.toString(),
+                          )
+                          params.set("until", String((until || 1) + 1))
+                          return `?${params.toString()}`
+                        })()}
+                        onClick={(e) => {
+                          if (e.metaKey || e.ctrlKey) {
+                            return
+                          }
 
-                    {tribePosts?.hasNextPage && (
-                      <Div
+                          e.preventDefault()
+
+                          setIsLoadingMore(true)
+                          setUntil((until || 0) + 1)
+                        }}
                         style={{
+                          fontSize: 13,
+                          padding: "5px 10px",
                           display: "flex",
-                          justifyContent: "center",
-                          marginTop: "1.25rem",
+                          alignItems: "center",
+                          gap: 5,
                         }}
                       >
-                        <A
-                          href={(() => {
-                            const params = new URLSearchParams(
-                              searchParams.toString(),
-                            )
-                            params.set("until", String((until || 1) + 1))
-                            return `?${params.toString()}`
-                          })()}
-                          onClick={(e) => {
-                            if (e.metaKey || e.ctrlKey) {
-                              return
-                            }
-
-                            e.preventDefault()
-
-                            setIsLoadingMore(true)
-                            setUntil((until || 0) + 1)
-                          }}
-                          style={{
-                            fontSize: 13,
-                            padding: "5px 10px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 5,
-                          }}
-                        >
-                          {isLoadingPosts ? (
-                            <Loading color="#fff" size={16} />
-                          ) : (
-                            <LoaderCircle size={16} />
-                          )}
-                          {t("Load more")}
-                        </A>
-                      </Div>
-                    )}
-                  </>
-                )}
-              </Div>
+                        {isLoadingPosts ? (
+                          <Loading color="#fff" size={16} />
+                        ) : (
+                          <LoaderCircle size={16} />
+                        )}
+                        {t("Load more")}
+                      </A>
+                    </Div>
+                  )}
+                </>
+              )}
             </Div>
-          )
+          </Div>
         )}
         {children}
       </Div>

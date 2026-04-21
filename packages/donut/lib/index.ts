@@ -140,14 +140,7 @@ export const getImageSrc = ({
     if (appLogos.includes(appSlug)) {
       appImageSrc = `${BASE_URL}/images/apps/${appSlug === "zarathustra" ? "z" : appSlug}.png`
     } else {
-      appImageSrc =
-        app?.images?.[0]?.url ||
-        app?.image ||
-        (slug
-          ? `${BASE_URL}/images/apps/coder.png`
-          : canEditApp
-            ? image || iconSrc
-            : undefined)
+      appImageSrc = app?.images?.[0]?.url || app?.image
     }
   }
 

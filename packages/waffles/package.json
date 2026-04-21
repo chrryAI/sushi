@@ -1,10 +1,7 @@
 {
   "name": "@chrryai/waffles",
-  "version": "2.4.94",
+  "version": "2.4.96",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,14 +14,17 @@
       "require": "./dist/test-utils.cjs"
     }
   },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "vp dev run --port 3000",
     "build": "tsup",
-    "lint": "eslint .",
-    "preview": "vp preview run",
+    "dev": "vp dev run --port 3000",
     "e": "pnpm exec playwright install chromium && playwright test --project chromium",
     "e2e": "playwright test --project chromium",
-    "ec": "pnpm exec playwright install chromium && playwright test critical.spec.ts --project chromium"
+    "ec": "pnpm exec playwright install chromium && playwright test critical.spec.ts --project chromium",
+    "lint": "eslint .",
+    "preview": "vp preview run"
   },
   "dependencies": {
     "@xstate/graph": "^3.0.4",

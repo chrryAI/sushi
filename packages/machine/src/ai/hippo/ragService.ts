@@ -1,13 +1,10 @@
-import { createOpenAI } from "@ai-sdk/openai"
 import type { sushi } from "@chrryai/donut/types"
 import {
   type app,
   db,
   desc,
   eq,
-  getEmbeddingProvider,
   getGuest,
-  getModelProvider,
   getUser,
   type guest,
   isDevelopment,
@@ -15,12 +12,18 @@ import {
   sql,
   type user,
 } from "@chrryai/machine"
+import { createLayer } from "@chrryai/machine/src/ai/sushi/effectProvider"
+import {
+  createEmbeddingLayer,
+  runEmbed,
+} from "@chrryai/machine/src/ai/sushi/embeddingProvider"
+import { runStructuredOutputWithFallback } from "@chrryai/machine/src/ai/sushi/structuredOutput"
 import {
   documentChunks,
   documentSummaries,
   messageEmbeddings,
 } from "@chrryai/machine/src/schema"
-import { embed, generateText } from "ai"
+import { Schema } from "effect"
 
 // import { captureException } from "../../lib/captureException"
 const captureException = (e: unknown) => console.error(e)
@@ -34,14 +37,6 @@ const extractAndStoreKnowledge = async (..._args: any[]) => {}
 const getGraphContext = async (..._args: any[]) => ({})
 const linkChunkToEntities = async (..._args: any[]) => {}
 const storeDocumentChunk = async (..._args: any[]) => {}
-// import { cleanAiResponse } from "../ai/cleanAiResponse"
-const cleanAiResponse = (text: string) => text
-
-const API_KEY = process.env.CHATGPT_API_KEY || process.env.OPENAI_API_KEY
-
-const _openaiProvider = createOpenAI({
-  apiKey: API_KEY,
-})
 
 // Text chunking utility
 export function chunkText(
@@ -75,7 +70,7 @@ export function chunkText(
   return chunks.filter((chunk) => chunk.length > 50)
 }
 
-// Generate embeddings using OpenAI API
+// Generate embeddings using Effect AI
 export async function generateEmbedding(
   text: string,
   options: {
@@ -86,16 +81,13 @@ export async function generateEmbedding(
   } = {},
 ): Promise<number[] | undefined> {
   try {
-    const { textEmbeddingModel } = await getEmbeddingProvider({
-      ...options,
-      source: options.source ?? "rag/documentSummary",
-    })
-    if (!textEmbeddingModel) return
+    if (!process.env.OPENROUTER_API_KEY) return undefined
 
-    const { embedding } = await embed({
-      model: textEmbeddingModel,
-      value: text.substring(0, 8000),
-    })
+    const embeddingLayer = createEmbeddingLayer(
+      "qwen/qwen3-embedding-8b",
+      process.env.OPENROUTER_API_KEY,
+    )
+    const embedding = await runEmbed(text.substring(0, 8000), embeddingLayer)
     return embedding
   } catch (error) {
     console.error("❌ Error generating embedding:", error)
@@ -133,22 +125,19 @@ Required JSON format:
   "keyTopics": ["topic1", "topic2", "topic3"]
 }`
 
-    const provider = await getModelProvider({
-      app,
-      user: member,
-      guest,
-      source: "rag/documentSummary",
+    const SummarySchema = Schema.Struct({
+      summary: Schema.String,
+      keyTopics: Schema.Array(Schema.String),
     })
 
-    const result = await generateText({
-      model: provider.provider,
-      prompt,
-      temperature: 0.1,
-    })
+    const modelLayer = createLayer()
 
     try {
-      const cleanText = cleanAiResponse(result.text)
-      const parsed = JSON.parse(cleanText)
+      const parsed = await runStructuredOutputWithFallback(
+        SummarySchema,
+        prompt,
+        modelLayer,
+      )
       return {
         summary: parsed.summary || `Document: ${filename}`,
         keyTopics: Array.isArray(parsed.keyTopics)
@@ -157,7 +146,7 @@ Required JSON format:
       }
     } catch (parseError) {
       console.warn(
-        "⚠️ Failed to parse summary JSON, using fallback:",
+        "⚠️ Failed to generate document summary, using fallback:",
         parseError,
       )
       return {
@@ -207,12 +196,7 @@ export async function processFileForRAG({
     `📚 Processing ${filename} for RAG (${Math.round(fileSizeBytes / 1024)}KB)...`,
   )
 
-  const { provider } = await getEmbeddingProvider({
-    user: member,
-    guest,
-    source: "rag/documentSummary",
-  })
-  if (!provider) return
+  if (!process.env.OPENROUTER_API_KEY) return
   try {
     // 1. Generate document summary
     const { summary, keyTopics } = await generateDocumentSummary({

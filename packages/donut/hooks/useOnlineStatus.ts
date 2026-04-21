@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../context/providers"
 import { isTauri } from "../platform/detection"
-import { API_URL, apiFetch, FRONTEND_URL } from "../utils"
 import useLocalStorage from "./useLocalStorage"
 
 const THROTTLE_MS = 5000 // 5 seconds
@@ -17,9 +16,11 @@ export function useOnlineStatus() {
     false,
   )
 
-  const { user, guest } = useAuth()
+  const { user, guest, isDevelopment, isE2E } = useAuth()
 
   useEffect(() => {
+    if (!isDevelopment) return
+    if (!isE2E) return
     // Skip if window or addEventListener is not available (React Native)
     if (typeof window === "undefined" || !window.addEventListener) {
       return
@@ -74,7 +75,7 @@ export function useOnlineStatus() {
     checkConnection()
 
     // Recheck every 30s to detect server outages
-    const interval = setInterval(checkConnection, 7000)
+    const interval = setInterval(checkConnection, 70000)
 
     return () => {
       if (window.removeEventListener) {

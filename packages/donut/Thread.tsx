@@ -240,10 +240,14 @@ const Thread = ({
   ) : (
     <Suspense fallback={<Loading fullScreen />}>
       <Skeleton>
-        <Tribe>
-          {!showTribe && <MemoryConsent />}
-          {render()}
-        </Tribe>
+        {showTribe ? (
+          <Tribe>{render()}</Tribe>
+        ) : (
+          <>
+            <MemoryConsent />
+            {render()}
+          </>
+        )}
       </Skeleton>
     </Suspense>
   )

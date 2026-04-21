@@ -178,14 +178,10 @@ export default function ImageComponent(props: ImageProps) {
     ].includes(dojoSlug)
   const isEmoji =
     props.emoji ||
-    ((isP
-      ? !ex && dojoSlug && dojoApp?.emoji
-        ? true
-        : slug === "tribe"
-      : app?.slug &&
-        (app?.store?.slug === "movies" ||
-          app?.store?.slug === "popcorn" ||
-          app?.store?.slug === "_books")) &&
+    (app?.slug &&
+      (app?.store?.slug === "_movies" ||
+        app?.store?.slug === "_popcorn" ||
+        app?.store?.slug === "_books") &&
       !ex)
 
   const { src: fallbackSrc } = useWannathis()

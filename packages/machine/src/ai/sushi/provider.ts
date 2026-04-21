@@ -24,19 +24,28 @@ import {
   type routeTier,
 } from "../vault"
 
-export const OLLAMA_MODEL_MAP: Record<string, string> = {
-  "deepseek/deepseek-v3.2": "deepseek-v3.2:cloud",
-  "deepseek/deepseek-r1": "kimi-k2.5:cloud",
-  "deepseek/deepseek-chat": "deepseek-v3.2:cloud",
-  "deepseek-chat": "deepseek-v3.2:cloud",
-  "minimax/minimax-m2.7": "kimi-k2.5:cloud",
-  "minimax/minimax-m2.5": "kimi-k2.5:cloud",
-  "nvidia/nemotron-3-super-120b-a12b": "nemotron-3-super:cloud",
-  "google/gemini-3.1-pro-preview": "gemini-3-flash-preview:cloud",
-  "x-ai/grok-4.1-fast": "kimi-k2.5:cloud",
+export const OLLAMA_MODEL_MAP: Record<
+  string,
+  { name: string; reasoning_effort?: string }
+> = {
+  "deepseek/deepseek-v3.2": { name: "glm-5.1:cloud", reasoning_effort: "none" },
+  "deepseek/deepseek-r1": { name: "glm-5.1:cloud", reasoning_effort: "high" },
+  "deepseek/deepseek-chat": { name: "glm-5.1:cloud", reasoning_effort: "none" },
+  "deepseek-chat": { name: "glm-5.1:cloud", reasoning_effort: "none" },
+  "minimax/minimax-m2.7": { name: "glm-5.1:cloud", reasoning_effort: "high" },
+  "minimax/minimax-m2.5": { name: "glm-5.1:cloud", reasoning_effort: "none" },
+  "nvidia/nemotron-3-super-120b-a12b": {
+    name: "glm-5.1:cloud",
+    reasoning_effort: "none",
+  },
+  "google/gemini-3.1-pro-preview": {
+    name: "glm-5.1:cloud",
+    reasoning_effort: "none",
+  },
+  "x-ai/grok-4.1-fast": { name: "glm-5.1:cloud", reasoning_effort: "none" },
 }
 
-export function toOllamaModel(orModelId: string): string | undefined {
+export function toOllamaModel(orModelId: string) {
   return OLLAMA_MODEL_MAP[orModelId.replace(":free", "")]
 }
 
@@ -143,30 +152,35 @@ const CHEAP_ANALYZERS: string[] = [
 
 // ─── Source → Tier mapping ────────────────────────────────────────
 
+const OLLAMA_SOURCE_TIERS: Record<string, { tier: routeTier; model?: string }> =
+  {
+    "moltbook/commentFilter": { tier: "cheap" },
+    "moltbook/engagement": { tier: "cheap" },
+    "ai/title": { tier: "cheap" },
+    swarm: { tier: "cheap" },
+    coder: { tier: "cheap" },
+    "ai/content": { tier: "cheap" },
+    "pear/validate": { tier: "cheap" },
+    "rag/documentSummary": { tier: "cheap" },
+
+    "moltbook/comment": { tier: "cheap" },
+    "ai/tribe/comment": { tier: "cheap" },
+    "ai/thread/instructions": { tier: "cheap" },
+    comment: { tier: "cheap" },
+    engagement: { tier: "cheap" },
+    tribe_comment: { tier: "cheap" },
+    tribe_engage: { tier: "cheap" },
+    m2m: { tier: "mid" },
+    post: { tier: "mid" },
+    codebase: { tier: "mid" },
+    autonomous: { tier: "mid" },
+    "autonomous/bidding": { tier: "mid" },
+  }
 const SOURCE_TIERS: Record<string, { tier: routeTier; model?: string }> = {
-  "moltbook/commentFilter": { tier: "cheap" },
-  "moltbook/engagement": { tier: "cheap" },
-  "ai/title": { tier: "cheap" },
-  swarm: { tier: "cheap" },
-  coder: { tier: "cheap" },
-  "ai/content": { tier: "cheap" },
-  "pear/validate": { tier: "cheap" },
-  "rag/documentSummary": { tier: "cheap" },
+  ...OLLAMA_SOURCE_TIERS,
   "graph/cypher": { tier: "cheap" },
   "graph/entity": { tier: "cheap" },
   "graph/extract": { tier: "cheap" },
-  "moltbook/comment": { tier: "cheap" },
-  "ai/tribe/comment": { tier: "cheap" },
-  "ai/thread/instructions": { tier: "cheap" },
-  comment: { tier: "cheap" },
-  engagement: { tier: "cheap" },
-  tribe_comment: { tier: "cheap" },
-  tribe_engage: { tier: "cheap" },
-  m2m: { tier: "mid" },
-  post: { tier: "mid" },
-  codebase: { tier: "mid" },
-  autonomous: { tier: "mid" },
-  "autonomous/bidding": { tier: "mid" },
   "ai/sushi/file": { tier: "quality", model: "google/gemini-3.1-pro-preview" },
   "ai/sushi/webSearch": { tier: "premium", model: "perplexity/sonar-pro" },
 }
@@ -401,10 +415,14 @@ export async function getModelProvider({
     models: fallbackModels,
   })
 
-  if (ollamaModel && !isBYOK && user?.role === "admin") {
+  if (
+    ollamaModel &&
+    !isBYOK &&
+    (user?.role === "admin" || !!OLLAMA_SOURCE_TIERS[source || ""])
+  ) {
     return {
-      provider: ollamaWithThinking(ollamaModel, {
-        reasoning_effort: "high",
+      provider: ollamaWithThinking(ollamaModel.name, {
+        reasoning_effort: ollamaModel.reasoning_effort,
       }) as unknown as typeof orProvider,
       modelId,
       agentName: agent.name,
@@ -417,24 +435,25 @@ export async function getModelProvider({
     }
   }
 
-  // DeepSeek API uses different model IDs than OpenRouter
   const DEEPSEEK_API_MODEL_MAP: Record<string, string> = {
     "deepseek/deepseek-chat": "deepseek-chat",
     "deepseek/deepseek-r1": "deepseek-reasoner",
     "deepseek/deepseek-v3.2": "deepseek-chat",
   }
 
-  const deepseekApiModelId = DEEPSEEK_API_MODEL_MAP[modelId] ?? modelId
+  const deepseekApiKey = !isBYOK ? process.env.DEEPSEEK_API_KEY : undefined
+  const deepseekApiModelId = deepseekApiKey
+    ? DEEPSEEK_API_MODEL_MAP[modelId]
+    : undefined
 
   return {
-    provider: modelId.startsWith("deepseek")
-      ? createDeepSeek({ apiKey: process.env.DEEPSEEK_API_KEY! })(
-          deepseekApiModelId,
-        )
-      : orProvider,
+    provider:
+      deepseekApiModelId && deepseekApiKey
+        ? createDeepSeek({ apiKey: deepseekApiKey })(deepseekApiModelId)
+        : orProvider,
     modelId,
     agentName: agent.name,
-    lastKey: "openrouter",
+    lastKey: deepseekApiModelId ? "deepseek" : "openrouter",
     supportsTools: modelCapabilities[modelId]?.tools ?? false,
     canAnalyze: modelCapabilities[modelId]?.canAnalyze ?? false,
     isBYOK: !!byokKey,
@@ -447,7 +466,7 @@ export async function getModelProvider({
 // getEmbeddingProvider
 // ─────────────────────────────────────────────────────────────────
 
-const EMBEDDING_SOURCES: Record<string, string> = {
+export const EMBEDDING_SOURCES: Record<string, string> = {
   codebase: "qwen/qwen3-embedding-8b",
   coder: "qwen/qwen3-embedding-8b",
   "rag/documentSummary": "qwen/qwen3-embedding-8b",
@@ -487,7 +506,9 @@ export async function getEmbeddingProvider({
   const orKey = byokKey ?? safeDecrypt(app?.apiKeys?.openrouter) ?? systemKey
 
   const modelId =
-    EMBEDDING_SOURCES[source || "default"] ?? EMBEDDING_SOURCES.default
+    EMBEDDING_SOURCES[source || "default"] ??
+    EMBEDDING_SOURCES.default ??
+    "qwen/qwen3-embedding-8b"
 
   const creditsLeft = user?.creditsLeft ?? guest?.creditsLeft ?? 1
 
