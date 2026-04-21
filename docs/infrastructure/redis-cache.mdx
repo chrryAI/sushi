@@ -187,7 +187,7 @@ cacheKeys.guestByFingerprint(fingerprint); // "guest:fp:{fingerprint}"
 
 ### Before (no cache)
 
-```
+```text
 API Request Flow:
 1. getMember() called
 2. getUser({ email }) → PostgreSQL query (50-100ms)
@@ -199,7 +199,7 @@ Every request = 1 DB query
 
 ### After (with cache)
 
-```
+```text
 API Request Flow:
 1. getMember() called
 2. getUser({ email }) → Redis check (1-5ms)
@@ -334,7 +334,7 @@ await updateUser({ id: userId, name: "New Name" });
 
 ### High-traffic endpoints
 
-```
+```text
 ✅ /api/session (every page load)
 ✅ /api/user (profile views)
 ✅ /api/guest (anonymous users)
@@ -347,7 +347,7 @@ All these endpoints call `getUser()` or `getGuest()` internally.
 
 ### Cache hit rate expectations
 
-```
+```text
 Session endpoint: 95%+ hit rate
 - Same user checks session multiple times
 - Cache stays valid for 2 minutes
@@ -389,7 +389,7 @@ export async function GET() {
 
 ### Key metrics to track
 
-```
+```text
 1. Cache hit rate (target: >90%)
 2. Average response time (target: <10ms for cached)
 3. Redis memory usage (monitor growth)
@@ -400,7 +400,7 @@ export async function GET() {
 
 ### Phase 1: deploy and monitor (week 1)
 
-```
+```text
 ✅ Code is ready
 □ Deploy to production
 □ Monitor cache hit rates
@@ -410,7 +410,7 @@ export async function GET() {
 
 ### Phase 2: expand caching (week 2-3)
 
-```
+```text
 □ Cache app configurations
 □ Cache store data
 □ Cache public app listings
@@ -419,7 +419,7 @@ export async function GET() {
 
 ### Phase 3: optimize (week 4+)
 
-```
+```text
 □ Adjust TTLs based on data
 □ Add cache warming for popular data
 □ Add cache preloading on login

@@ -13,7 +13,7 @@ Consolidated from multiple servers to **one server** that automatically detects 
 
 ### Before: multi-server setup
 
-```
+```text
 Server 1: chrry.ai (VITE_API_URL=https://chrry.ai/api)
 Server 2: vex.chrry.ai (VITE_API_URL=https://vex.chrry.ai/api)
 Server 3: focus.chrry.ai (needs new env vars)
@@ -21,7 +21,7 @@ Server 3: focus.chrry.ai (needs new env vars)
 
 ### After: single server
 
-```
+```text
 One Server: Detects domain automatically
 ├─ chrry.ai → chrryAI mode
 ├─ focus.chrry.ai → chrryAI mode ✅
@@ -171,7 +171,7 @@ export default async function Page() {
 
 ### 1. Automatic subdomain support
 
-```
+```text
 focus.chrry.ai - Works automatically
 bloom.chrry.ai - Works automatically
 vault.chrry.ai - Works automatically
@@ -180,7 +180,7 @@ any-app.chrry.ai - Works automatically
 
 ### 2. No environment variables needed
 
-```
+```text
 Before:
 - VITE_SITE_MODE=chrryAI
 - VITE_API_URL=https://chrry.ai/api
@@ -191,7 +191,7 @@ After:
 
 ### 3. Single deployment
 
-```
+```text
 One build → Deploy once → Works everywhere
 - chrry.ai ✅
 - focus.chrry.ai ✅
@@ -201,7 +201,7 @@ One build → Deploy once → Works everywhere
 
 ### 4. Simplified infrastructure
 
-```
+```text
 Before: 3+ servers
 After: 1 server
 
@@ -216,7 +216,7 @@ Complexity: 66% reduction
 
 ### Production domains
 
-```typescript
+```text
 Domain                  → Mode       → Config
 ─────────────────────────────────────────────
 chrry.ai                → chrryAI    → AI Marketplace
@@ -279,7 +279,7 @@ console.log(config3.mode); // Depends on current domain
 
 Each app can have its own subdomain:
 
-```
+```text
 focus.chrry.ai
 ├─ Detects as "chrryAI" mode
 ├─ Loads Focus app from store
@@ -327,7 +327,7 @@ const allowedOrigins = [
 
 ### 3. SSL/TLS
 
-```
+```text
 All domains must use HTTPS in production
 - chrry.ai → HTTPS ✅
 - *.chrry.ai → HTTPS ✅ (wildcard cert)
@@ -340,7 +340,7 @@ All domains must use HTTPS in production
 
 ### Before: multi-server
 
-```
+```text
 Request → DNS → Load Balancer → Server 1 (chrry.ai)
 Request → DNS → Load Balancer → Server 2 (vex.chrry.ai)
 Request → DNS → Load Balancer → Server 3 (focus.chrry.ai)
@@ -350,7 +350,7 @@ Total: 3 servers, 3 deployments, 3x maintenance
 
 ### After: single server
 
-```
+```text
 Request → DNS → Load Balancer → Single Server
                                  ├─ Detect domain
                                  ├─ Route to correct mode
@@ -387,7 +387,7 @@ npm run deploy
 
 ### 3. Configure DNS
 
-```
+```text
 chrry.ai → Server IP
 *.chrry.ai → Server IP (wildcard)
 vex.chrry.ai → Server IP

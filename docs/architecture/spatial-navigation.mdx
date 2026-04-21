@@ -50,7 +50,7 @@ interface Store {
 
 #### State 1: store home (base position)
 
-```
+```text
 Location: chrry.ai/
 You're at: Chrry home
 Visible: [Vex] [Focus] [Atlas] [Bloom] [Vault] [Peach] etc.
@@ -59,7 +59,7 @@ Hidden: Chrry (you're here)
 
 #### State 2: in-store (deep link active)
 
-```
+```text
 Location: chrry.ai/vex
 You're at: Vex app inside Chrry store
 Visible: [Chrry] [Focus] [Atlas] [Bloom] [Vault] etc.
@@ -69,7 +69,7 @@ Note: Chrry button appears (back to store home)
 
 #### State 3: cross-store (dimensional jump)
 
-```
+```text
 Location: vex.chrry.ai/
 You're at: Vex store (different universe)
 Visible: [Chrry] [Focus] [Atlas] [Bloom] [Vault] etc.
@@ -96,7 +96,7 @@ if (clickedApp.store === currentStore) {
 
 **Real Example:**
 
-```
+```text
 Location: chrry.ai/
 Click: Sushi app
 Result: Navigate to chrry.ai/sushi
@@ -121,7 +121,7 @@ if (clickedApp.store !== currentStore) {
 
 **Real Example:**
 
-```
+```text
 Location: chrry.ai/
 Click: Vex (different store)
 Result: Navigate to vex.chrry.ai/
@@ -159,7 +159,7 @@ function getVisibleButtons(currentStore: Store, allStores: Store[]): Store[] {
 
 **Visual Example:**
 
-```
+```text
 At chrry.ai/:
 Buttons: [Vex] [Focus] [Atlas] [Bloom] [Vault] [Peach]
 Missing: Chrry ← You are here
@@ -178,7 +178,7 @@ Back: Chrry button appears (return to store home)
 
 ### Journey 1: Grape discovery → app usage
 
-```
+```text
 1. Start: chrry.ai/
    Click: 🍇 Grape icon
 
@@ -197,7 +197,7 @@ Back: Chrry button appears (return to store home)
 
 ### Journey 2: cross-beast integration
 
-```
+```text
 1. Coding in Sushi: sushi.chrry.ai/
    Need help: Click Vex
 
@@ -212,7 +212,7 @@ Back: Chrry button appears (return to store home)
 
 ### Journey 3: deep nesting
 
-```
+```text
 1. Start: chrry.ai/
 2. Click: Vex → vex.chrry.ai/
 3. In Vex, click: Sushi app → vex.chrry.ai/sushi
@@ -257,7 +257,7 @@ function handleNavigation(targetStore: Store, targetPath?: string) {
 
 ### URL structure
 
-```
+```text
 Store Home:     vex.chrry.ai/
 In-Store App:   chrry.ai/vex (Vex app within Chrry store)
 Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
@@ -334,7 +334,7 @@ Users never ask:
 
 Spatial navigation enables the "beasts feeding each other":
 
-```
+```text
 Chrry (Discovery)
   ↓ grape_app_select
 Vex/Atlas/Focus (Usage)
@@ -363,21 +363,21 @@ Each navigation is tracked, analyzed, and used to improve the ecosystem.
 
 ### 1. Visual spatial memory
 
-```
+```text
 Show navigation trail:
 chrry → vex → sushi → [You are here]
 ```
 
 ### 2. Smart suggestions
 
-```
+```text
 "You often go from Vex → Sushi"
 "Quick jump to Sushi?"
 ```
 
 ### 3. Gesture navigation
 
-```
+```text
 Swipe left: Back to previous store
 Swipe right: Forward in history
 Pinch: Zoom to store overview
@@ -385,7 +385,7 @@ Pinch: Zoom to store overview
 
 ### 4. Navigation heatmaps
 
-```
+```text
 Visualize most common paths:
 Chrry ⇄ Vex (80% of users)
 Vex → Sushi (60% of users)
