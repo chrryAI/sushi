@@ -39,17 +39,17 @@ import type { Hono } from "hono"
 import type { locale } from "../locales"
 
 export type {
-  ChrryAiContext,
-  ChrryEmbeddingModel,
-  ChrryLanguageModel,
-  ChrryModelMeta,
-  ChrryProvider,
+  chrryAiContext as ChrryAiContext,
+  chrryEmbeddingModel,
+  chrryLanguageModel,
+  chrryModelMeta,
+  chrryProvider,
 } from "./ai.js"
 
-import type { ChrryAiContext, ChrryLanguageModel } from "./ai.js"
+import type { chrryAiContext, chrryLanguageModel } from "./ai.js"
 
-/** @deprecated use ChrryLanguageModel from "./ai.js" */
-export type languageModel = ChrryLanguageModel
+/** @deprecated use chrryLanguageModel from "./ai.js" */
+export type languageModel = chrryLanguageModel
 
 export type burn<T extends chrry> = T & {
   testConfig?: {
@@ -286,7 +286,7 @@ export type spatialChopstick<T extends chrry> = chrry &
   withPicks<T> &
   withBreadcrumbs<T> & {
     // OpenAI-compatible AI context - server/client same interface
-    ai?: ChrryAiContext | null
+    ai?: chrryAiContext | null
     spatialConfig?: {
       maxDepth?: number
       maxHistory?: number
@@ -369,6 +369,16 @@ export type artifacts = {
   id: string
 }
 
+export type weather = {
+  location: string
+  country: string
+  temperature: string
+  condition: string
+  code: number
+  createdOn: Date
+  lastUpdated: Date
+}
+
 export type coder<T extends sushi> = chrry & {
   app?: T
   apps?: T[]
@@ -390,8 +400,8 @@ export type coder<T extends sushi> = chrry & {
   byokModelId?: string
   canReason?: boolean
   job?: T
-  user?: user | userWithRelations | null
-  guest?: guest | guestWithRelations | null
+  user?: user | null
+  guest?: guest | null
   isBYOK?: boolean
   isFree?: boolean
   ramen?: ramen
@@ -403,7 +413,6 @@ export type coder<T extends sushi> = chrry & {
   autonomous?: boolean
   modelProviderPayload?: sushi
   // will be logged after generation
-  llm?: aiModelResponse[]
   charLimit?: number
   maxCredits?: number
   maxTokens?: number
@@ -485,7 +494,7 @@ export type ramen = {
    * fetched memories, instructions, character profiles, placeholders, DNA.
    * Agent's metadata.join config is used if present.
    */
-  buildPrompt?: boolean
+  buildPrompt?: string[]
   /**
    * Current thread message count — used for dynamic memory page-size.
    * More messages → fewer memories (context already in-thread).
@@ -510,7 +519,7 @@ export type ramen = {
 
 export type aiModel = {
   // Vercel AI SDK LanguageModelV1 compatible - pass to generateText(), streamText()
-  provider: ChrryLanguageModel
+  provider: chrryLanguageModel
   modelId: string
   agentName: string
   lastKey?: string
@@ -521,7 +530,7 @@ export type aiModel = {
   supportsTools?: boolean
   isBYOK?: boolean
   isFree?: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   job?: swarm
   creditsCost?: number
   appCreditsLeft?: number
@@ -545,7 +554,7 @@ export type aiModelResponse = Omit<aiModel, "provider"> & {
   supportsTools?: boolean
   isBYOK?: boolean
   isFree?: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   creditsCost?: number
   appCreditsLeft?: number
   ownerCreditsLeft?: number
@@ -696,19 +705,7 @@ export type user = {
   } | null
 }
 
-export type userWithRelations = user
-
 export type envType = "development" | "production" | "staging" | "local"
-
-export type weather = {
-  location: string
-  country: string
-  temperature: string
-  condition: string
-  code: number
-  createdOn: Date
-  lastUpdated: Date
-}
 
 export type instructionBase = {
   id: string
@@ -872,9 +869,6 @@ export type subscription = {
 
 export type newSubscription = Partial<subscription>
 
-// Eğer bu tipler başka bir yerde tanımlıysa onları import et
-
-// Guest types
 export type guest = {
   id: string
   createdOn: Date
@@ -884,6 +878,14 @@ export type guest = {
     instructions: Array<instruction>
     lastGenerated?: string
   } | null
+  messagesLastHour: number
+  creditsLeft: number
+  instructions?: instruction[]
+  placeHolder?: placeHolder | null
+  characterProfiles?: characterProfile[]
+  lastMessage?: message | null
+  messageCount: number | undefined
+  subscription: subscription | undefined
   fingerprint: string
   activeOn: Date
   email: string | null
@@ -911,41 +913,16 @@ export type guest = {
   speechCharactersToday: number
   lastSpeechReset: Date | null
   timezone: string | null
-  subscription?: subscription
   token?: string
-  creditsLeft?: number
-  lastMessage?: message
-  messagesLastHour?: number
-  characterProfiles?: characterProfile[]
+
   memoriesCount?: number
-  placeHolder?: placeHolder
-  instructions?: instruction[]
   characterProfilesEnabled?: boolean | null
   memoriesEnabled?: boolean | null
   city: string | null
   country: string | null
-  weather?: {
-    location: string
-    country: string
-    temperature: string
-    condition: string
-    code: number
-    createdOn: Date
-    lastUpdated: Date
-  } | null
+  weather?: weather | null
 }
 
-export type guestWithRelations = guest & {
-  memoriesCount: number | undefined
-  messagesLastHour: number
-  creditsLeft: number
-  instructions?: instruction[]
-  placeHolder?: placeHolder | undefined
-  characterProfiles?: characterProfile[]
-  lastMessage: string | undefined
-  messageCount: number | undefined
-  subscription: subscription | undefined
-}
 export type newGuest = Partial<guest>
 
 export type sessionUser = user
@@ -1076,11 +1053,11 @@ export type paginatedMessages = {
 // Thread types
 export type thread = {
   isMolt?: boolean
-  pearAppId?: string
+  pearAppId?: string | null
   apps?: sushi[]
   creditsLeft?: number
   isTribe: boolean
-  jobId?: string
+  jobId?: string | null
   characterProfile?: characterProfile
   placeHolder?: placeHolder
   collaborations?:
@@ -1091,11 +1068,11 @@ export type thread = {
       }[]
     | null
   hippo?: hips[]
-  moltUrl?: string
-  moltId?: string
-  submolt?: string
+  moltUrl?: string | null
+  moltId?: string | null
+  submolt?: string | null
   pearApp?: sushi
-  tribeId?: string
+  tribeId?: string | null
   isMainThread: boolean
   lastMessage?: message
   user?: user
@@ -1736,7 +1713,7 @@ export type chrry = {
   updatedOn: Date
   features: { [key: string]: boolean } | null
   // OpenAI-compatible AI context - server/client same interface
-  ai?: ChrryAiContext | null
+  ai?: chrryAiContext | null
 }
 
 export type newApp = Partial<app>

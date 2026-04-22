@@ -1,25 +1,25 @@
 import type { ramen } from "./index.js"
 
-export interface ChrryChatMessage {
+export interface chrryChatMessage {
   role: "system" | "user" | "assistant"
   content: string
 }
 
-export interface ChrryChatRequest {
-  messages: ChrryChatMessage[]
+export interface chrryChatRequest {
+  messages: chrryChatMessage[]
   model?: string
   stream?: boolean
   ramen: ramen
 }
 
-export interface ChrryChatResponse {
+export interface chrryChatResponse {
   id: string
   object: "chat.completion"
   created: number
   model: string
   choices: Array<{
     index: number
-    message: ChrryChatMessage
+    message: chrryChatMessage
     finish_reason: string
   }>
   usage?: {
@@ -29,14 +29,14 @@ export interface ChrryChatResponse {
   }
 }
 
-export interface ChrryChatStreamChunk {
+export interface chrryChatStreamChunk {
   id: string
   object: "chat.completion.chunk"
   created: number
   model: string
   choices: Array<{
     index: number
-    delta: Partial<ChrryChatMessage>
+    delta: Partial<chrryChatMessage>
     finish_reason: string | null
   }>
 }
@@ -48,7 +48,7 @@ export interface ChrryChatStreamChunk {
 // Her ikisi de aynı interface'i görür
 // ============================================
 
-export interface ChrryLanguageModel {
+export interface chrryLanguageModel {
   readonly specificationVersion: "v1"
   readonly provider: string
   readonly modelId: string
@@ -65,27 +65,36 @@ export interface ChrryLanguageModel {
     stream: AsyncIterable<unknown>
     rawCall: { rawPrompt: unknown; rawSettings: Record<string, unknown> }
   }>
+  agentName: string
+  lastKey: string
+  supportsTools: boolean
+  canAnalyze: boolean
+  isBYOK: boolean
+  isBELEŞ?: boolean
+  isFree?: boolean
+  /** Kredi bitti, free pool'a düştü — frontend banner gösterebilir */
+  isDegraded?: boolean
 }
 
 // Provider factory - createOpenAI() gibi
 // Server'da gerçek key, client'da proxy url ile oluşturulur
-export type ChrryProvider = {
-  (modelId: string, settings?: Record<string, unknown>): ChrryLanguageModel
+export type chrryProvider = {
+  (modelId: string, settings?: Record<string, unknown>): chrryLanguageModel
   chat: (
     modelId: string,
     settings?: Record<string, unknown>,
-  ) => ChrryLanguageModel
+  ) => chrryLanguageModel
   embedding: (modelId: string, settings?: Record<string, unknown>) => unknown
   readonly baseURL: string
 }
 
 // Model metadata - provider callable olmadan
-export interface ChrryModelMeta {
+export interface chrryModelMeta {
   modelId: string
   agentName: string
   isBYOK?: boolean
   isFree?: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   supportsTools?: boolean
   canAnalyze?: boolean
   canDoWebSearch?: string[]
@@ -97,7 +106,7 @@ export interface ChrryModelMeta {
 }
 
 // Embed model interface
-export interface ChrryEmbeddingModel {
+export interface chrryEmbeddingModel {
   readonly specificationVersion: "v1"
   readonly provider: string
   readonly modelId: string
@@ -110,17 +119,17 @@ export interface ChrryEmbeddingModel {
 
 // spatialChopstick.ai ve chrry.ai için - compose edilebilir AI context
 // chopStick() gibi çalışır ama callable model döner
-export interface ChrryAiContext {
+export interface chrryAiContext {
   // Pass this directly to generateText(), streamText() from "ai" package
   // Server: OpenRouter provider("model-id")
   // Client: proxy provider("model-id") → /api/ai/v1
-  model?: ChrryLanguageModel | null
+  model?: chrryLanguageModel | null
   // Embedding model
-  embedding?: ChrryEmbeddingModel | null
+  embedding?: chrryEmbeddingModel | null
   // Provider factory - farklı model denemek istersen
-  provider?: ChrryProvider | null
+  provider?: chrryProvider | null
   // Metadata - UI'da model adı göstermek için
-  meta?: ChrryModelMeta | null
+  meta?: chrryModelMeta | null
   /**
    * Assembled prompt sections from buildPrompt: true.
    * Each section is ready to append to your system prompt.
@@ -135,6 +144,7 @@ export interface ChrryAiContext {
     apps: string
     assembled: string
   } | null
+  dnaContext?: string | null
   /**
    * The chopStick payload that produced this context.
    * Stored in thread/message metadata for traceability.

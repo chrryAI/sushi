@@ -6,16 +6,16 @@
   "license": "ISC",
   "author": "",
   "type": "module",
+  "main": "./index.ts",
   "exports": {
     ".": "./index.ts",
     "./src/*": "./src/*.ts",
     "./src/schema": "./src/schema.ts",
     "./ai/vault": "./src/ai/vault/index.ts",
     "./ai/sushi": "./src/ai/sushi/provider.ts",
-    "./ai/sushi/effectProvider": "./src/ai/sushi/effectProvider.ts",
+    "./ai/sushi/aiProvider": "./src/ai/sushi/aiProvider.ts",
     "./ai/sushi/structuredOutput": "./src/ai/sushi/structuredOutput.ts"
   },
-  "main": "./index.ts",
   "scripts": {
     "check-types": "tsc --noEmit -p tsconfig.check.json",
     "clear": "CLEAR=true pnpm exec tsx seed.ts",
@@ -51,6 +51,7 @@
     "@effect/platform": "^0.96.0",
     "@neondatabase/serverless": "^1.0.2",
     "@openrouter/ai-sdk-provider": "^2.3.3",
+    "@providerprotocol/ai": "^0.0.43",
     "@sentry/node": "^10.45.0",
     "@types/all-the-cities": "^3.1.3",
     "@types/bcrypt": "^6.0.0",

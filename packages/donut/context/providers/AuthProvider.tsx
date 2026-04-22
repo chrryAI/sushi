@@ -1668,7 +1668,7 @@ export function AuthProvider({
   } = useSWR(
     deviceId && token && session ? ["timer", deviceId] : null,
     async () => {
-      const response = await apiFetch(`${API_URL}/timers/${deviceId}`, {
+      const response = await apiFetch(`${API_URL}/timers`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

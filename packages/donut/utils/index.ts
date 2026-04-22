@@ -47,6 +47,8 @@ import { checkIsExtension, isDevelopment, isE2E, isTestingDevice } from "./env"
 export const VEX_LIVE_FINGERPRINTS =
   getEnv().VEX_LIVE_FINGERPRINTS?.split(",") || []
 
+export const APP_SALT = getEnv().VITE_APP_SALT || getEnv().APP_SALT
+
 export const VITE_VAPID_PUBLIC_KEY = getEnv().VITE_VAPID_PUBLIC_KEY
 
 export const CF_BEACON = getEnv().VITE_CF_BEACON || getEnv().CF_BEACON
