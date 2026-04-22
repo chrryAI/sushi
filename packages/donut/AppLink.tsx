@@ -49,27 +49,23 @@ export default function AppLink({
   const {
     loadingApp,
     getAppSlug,
-    setLoadingAppId,
+    setLoadingApp,
     storeApps,
     mergeApps,
     plausible,
   } = useAuth()
 
-  const [isLoading, setIsLoadingInternal] = React.useState(
+  const [isLoadingInternal, setIsLoadingInternal] = React.useState(
     loadingApp && loadingApp?.id === app?.id,
   )
+
+  const isLoading = isLoadingInternal || loadingApp?.id === app?.id
 
   const setIsLoading = (value: boolean) => {
     setIsLoadingInternal(value)
   }
 
   const { push } = useNavigationContext()
-
-  React.useEffect(() => {
-    const l = loadingApp && loadingApp?.id === app?.id
-
-    l && setIsLoading(l)
-  }, [loadingApp])
 
   const currentApp = storeApps.find(
     (a) => app.id && a.id === app?.id && a.store?.apps?.length,
@@ -129,7 +125,7 @@ export default function AppLink({
           e.preventDefault()
 
           if (!currentApp) {
-            setLoadingAppId(app.id)
+            setLoadingApp(app)
             onLoading?.()
 
             setIsLoading(true)
@@ -178,7 +174,7 @@ export default function AppLink({
         }
 
         if (!currentApp) {
-          setLoadingAppId(app.id)
+          setLoadingApp(app)
           onLoading?.()
           return
         }

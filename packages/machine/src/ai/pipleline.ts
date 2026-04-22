@@ -404,7 +404,7 @@ Return ONLY valid JSON matching this schema:
       })),
     )
     const { getEffectModelLayer } = yield* Effect.promise(() =>
-      import("./sushi/effectProvider").then((m) => ({
+      import("./sushi/aiProvider").then((m) => ({
         getEffectModelLayer: m.getEffectModelLayer,
       })),
     )

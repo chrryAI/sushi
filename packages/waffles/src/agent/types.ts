@@ -529,16 +529,16 @@ import type { locale } from "../locales"
 
 export type {
   ChrryAiContext,
-  ChrryEmbeddingModel,
-  ChrryLanguageModel,
-  ChrryModelMeta,
-  ChrryProvider,
+  chrryEmbeddingModel,
+  chrryLanguageModel,
+  chrryModelMeta,
+  chrryProvider,
 } from "./ai.js"
 
-import type { ChrryAiContext, ChrryLanguageModel } from "./ai.js"
+import type { ChrryAiContext, chrryLanguageModel } from "./ai.js"
 
-/** @deprecated use ChrryLanguageModel from "./ai.js" */
-export type languageModel = ChrryLanguageModel
+/** @deprecated use chrryLanguageModel from "./ai.js" */
+export type languageModel = chrryLanguageModel
 
 export type burn<T extends chrry> = T & {
   testConfig?: {
@@ -878,8 +878,8 @@ export type coder<T extends sushi> = chrry & {
   byokModelId?: string
   canReason?: boolean
   job?: T
-  user?: user | userWithRelations | null
-  guest?: guest | guestWithRelations | null
+  user?: user | null
+  guest?: guest | null
   isBYOK?: boolean
   isFree?: boolean
   ramen?: ramen
@@ -987,7 +987,7 @@ export type ramen = {
 
 export type aiModel = {
   // Vercel AI SDK LanguageModelV1 compatible - pass to generateText(), streamText()
-  provider: ChrryLanguageModel
+  provider: chrryLanguageModel
   modelId: string
   agentName: string
   lastKey?: string
@@ -998,7 +998,7 @@ export type aiModel = {
   supportsTools?: boolean
   isBYOK?: boolean
   isFree?: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   job?: swarm
   creditsCost?: number
   appCreditsLeft?: number
@@ -1022,7 +1022,7 @@ export type aiModelResponse = Omit<aiModel, "provider"> & {
   supportsTools?: boolean
   isBYOK?: boolean
   isFree?: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   creditsCost?: number
   appCreditsLeft?: number
   ownerCreditsLeft?: number
@@ -1172,8 +1172,6 @@ export type user = {
     lastUpdated: Date
   } | null
 }
-
-export type userWithRelations = user
 
 export type envType = "development" | "production" | "staging" | "local"
 
@@ -1394,7 +1392,6 @@ export type guest = {
   lastMessage?: message
   messagesLastHour?: number
   characterProfiles?: characterProfile[]
-  memoriesCount?: number
   placeHolder?: placeHolder
   instructions?: instruction[]
   characterProfilesEnabled?: boolean | null
@@ -1412,7 +1409,7 @@ export type guest = {
   } | null
 }
 
-export type guestWithRelations = guest & {
+export type guest = guest & {
   memoriesCount: number | undefined
   messagesLastHour: number
   creditsLeft: number

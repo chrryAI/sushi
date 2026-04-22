@@ -12,7 +12,7 @@ import {
   sql,
   type user,
 } from "@chrryai/machine"
-import { getEffectModelLayer } from "@chrryai/machine/src/ai/sushi/effectProvider"
+import { getEffectModelLayer } from "@chrryai/machine/src/ai/sushi/aiProvider"
 import {
   createEmbeddingLayer,
   runEmbed,

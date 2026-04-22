@@ -153,3 +153,4 @@ export {
 export { useKeepAwake } from "./KeepAwake"
 export { Toast, VexToast } from "./ToastComponent"
 export { default as toast } from "./toast"
+export { default as useLocalStorage } from "./useStorage"

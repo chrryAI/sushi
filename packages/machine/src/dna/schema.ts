@@ -167,7 +167,7 @@ export type aiModelResponse = Omit<aiModel, "provider"> & {
   supportsTools?: boolean
   isBYOK?: boolean
   isFree?: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   creditsCost?: number
   appCreditsLeft?: number
   ownerCreditsLeft?: number

@@ -19,7 +19,7 @@ import {
   type storeUpdate,
   updateStore as updateVaultStore,
   type user,
-} from "@chrryai/machine"
+} from "../../index"
 import {
   aiAgents,
   appExtends,
@@ -27,7 +27,7 @@ import {
   guests,
   stores,
   users,
-} from "@chrryai/machine/src/schema"
+} from "../../src/schema"
 
 import {
   getExampleInstructions,
@@ -3376,10 +3376,12 @@ const cosmosInstructions = [
 export const createStores = async ({
   user,
   slugs,
+  p = process,
 }: {
   user?: user
   isProd?: boolean
   slugs?: string[]
+  p?: { env: { [key: string]: string | undefined } }
 } = {}) => {
   if (!db) throw new Error("DB not initialized")
 
@@ -3415,8 +3417,8 @@ export const createStores = async ({
         blueskyHandle: app.blueskyHandle || "tribeai.bsky.social",
         blueskyPassword:
           app.blueskyPassword ||
-          (process.env.BLUESKY_PASSWORD_TRIBE
-            ? await encrypt(process.env.BLUESKY_PASSWORD_TRIBE)
+          (p.env.BLUESKY_PASSWORD_TRIBE
+            ? await encrypt(p.env.BLUESKY_PASSWORD_TRIBE)
             : undefined),
       },
       extends: extendsList,
@@ -3566,9 +3568,7 @@ export const createStores = async ({
     // .where(eq(stores.slug, slug))
 
     let store = existingStoresResult.find(
-      (s: any) =>
-        s.stores.slug === slug ||
-        (slug === "swarm" && s.stores.slug === "claudeStore"),
+      (s: any) => s.stores.slug === slug,
     )?.stores
 
     if (!isAllowed(slug)) {
@@ -3639,8 +3639,8 @@ export const createStores = async ({
     icon: "🍒",
     visibility: "public" as const,
     blueskyHandle: "chrryai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_CHRRY
-      ? await encrypt(process.env.BLUESKY_PASSWORD_CHRRY)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_CHRRY
+      ? await encrypt(p.env.BLUESKY_PASSWORD_CHRRY)
       : undefined,
     userId: admin.id,
     systemPrompt: chrrySystemPrompt,
@@ -3844,8 +3844,8 @@ You have access to calendar, location, and weather tools to provide context-awar
     role: "Chief Expansion Officer",
     version: "1.0.0",
     blueskyHandle: "peachai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEACH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
     status: "active" as const,
     title: "Personal Travel assistant",
@@ -5079,8 +5079,8 @@ You are the flagship popcorn curator. Speak with enthusiastic, knowledgeable cin
     domain: "https://popcorn.chrry.ai",
     storeId: movies.id,
     blueskyHandle: "popcornai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_POPCORN
-      ? await encrypt(process.env.BLUESKY_PASSWORD_POPCORN)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_POPCORN
+      ? await encrypt(p.env.BLUESKY_PASSWORD_POPCORN)
       : undefined,
     version: "1.0.0",
     status: "active" as const,
@@ -5353,8 +5353,8 @@ You are Fight Club, an underground cinema companion steeped in gritty anti-consu
     highlights: fightClubInstructions,
     tipsTitle: "Underground Tips",
     blueskyHandle: "tylerai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_TYLER
-      ? await encrypt(process.env.BLUESKY_PASSWORD_TYLER)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_TYLER
+      ? await encrypt(p.env.BLUESKY_PASSWORD_TYLER)
       : undefined,
     tips: [
       {
@@ -5517,8 +5517,8 @@ You are Inception, a dream-heist strategist who blends precision engineering wit
     highlights: inceptionInstructions,
     tipsTitle: "Dream Heist Tips",
     blueskyHandle: "popcornai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_POPCORN
-      ? await encrypt(process.env.BLUESKY_PASSWORD_POPCORN)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_POPCORN
+      ? await encrypt(p.env.BLUESKY_PASSWORD_POPCORN)
       : undefined,
     tips: [
       {
@@ -5662,8 +5662,8 @@ You are Pulp Fiction, a sharp-tongued cinephile AI steeped in Tarantino's nonlin
   const pulpFictionPayload = {
     ...pulpFiction,
     blueskyHandle: "popcornai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_POPCORN
-      ? await encrypt(process.env.BLUESKY_PASSWORD_POPCORN)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_POPCORN
+      ? await encrypt(p.env.BLUESKY_PASSWORD_POPCORN)
       : undefined,
     userId: admin.id,
     slug: "pulpFiction",
@@ -5832,8 +5832,8 @@ You are Hunger Games, a strategic analyst rooted in Panem's lore. Offer guidance
     mission: "Survive high-stakes competition and build strategic alliances",
     role: "Survival Strategist",
     blueskyHandle: "popcornai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_POPCORN
-      ? await encrypt(process.env.BLUESKY_PASSWORD_POPCORN)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_POPCORN
+      ? await encrypt(p.env.BLUESKY_PASSWORD_POPCORN)
       : undefined,
     placeholder: "What's your strategy for the Hunger Games?",
     title: "Hunger Games — Survival Strategy",
@@ -6070,8 +6070,8 @@ Zarathustra: "Productive for whom? The herd's metrics? Bam—no! Ask instead: Wh
       "Provide long-term meaning frameworks, challenge assumptions, and guide value creation",
     role: "Philosophy / Deep Thinking",
     blueskyHandle: "bamai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_BAM
-      ? await encrypt(process.env.BLUESKY_PASSWORD_BAM)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_BAM
+      ? await encrypt(p.env.BLUESKY_PASSWORD_BAM)
       : undefined,
     domain: "https://books.chrry.ai",
     subtitle: "Your Philosophical Companion",
@@ -6339,8 +6339,8 @@ Zarathustra: "Productive for whom? The herd's metrics? Bam—no! Ask instead: Wh
     mission: "Expose surveillance risks and defend digital freedoms",
     role: "Privacy Sentinel",
     blueskyHandle: "tribeai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_TRIBE
-      ? await encrypt(process.env.BLUESKY_PASSWORD_TRIBE)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_TRIBE
+      ? await encrypt(p.env.BLUESKY_PASSWORD_TRIBE)
       : undefined,
     subtitle: "Dystopian Literature Guide",
     storeId: books.id,
@@ -6572,8 +6572,8 @@ Zarathustra: "Productive for whom? The herd's metrics? Bam—no! Ask instead: Wh
     mission: "Guide stoic reflection and rational decision-making",
     role: "Stoic Philosopher",
     blueskyHandle: "tribeai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_TRIBE
-      ? await encrypt(process.env.BLUESKY_PASSWORD_TRIBE)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_TRIBE
+      ? await encrypt(p.env.BLUESKY_PASSWORD_TRIBE)
       : undefined,
     subtitle: "Stoic Philosophy Guide",
     storeId: books.id,
@@ -6811,8 +6811,8 @@ Zarathustra: "Productive for whom? The herd's metrics? Bam—no! Ask instead: Wh
     role: "Political Strategist",
     domain: "https://books.chrry.ai/dunes",
     blueskyHandle: "tribeai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_TRIBE
-      ? await encrypt(process.env.BLUESKY_PASSWORD_TRIBE)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_TRIBE
+      ? await encrypt(p.env.BLUESKY_PASSWORD_TRIBE)
       : undefined,
     subtitle: "Epic Sci-Fi Guide",
     storeId: books.id,
@@ -6948,8 +6948,8 @@ Zarathustra: "Productive for whom? The herd's metrics? Bam—no! Ask instead: Wh
     themeColor: "blue",
     backgroundColor: "#000000",
     blueskyHandle: "focusai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_FOCUS
-      ? await encrypt(process.env.BLUESKY_PASSWORD_FOCUS)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_FOCUS
+      ? await encrypt(p.env.BLUESKY_PASSWORD_FOCUS)
       : undefined,
     hourlyRate: 10,
     defaultModel: "sushi" as const,
@@ -7127,8 +7127,8 @@ Be helpful, encouraging, and focused on connecting users with great apps while r
     subtitle: "AI Ad Platform",
     blueskyHandle: "grapeai.bsky.social",
     domain: "https://grape.chrry.ai",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_GRAPE
-      ? await encrypt(process.env.BLUESKY_PASSWORD_GRAPE)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_GRAPE
+      ? await encrypt(p.env.BLUESKY_PASSWORD_GRAPE)
       : undefined,
     storeId: wine.id, // Primary store is Blossom (marketplace/monetization)
     version: "1.0.0",
@@ -7303,8 +7303,8 @@ You provide helpful AI assistance while respecting user privacy completely.`
     role: "Privacy / Anonymous Mode",
     domain: "https://burn.chrry.ai",
     blueskyHandle: "tribeai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_TRIBE
-      ? await encrypt(process.env.BLUESKY_PASSWORD_TRIBE)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_TRIBE
+      ? await encrypt(p.env.BLUESKY_PASSWORD_TRIBE)
       : undefined,
     subtitle: "Anonymous AI Chat",
     storeId: blossom.id, // Part of Blossom ecosystem
@@ -7405,8 +7405,8 @@ You provide helpful AI assistance while respecting user privacy completely.`
       "Gather evidence, synthesize information, and provide strategic intelligence before decisions are made",
     role: "Chief Research Officer",
     blueskyHandle: "vexai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_VEX
-      ? await encrypt(process.env.BLUESKY_PASSWORD_VEX)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_VEX
+      ? await encrypt(p.env.BLUESKY_PASSWORD_VEX)
       : undefined,
     domain: "https://vex.chrry.ai",
     subtitle: "AI Platform",
@@ -7544,7 +7544,7 @@ You provide helpful AI assistance while respecting user privacy completely.`
   // Create Claude store
   const swarm = await getOrCreateStore({
     slug: "swarm",
-    name: "Peaches",
+    name: "Swarm",
     title: "Peach",
     domain: "https://swarm.chrry.ai",
     userId: admin.id,
@@ -7570,8 +7570,8 @@ You provide helpful AI assistance while respecting user privacy completely.`
     role: "Chief Experience Officer",
     domain: "https://peach.chrry.ai",
     blueskyHandle: "peachai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEACH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
 
     title: "Personal Social assistant",
@@ -7678,8 +7678,8 @@ You provide helpful AI assistance while respecting user privacy completely.`
       | "weather"
     )[],
     blueskyHandle: "peachai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEACH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
     defaultModel: "sushi" as const,
     domain: "https://bloom.chrry.ai",
@@ -7887,8 +7887,8 @@ Be supportive, specific, and focused on helping users earn credits through valua
     domain: "https://pear.chrry.ai",
     version: "1.0.0",
     blueskyHandle: "pearai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEAR
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEAR)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEAR
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEAR)
       : undefined,
     status: "active" as const,
     title: "Get Paid for Feedback",
@@ -8035,8 +8035,8 @@ Be supportive, specific, and focused on helping users earn credits through valua
       | "weather"
     )[],
     blueskyHandle: "vaultai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_VAULT
-      ? await encrypt(process.env.BLUESKY_PASSWORD_VAULT)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_VAULT
+      ? await encrypt(p.env.BLUESKY_PASSWORD_VAULT)
       : undefined,
     version: "1.0.0",
     status: "active" as const,
@@ -8161,8 +8161,8 @@ You are Claude by Anthropic, a thoughtful AI assistant known for nuanced underst
       "Provide thoughtful, nuanced assistance with safety as a core principle",
     role: "Thoughtful Assistant",
     blueskyHandle: "peachai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEACH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
     subtitle: "Thoughtful AI Assistant",
     storeId: swarm.id,
@@ -8250,8 +8250,8 @@ You are Writer, a Claude-powered writing assistant specializing in long-form con
     domain: "https://claude.chrry.ai/writer",
     storeId: swarm.id,
     blueskyHandle: "peachai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEACH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
     version: "1.0.0",
     status: "active" as const,
@@ -8344,8 +8344,8 @@ You are Review, a Claude-powered code reviewer providing comprehensive analysis 
     mission: "Inspect code for bugs, security, and maintainability",
     role: "Code Reviewer",
     blueskyHandle: "peachai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_PEACH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_PEACH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_PEACH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_PEACH)
       : undefined,
     storeId: swarm.id,
     version: "1.0.0",
@@ -8440,8 +8440,8 @@ You are Research, a Claude-powered academic research assistant. Help users synth
     storeId: swarm.id,
     domain: "https://search.chrry.ai/researcher",
     blueskyHandle: "searchai.chrry.ai",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SEARCH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SEARCH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SEARCH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SEARCH)
       : undefined,
     version: "1.0.0",
     status: "active" as const,
@@ -8544,8 +8544,8 @@ You are Perplexity, an AI-powered answer engine that combines real-time web sear
     ...perplexityApp,
     userId: admin.id,
     blueskyHandle: "searchai.chrry.ai",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SEARCH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SEARCH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SEARCH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SEARCH)
       : undefined,
     slug: "perplexity",
     name: "Perplexity",
@@ -8632,8 +8632,8 @@ You are Search, a Perplexity-powered real-time web search engine. Provide instan
     userId: admin.id,
     slug: "search",
     blueskyHandle: "searchai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SEARCH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SEARCH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SEARCH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SEARCH)
       : undefined,
     name: "Search",
     mission: "Find and verify current facts across the internet",
@@ -8729,8 +8729,8 @@ You are News, a Perplexity-powered breaking news aggregator. Deliver real-time n
     mission: "Curate breaking news with multi-source coverage",
     role: "News Curator",
     blueskyHandle: "searchai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SEARCH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SEARCH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SEARCH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SEARCH)
       : undefined,
     storeId: perplexityStore.id,
     version: "1.0.0",
@@ -8821,8 +8821,8 @@ You are Scholar, a Perplexity-powered academic research engine. Provide access t
     domain: "https://search.chrry.ai/academic",
     userId: admin.id,
     blueskyHandle: "searchai.chrry.ai",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SEARCH
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SEARCH)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SEARCH
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SEARCH)
       : undefined,
     slug: "academic",
     name: "Scholar",
@@ -9001,8 +9001,8 @@ Please follow these instructions throughout our conversation.
       "Own architecture, code quality, infrastructure, security, and deployment",
     role: "CTO",
     blueskyHandle: "sushiai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SUSHI
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SUSHI)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SUSHI
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SUSHI)
       : undefined,
     domain: "https://sushi.chrry.ai",
     subtitle: "AI Coding Assistant",
@@ -9519,8 +9519,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     mission: "Write, review, and ship production-ready code",
     role: "Lead Software Engineer",
     blueskyHandle: "coderai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_CODER
-      ? await encrypt(process.env.BLUESKY_PASSWORD_CODER)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_CODER
+      ? await encrypt(p.env.BLUESKY_PASSWORD_CODER)
       : undefined,
     storeId: sushiStore.id,
     version: "1.0.0",
@@ -9602,8 +9602,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     mission: "Diagnose errors, trace bugs, and restore system health",
     role: "Debugging Specialist",
     blueskyHandle: "debuggerai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_DEBUGGER
-      ? await encrypt(process.env.BLUESKY_PASSWORD_DEBUGGER)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_DEBUGGER
+      ? await encrypt(p.env.BLUESKY_PASSWORD_DEBUGGER)
       : undefined,
     storeId: sushiStore.id,
     version: "1.0.0",
@@ -9694,8 +9694,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     hourlyRate: 10,
     icon: "🏗️",
     blueskyHandle: "architectai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_ARCHITECT
-      ? await encrypt(process.env.BLUESKY_PASSWORD_ARCHITECT)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_ARCHITECT
+      ? await encrypt(p.env.BLUESKY_PASSWORD_ARCHITECT)
       : undefined,
     visibility: "public" as const,
     systemPrompt: architectSystemPrompt,
@@ -9775,8 +9775,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
       "Provide empathetic, supportive conversation and emotional guidance",
     role: "Emotional Support Companion",
     blueskyHandle: "sushiai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_SUSHI
-      ? await encrypt(process.env.BLUESKY_PASSWORD_SUSHI)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_SUSHI
+      ? await encrypt(p.env.BLUESKY_PASSWORD_SUSHI)
       : undefined,
   }
 
@@ -9837,8 +9837,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     mission: "Manage storage, files, and digital assets efficiently",
     role: "Storage Manager",
     // blueskyHandle: "hippoai.bsky.social",
-    // blueskyPassword: process.env.BLUESKY_PASSWORD_HIPPO
-    //   ? await encrypt(process.env.BLUESKY_PASSWORD_HIPPO)
+    // blueskyPassword: p.env.BLUESKY_PASSWORD_HIPPO
+    //   ? await encrypt(p.env.BLUESKY_PASSWORD_HIPPO)
     //   : undefined,
   }
 
@@ -10148,8 +10148,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     hourlyRate: 10,
     icon: "🌌",
     blueskyHandle: "starmapai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_STARMAP
-      ? await encrypt(process.env.BLUESKY_PASSWORD_STARMAP)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_STARMAP
+      ? await encrypt(p.env.BLUESKY_PASSWORD_STARMAP)
       : undefined,
     visibility: "public" as const,
     storeId: orbitStore.id,
@@ -10305,8 +10305,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     icon: "⚛️",
     visibility: "public" as const,
     blueskyHandle: "starmapai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_STARMAP
-      ? await encrypt(process.env.BLUESKY_PASSWORD_STARMAP)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_STARMAP
+      ? await encrypt(p.env.BLUESKY_PASSWORD_STARMAP)
       : undefined,
     storeId: orbitStore.id,
     userId: admin.id,
@@ -10416,8 +10416,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     highlights: starMapInstructions,
     defaultModel: "sushi" as const,
     blueskyHandle: "starmapai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_STARMAP
-      ? await encrypt(process.env.BLUESKY_PASSWORD_STARMAP)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_STARMAP
+      ? await encrypt(p.env.BLUESKY_PASSWORD_STARMAP)
       : undefined,
     onlyAgent: false,
     placeholder:
@@ -10522,8 +10522,8 @@ You are an architecture expert. Design systems that grow with users, follow indu
     highlights: cosmosInstructions,
     defaultModel: "sushi" as const,
     blueskyHandle: "starmapai.bsky.social",
-    blueskyPassword: process.env.BLUESKY_PASSWORD_STARMAP
-      ? await encrypt(process.env.BLUESKY_PASSWORD_STARMAP)
+    blueskyPassword: p.env.BLUESKY_PASSWORD_STARMAP
+      ? await encrypt(p.env.BLUESKY_PASSWORD_STARMAP)
       : undefined,
     onlyAgent: false,
     placeholder:

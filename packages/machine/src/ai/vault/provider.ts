@@ -28,7 +28,7 @@ export class ProviderConfig extends Context.Tag("ProviderConfig")<
     readonly canAnalyze: boolean
     readonly isBYOK: boolean
     readonly isFree: boolean
-    readonly isBELES: boolean
+    readonly isBELEŞ: boolean
   }
 >() {}
 
@@ -141,7 +141,7 @@ export const resolveProviderConfig = ({
         canAnalyze: caps?.canAnalyze ?? false,
         isBYOK,
         isFree: isFreeTier,
-        isBELES: resolvedName === "beleş",
+        isBELEŞ: resolvedName === "beleş",
       }),
     ).pipe(Effect.map((ctx) => Context.get(ctx, ProviderConfig)))
   })

@@ -20,7 +20,7 @@ export type ModelProviderResult = {
   supportsTools: boolean
   canAnalyze: boolean
   isBYOK: boolean
-  isBELES?: boolean
+  isBELEŞ?: boolean
   isFree?: boolean
   /** Kredi bitti, free pool'a düştü — frontend banner gösterebilir */
   isDegraded?: boolean

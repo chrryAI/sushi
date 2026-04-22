@@ -5,13 +5,13 @@ import * as Option from "effect/Option";
 import * as Stream from "effect/Stream";
 import type { ramen } from "../../types/index.js";
 
-export interface ChrryLanguageModelOptions {
+export interface chrryLanguageModelOptions {
   readonly ramen: ramen;
   readonly baseUrl?: string;
 }
 
 export const makeChrryLanguageModel = (
-  options: ChrryLanguageModelOptions,
+  options: chrryLanguageModelOptions,
 ): LanguageModel.Service => ({
   generateText: (opts) =>
     Effect.gen(function* () {
@@ -47,5 +47,5 @@ export const makeChrryLanguageModel = (
     ) as any,
 });
 
-export const ChrryLanguageModelLive = (options: ChrryLanguageModelOptions) =>
+export const chrryLanguageModelLive = (options: chrryLanguageModelOptions) =>
   Layer.succeed(LanguageModel as any, makeChrryLanguageModel(options));

@@ -9,7 +9,7 @@ import * as EmbeddingModel from "@effect/ai/EmbeddingModel"
 import { OpenAiClient, OpenAiEmbeddingModel } from "@effect/ai-openai"
 import { FetchHttpClient } from "@effect/platform"
 import { Effect, Layer, Redacted } from "effect"
-import { EMBEDDING_SOURCES } from "./provider"
+import { EMBEDDING_SOURCES } from "./aiProvider"
 
 /**
  * Create an Effect EmbeddingModel layer for the given model + API key.
