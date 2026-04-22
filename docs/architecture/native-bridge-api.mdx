@@ -17,8 +17,8 @@ This document defines the communication contract for the **Vex Native Bridge**, 
 
 ### 2. Core principles
 
-1.  **Strict Scope:** The Bridge must only operate within the user-configured Vex root directory (e.g., `~/Documents/vex`).
-2.  **User Consent:** Initial setup requires explicit user approval to install and grant permissions to the Bridge application.
+1.  **Strict scope:** The Bridge must only operate within the user-configured Vex root directory (e.g., `~/Documents/vex`).
+2.  **User consent:** Initial setup requires explicit user approval to install and grant permissions to the Bridge application.
 3.  **Efficiency:** Commands should be optimized for streaming output (especially CLI execution) to provide a real-time terminal feel within the extension.
 
 ### 3. API endpoints and payloads
@@ -42,7 +42,7 @@ These endpoints allow the AI agent to read and write code files directly.
 
 #### 3.2. CLI execution operations (`/cli`)
 
-This is the most powerful set of endpoints, enabling the AI to execute developer workflows.
+These endpoints enable the AI to execute developer workflows.
 
 | Endpoint | Method | Purpose | Client Request Payload | Server Response Payload |
 | :--- | :--- | :--- | :--- | :--- |

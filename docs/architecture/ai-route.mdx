@@ -9,16 +9,16 @@ The `/api/ai` route is the **single, unified entry point** for all AI interactio
 
 **Key features:**
 
-- **100% open source** - Every line is public
-- **Universal interface** - One endpoint for all AI
-- **App extensibility** - Infinite inheritance chains
-- **Multi-Modal** - Text, images, videos, PDFs
-- **Real-Time Streaming** - SSE with chunks
-- **Tool Integration** - Dynamic execution
-- **Web Search** - Real-time information
-- **Memory System** - Context-aware
-- **Rate Limiting** - Smart quotas
-- **Security** - Malware scanning, SSRF protection
+- **Open source** — every line is public
+- **Universal interface** — one endpoint for all AI
+- **App extensibility** — configurable inheritance chains
+- **Multi-modal** — text, images, videos, PDFs
+- **Real-time streaming** — SSE with chunks
+- **Tool integration** — dynamic execution
+- **Web search** — real-time information
+- **Memory system** — context-aware
+- **Rate limiting** — tiered quotas
+- **Security** — malware scanning, SSRF protection
 
 ## Core features
 
@@ -54,7 +54,7 @@ const buildAppKnowledgeBase = async (currentApp, depth = 0) => {
 
 ### 3. Memory system
 
-**User Memories** (personal) + **App Memories** (institutional)
+**User memories** (personal) + **App memories** (institutional)
 
 ```typescript
 const memories = await getMemories({
@@ -151,17 +151,17 @@ const atlasContext = {
 
 ## Security
 
-1. **Malware Scanning** - All files
-2. **SSRF Protection** - URL validation
-3. **File Size Limits** - Per agent
-4. **Content Validation** - Type checking
+1. **Malware scanning** — all files
+2. **SSRF protection** — URL validation
+3. **File size limits** — per agent
+4. **Content validation** — type checking
 
 ## Performance
 
-- **Context Window Management** - Smart sizing
-- **Parallel Processing** - Fetch all context
-- **Streaming Optimization** - Immediate chunks
+- **Context window management** — adaptive sizing
+- **Parallel processing** — fetch all context
+- **Streaming optimization** — immediate chunks
 
 ## Open source
 
-100% of this code is open source. Every feature, optimization, and security measure is public and auditable.
+This code is open source and publicly auditable.

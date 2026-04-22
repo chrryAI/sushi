@@ -5,7 +5,7 @@ description: "How Redis caching is integrated into getUser() and getGuest() func
 
 ## Overview
 
-Added Redis caching layer to `getUser()` and `getGuest()` functions to dramatically reduce database load and improve API response times.
+Added Redis caching layer to `getUser()` and `getGuest()` functions to reduce database load and improve API response times.
 
 ## What changed
 
@@ -221,7 +221,7 @@ Every request = 1 Redis check (fast)
 
 - Query reduction: **95%**
 - Connection pool usage: **95% less**
-- Cost savings: **Significant** (if using managed DB)
+- Cost savings: **Notable** (if using managed DB)
 
 **User Experience:**
 
