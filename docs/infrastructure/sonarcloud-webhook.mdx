@@ -99,7 +99,7 @@ The webhook uses **HMAC-SHA256** signature verification to ensure authenticity:
 
 1. SonarCloud generates a signature using your secret
 2. Signature is sent in `X-Sonar-Webhook-HMAC-SHA256` header
-3. Our endpoint verifies the signature before processing
+3. The endpoint verifies the signature before processing
 
 ## Monitoring
 
