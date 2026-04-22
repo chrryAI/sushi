@@ -23,7 +23,7 @@ This architecture uses a hybrid caching strategy to get the best of both worlds:
 2.  **Persistence (L2):** `IndexedDB` (via Dexie) for storing data across sessions/reloads.
 3.  **Network (Source):** REST API for the source of truth.
 
-### The Flow
+### The flow
 
 1.  **App Boot:** `getCacheProvider` initializes. It loads _non-expired_ data from IndexedDB into Memory immediately.
 2.  **Render:** Components render _instantly_ using data from Memory. No loading spinners for returning users.

@@ -125,7 +125,7 @@ Browser → Google Tag → Cookie → Track Everything
 User Action → Your Server → Google Ads API → Track Conversion Only
 ```
 
-**Key Difference:**
+**Key difference:**
 
 - No browser tracking
 - No cookies
@@ -296,17 +296,17 @@ console.log(`[Google Ads] Tracked conversion: ${transactionId}`);
 
 ### Conversions not showing up
 
-1. **Check Environment Variables**
+1. **Check environment variables**
 
    ```bash
    echo $GOOGLE_ADS_CONVERSION_ID
    ```
 
-2. **Verify Conversion ID Format**
+2. **Verify conversion ID format**
    - Should be: `AW-XXXXXXXXX`
    - Not: `G-XXXXXXXXX` (that's GA4)
 
-3. **Check Google Ads Status**
+3. **Check Google Ads status**
    - Conversions can take 3-24 hours to appear
    - Check "Recent conversions" in Google Ads
 
@@ -325,14 +325,14 @@ console.log(`[Google Ads] Tracked conversion: ${transactionId}`);
 
 ## Summary
 
-**What You Get:**
+**What you get:**
 
 - Zero client-side tracking (maintains your policy)
 - Google Ads optimization (fixes your campaign)
 - Privacy compliant (no consent needed)
 - Easy to implement (30 minutes)
 
-**Next Steps:**
+**Next steps:**
 
 1. Get conversion IDs from Google Ads
 2. Add to `.env`
