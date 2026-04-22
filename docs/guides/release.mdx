@@ -49,20 +49,20 @@ pnpm build:all
 
 ### What happens during build
 
-1. **Icon Generation** (`generate-icons.js`)
+1. **Icon generation** (`generate-icons.js`)
    - Takes high-res 500x500 PNG from `apps/chrry/public/images/apps/{mode}.png`
    - Generates all required sizes (16, 32, 48, 128, 256, 512, 1024)
    - Creates `.icns` for macOS and `.ico` for Windows
 
-2. **Config Generation** (`generate-tauri-config.js`)
+2. **Config generation** (`generate-tauri-config.js`)
    - Reads `tauri.conf.template.json`
    - Replaces placeholders with mode-specific values from `siteConfig.ts`
    - Writes to `tauri.conf.json` (gitignored)
 
-3. **Vite Build**
+3. **Vite build**
    - Bundles the React app for production
 
-4. **Tauri Build**
+4. **Tauri build**
    - Compiles Rust backend
    - Packages the app with native webview
    - Creates installers (.app for macOS, .dmg, etc.)
@@ -80,7 +80,7 @@ After building, you'll find:
 
 **DO NOT** commit binary files to git. Instead:
 
-1. **Create a GitHub Release**
+1. **Create a GitHub release**
 
    ```bash
    gh release create v1.8.47 \
@@ -88,16 +88,16 @@ After building, you'll find:
      --notes "Release notes here"
    ```
 
-2. **Upload Build Artifacts**
+2. **Upload build artifacts**
 
    ```bash
    gh release upload v1.8.47 \
      apps/desktop/src-tauri/target/release/bundle/dmg/*.dmg
    ```
 
-3. **Update Download Links**
+3. **Update download links**
    - Reference GitHub Release URLs in your app
-   - Example: `https://github.com/your-org/vex/releases/download/v1.8.47/Vex_0.1.0_aarch64.dmg`
+   - Example: `https://github.com/chrryai/vex/releases/download/v1.8.47/Vex_0.1.0_aarch64.dmg`
 
 ### Alternative: CDN distribution
 
