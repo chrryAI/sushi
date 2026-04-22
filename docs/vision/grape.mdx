@@ -1,0 +1,1197 @@
+---
+title: "Grape vision"
+description: "Reclaiming attention in the age of ad overload — Grape's vision for AI-powered smart glasses and consent-based advertising."
+---
+
+**Status:** Vision Document  
+**License:** MIT  
+**Project:** Open Source  
+**Mission:** Make attention pollution visible and give users control over their attention economy
+
+---
+
+## Executive summary
+
+Grape is a two-part open-source solution to the attention economy crisis:
+
+1. **Grape Glasses** - AI-powered smart glasses that track and quantify ad exposure in real-time
+2. **Grape Platform** - Consent-based advertising platform where users get paid for their attention
+
+Together, they create a complete ecosystem that makes invisible attention theft visible, then provides an ethical alternative where users control when they see ads and get compensated for their time.
+
+**The Problem:** Average person sees 4,000-10,000 ads per day. Nobody tracks this. Nobody gets paid. Attention is stolen, not earned.
+
+**The Solution:** Grape makes ad exposure visible (glasses) and offers a better model (platform) where users consent to ads and get paid directly.
+
+---
+
+## Part 1: Grape Glasses - the cognitive pollution detector
+
+### What are Grape Glasses?
+
+AI-powered smart glasses that passively detect and count advertisements in your environment:
+
+- Billboards and posters
+- TV and screen ads
+- Phone and computer ads
+- Audio advertisements
+- Sponsored content
+
+### Core features
+
+#### 1. Real-time ad detection
+
+```text
+Visual Detection:
+- Logo recognition (YOLOv8, MobileNet)
+- Text detection (OCR for "Sponsored", "Ad")
+- Banner/overlay detection
+- Video ad detection
+
+Audio Detection:
+- Ad audio fingerprinting
+- Jingle detection
+- Sponsored content markers
+```
+
+#### 2. Exposure tracking
+
+```text
+Metrics Tracked:
+- Total ads seen per day/week/month
+- Ad exposure time (minutes/hours)
+- Ad density by location
+- Engagement detection (did you look?)
+- Top offending brands/platforms
+- Interruption frequency
+```
+
+#### 3. Cognitive Pollution Index (CPI)
+
+```text
+Your unique attention metric:
+- Combines ad count, duration, and engagement
+- Normalized score (0-100)
+- Higher score = more attention pollution
+- Track improvements over time
+
+Like:
+- Oura Ring → Readiness Score
+- WHOOP → Strain Score
+- Grape → Cognitive Pollution Index
+```
+
+#### 4. Privacy-first architecture
+
+```text
+On-Device Processing:
+- All ML inference runs locally
+- No raw images sent to cloud
+- Only aggregated stats stored
+- User owns all data
+- GDPR compliant by design
+
+Optional Cloud:
+- Encrypted backup
+- Cross-device sync
+- Aggregate analytics (anonymized)
+```
+
+### Hardware specifications
+
+#### MVP prototype (€500-800)
+
+```text
+- Base: Modified smart glasses frame
+- Camera: Wide-angle USB camera (60-90° FOV)
+- Compute: Raspberry Pi Zero 2 W + Edge TPU
+- Battery: 2000mAh LiPo (6-8 hours)
+- IMU: MPU6050 (head tracking)
+- Mic: MEMS microphone array
+- Haptics: Vibration motor for alerts
+- Storage: 32GB microSD
+```
+
+#### Production target (€150-250 BOM)
+
+```text
+- Custom frame + integrated electronics
+- Optimized camera module
+- ARM SoC with NPU
+- 10-hour battery life
+- Bluetooth 5.0 for companion app
+- USB-C charging
+- IP54 water resistance
+```
+
+### Software stack
+
+#### Edge ML pipeline
+
+```typescript
+// Capture → Pre-filter → Detect → Aggregate → Sync
+
+1. Capture (1 FPS default, burst on motion)
+2. Pre-filter (brightness, motion, face blur)
+3. Ad Detection:
+   - Binary classifier (ad/not-ad)
+   - Logo detector (brand identification)
+   - OCR (text like "Sponsored")
+   - Scene classifier (billboard/TV/phone)
+4. Engagement Estimation:
+   - Head pose (IMU)
+   - Gaze proxy (optional eye tracking)
+   - Duration threshold (≥1.5s = impression)
+5. Event Aggregation:
+   - Dedupe repeated frames
+   - Cluster into single impressions
+   - Store summary (no raw images)
+6. Sync to Companion App:
+   - Bluetooth transfer
+   - Daily reports
+   - Analytics dashboard
+```
+
+#### Companion app (Vex integration)
+
+```text
+Built as Vex PWA:
+- Today view: Total ads, CPI score, timeline
+- Week/Month trends: Charts and heatmaps
+- Map view: Ad hotspots (location opt-in)
+- Insights: Top brands, worst times, recommendations
+- Focus Mode: Schedule ad-free periods
+- Export: CSV, API for researchers
+- Settings: Privacy controls, capture rate
+```
+
+### Use cases
+
+#### 1. Personal awareness
+
+```text
+"I saw 247 ads today. That's 6 hours this week."
+→ Behavior change: Install ad blockers, avoid ad-heavy routes
+```
+
+#### 2. Productivity optimization
+
+```text
+"My CPI spikes between 2-4pm (YouTube breaks)"
+→ Schedule deep work during low-ad periods
+```
+
+#### 3. Parental control
+
+```text
+"My child saw 89 ads in 3 hours of screen time"
+→ Adjust content sources, set limits
+```
+
+#### 4. Research & advocacy
+
+```text
+"Average user in NYC sees 400 ads/day"
+→ Regulatory evidence, class action lawsuits
+```
+
+#### 5. Urban planning
+
+```text
+"Times Square: 1,200 ads/hour exposure"
+→ City regulations on billboard density
+```
+
+---
+
+## Part 2: Grape Platform - consent-based advertising
+
+### What is Grape Platform?
+
+A revolutionary advertising model built into Vex where users **choose** when to see ads and get **paid directly** for their attention.
+
+### How it works
+
+#### User flow
+
+```text
+1. User clicks 🍇 emoji in Vex
+   → "I consent to see ads right now"
+
+2. User selects interests
+   → Tech, Travel, Fashion, Food, etc.
+
+3. Grape shows 5-10 curated ads
+   → Video, interactive, product demos
+   → 2-3 minutes total
+
+4. User engages with ads
+   → Watch, click, interact
+
+5. User gets paid
+   → $1.50-$2.00 per session
+   → Instant to Grape Wallet
+   → Cash out anytime
+```
+
+#### Advertiser flow
+
+```text
+1. Create campaign
+   → Set budget, target audience, payout
+
+2. Upload ad content
+   → Video, interactive, product page
+
+3. Set targeting
+   → Demographics, interests, location
+
+4. Launch campaign
+   → Grape matches to relevant users
+
+5. Track performance
+   → Real-time analytics, ROI tracking
+```
+
+### Economics
+
+#### Payment model
+
+```text
+Advertiser pays: $2.00 per engaged view
+User receives:   $1.70 (85%)
+Grape takes:     $0.30 (15%)
+
+Why advertisers pay more:
+- Voluntary attention = 10x higher engagement
+- Self-selected targeting = better conversion
+- No ad fraud = verified real users
+- Quality over quantity
+```
+
+#### User earnings potential
+
+```text
+Casual (10 sessions/month):  $15-20/month
+Active (daily sessions):     $50-60/month
+Power (multiple daily):      $150-200/month
+
+Annual potential:
+- Casual: $180-240/year
+- Active: $600-720/year
+- Power: $1,800-2,400/year
+```
+
+#### Platform revenue
+
+```text
+At 100k users (10 sessions/month):
+- 1M ad views/month
+- $300k platform revenue/month
+- $3.6M/year
+
+At 1M users:
+- 10M ad views/month
+- $3M platform revenue/month
+- $36M/year
+```
+
+### Key features
+
+#### 1. Smart matching algorithm
+
+```typescript
+function matchAdsToUser(user, availableAds) {
+  return availableAds
+    .map((ad) => ({
+      ad,
+      score: calculateRelevance({
+        userInterests: user.interests,
+        adCategory: ad.category,
+        userHistory: user.pastEngagement,
+        adQuality: ad.qualityScore,
+        payout: ad.payoutPerView,
+        timing: user.currentContext,
+      }),
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10);
+}
+```
+
+#### 2. Grape Wallet
+
+```text
+Features:
+- Real-time balance tracking
+- Instant payouts (Grape Plus)
+- 7-day hold (free tier)
+- Multiple withdrawal methods:
+  - Bank transfer
+  - PayPal
+  - Crypto (optional)
+  - Vex credits
+```
+
+#### 3. Quality control
+
+```text
+For Users:
+- Rate ads (1-5 stars)
+- Report misleading ads
+- Block brands
+- Set ad preferences
+
+For Advertisers:
+- Minimum quality score required
+- User feedback visible
+- A/B testing tools
+- Performance analytics
+```
+
+#### 4. Privacy protection
+
+```text
+No Tracking:
+- Users self-select interests
+- No shadow profiles
+- No data selling
+- GDPR compliant
+
+Transparency:
+- Clear payout structure
+- Ad source visible
+- Data usage disclosed
+- User controls everything
+```
+
+### Competitive advantages
+
+#### vs Google Ads
+
+```text
+Google Ads:
+- Forced impressions
+- $0 to users
+- 0.5-2% CTR
+- Privacy invasion
+- 45% platform cut
+
+Grape:
+- Voluntary impressions
+- $1.70 to users
+- 10-30% CTR (estimated)
+- Privacy-first
+- 15% platform cut
+```
+
+#### vs Brave Browser
+
+```text
+Brave:
+- Browser-only
+- Pays in BAT (crypto)
+- Complex setup
+- Limited adoption
+
+Grape:
+- Works everywhere (Vex integration)
+- Pays in cash
+- One-click setup
+- Built into existing platform
+```
+
+---
+
+## The complete ecosystem: glasses + platform
+
+### The virtuous cycle
+
+```text
+1. User wears Grape Glasses
+   → Tracks ad exposure: "You saw 247 ads today"
+   → CPI score: 78/100 (high pollution)
+
+2. User sees the data
+   → "I'm being bombarded with ads"
+   → "And I'm not getting paid for any of it"
+
+3. User opens Grape Platform in Vex
+   → "Want to get PAID for your attention instead?"
+   → Click Grape emoji
+
+4. User sees 5 curated ads
+   → Earns $1.70 in 3 minutes
+   → High-quality, relevant ads
+
+5. User realizes
+   → "I saw 247 ads for free today"
+   → "Or I can see 5 ads and earn $1.70"
+   → "I'll take the $1.70"
+
+6. Behavior change
+   → Blocks all involuntary ads
+   → Only sees ads through Grape
+   → Gets paid for attention
+   → CPI drops to 15/100
+
+7. Network effect
+   → User shares with friends
+   → "I made $50 this month from ads"
+   → Friends join Grape
+   → Movement grows
+```
+
+### Data integration
+
+```typescript
+// Glasses track involuntary ads
+const involuntaryAds = {
+  today: 247,
+  thisWeek: 1456,
+  thisMonth: 6234,
+  earnings: 0, // $0 for involuntary ads
+  cpi: 78,
+};
+
+// Platform tracks voluntary ads
+const voluntaryAds = {
+  today: 5,
+  thisWeek: 35,
+  thisMonth: 150,
+  earnings: 255, // $255 for voluntary ads
+  cpi: 15,
+};
+
+// Combined insights
+const insights = {
+  message:
+    "You saw 247 involuntary ads today (CPI: 78) but earned $0. You saw 5 voluntary ads and earned $8.50. Voluntary ads are 49x more efficient for your time.",
+  recommendation:
+    "Block involuntary ads and increase Grape sessions to 2/day to earn $100/month while reducing CPI to <20.",
+};
+```
+
+---
+
+## Open source strategy
+
+### Why MIT?
+
+```text
+MIT ensures:
+1. Maximum adoption and contribution
+2. Freedom to use, modify, and distribute
+3. Low barrier for corporate adoption
+4. Community-driven development
+5. Ecosystem growth through permissive licensing
+```
+
+### What's open source?
+
+#### Fully open
+
+```text
+- Grape Glasses firmware
+- ML models and training code
+- Companion app (Vex integration)
+- Ad detection algorithms
+- Privacy-preserving architecture
+- Data schemas and APIs
+- Documentation and research
+```
+
+#### Partially open
+
+```text
+- Grape Platform core (MIT)
+- Matching algorithm (core open, optimizations proprietary)
+- Advertiser dashboard (basic open, advanced features paid)
+```
+
+#### Closed (business logic)
+
+```text
+- Payment processing (PCI compliance)
+- Fraud detection (security)
+- Premium features (revenue)
+```
+
+### Community contributions
+
+#### How to contribute
+
+```text
+1. Hardware:
+   - Improve glasses design
+   - Optimize battery life
+   - Add new sensors
+   - Port to different platforms
+
+2. Software:
+   - Improve ML models
+   - Add language support
+   - Build integrations
+   - Fix bugs
+
+3. Research:
+   - Publish studies on ad exposure
+   - Analyze effectiveness
+   - Study behavioral impact
+   - Validate privacy claims
+
+4. Advocacy:
+   - Regulatory submissions
+   - Media outreach
+   - Community building
+   - Educational content
+```
+
+---
+
+## Roadmap
+
+### Phase 1: MVP (months 1-3)
+
+```text
+Grape Glasses:
+- [x] Prototype hardware (Pi Zero + camera)
+- [x] Basic ad detection (YOLOv8-nano)
+- [x] Companion app (Vex PWA)
+- [x] Daily reports and CPI
+- Target: 50 beta users
+
+Grape Platform:
+- [x] Grape emoji integration in Vex
+- [x] Ad viewer UI
+- [x] Grape Wallet
+- [x] Payment processing
+- Target: 10 beta advertisers, 100 users
+```
+
+### Phase 2: beta (months 4-6)
+
+```text
+Grape Glasses:
+- Custom frame design
+- Improved ML models
+- Audio ad detection
+- Map view with hotspots
+- Target: 500 beta users
+
+Grape Platform:
+- Smart matching algorithm
+- Advertiser dashboard
+- A/B testing tools
+- Quality control system
+- Target: 50 advertisers, 1k users
+```
+
+### Phase 3: launch (months 7-9)
+
+```text
+Grape Glasses:
+- Kickstarter campaign
+- Production hardware ($299)
+- App Store/Play Store launch
+- Media coverage
+- Target: 5k users
+
+Grape Platform:
+- Public launch in Vex
+- Grape Plus subscription
+- API for developers
+- Analytics dashboard
+- Target: 500 advertisers, 10k users
+```
+
+### Phase 4: scale (months 10-12)
+
+```text
+Grape Glasses:
+- Retail partnerships
+- International shipping
+- Multiple frame styles
+- Eye tracking (premium)
+- Target: 50k users
+
+Grape Platform:
+- Enterprise advertisers
+- Advanced targeting
+- Programmatic API
+- Marketplace features
+- Target: 5k advertisers, 100k users
+```
+
+### Phase 5: movement (year 2+)
+
+```text
+Both:
+- 1M+ users
+- Regulatory impact
+- Force Google to respond
+- Become industry standard
+- Attention rights movement
+```
+
+---
+
+## Business model
+
+### Revenue streams
+
+#### 1. Platform fees (primary)
+
+```text
+15% of all ad transactions
+- Sustainable at scale
+- Aligns incentives (more users = more revenue)
+- No user fees (users get paid)
+```
+
+#### 2. Grape Plus subscription
+
+```text
+$5/month for users:
+- Higher payout (90% vs 85%)
+- Instant cashouts
+- Priority ad matching
+- Advanced analytics
+- Ad-free Vex experience
+```
+
+#### 3. Hardware sales
+
+```text
+Grape Glasses:
+- $299 retail price
+- $150-200 BOM
+- 30-40% margin
+- One-time revenue per user
+```
+
+#### 4. Advertiser tools
+
+```text
+Grape Pro ($99/mo):
+- Advanced analytics
+- A/B testing
+- Audience insights
+- API access
+- Priority support
+```
+
+#### 5. Data insights (ethical)
+
+```text
+Aggregated, anonymized data:
+- Urban ad density maps
+- Industry reports
+- Research partnerships
+- Sold to regulators, academics
+- User consent required
+```
+
+### Unit economics
+
+#### Per user (annual)
+
+```text
+Revenue:
+- Platform fees: $45 (300 sessions × $2 × 15%)
+- Grape Plus: $60 (if subscribed)
+- Total: $45-105/user/year
+
+Costs:
+- Server/infrastructure: $5/user/year
+- Payment processing: $10/user/year
+- Support: $5/user/year
+- Total: $20/user/year
+
+Profit: $25-85/user/year
+```
+
+#### At scale (1M users)
+
+```text
+Revenue:
+- Platform fees: $45M/year
+- Subscriptions (20% conversion): $12M/year
+- Hardware (10% adoption): $30M one-time
+- Advertiser tools: $5M/year
+- Total: $62M/year + $30M hardware
+
+Costs:
+- Infrastructure: $5M/year
+- Payment processing: $10M/year
+- Support: $5M/year
+- R&D: $10M/year
+- Marketing: $10M/year
+- Total: $40M/year
+
+Profit: $22M/year + hardware
+```
+
+---
+
+## Impact & mission
+
+### The attention rights movement
+
+Grape is more than a product—it's a movement to reclaim human attention from corporate exploitation.
+
+#### Core principles
+
+```text
+1. Attention is valuable
+   → Users should be compensated
+
+2. Consent is required
+   → No forced advertising
+
+3. Privacy is fundamental
+   → No tracking without permission
+
+4. Transparency is essential
+   → Users see all data collection
+
+5. Control belongs to users
+   → Users decide when/what to see
+```
+
+#### Measurable impact
+
+```text
+Individual Level:
+- Reduce involuntary ad exposure by 80%
+- Earn $50-200/month from attention
+- Lower CPI from 70+ to <20
+- Reclaim 5-10 hours/week
+
+Societal Level:
+- Make ad pollution visible
+- Force industry accountability
+- Enable regulatory action
+- Create ethical alternative
+- Shift power to users
+
+Economic Level:
+- $415B ad industry disrupted
+- Direct user compensation
+- Privacy-first business model
+- Open source innovation
+```
+
+### Success metrics
+
+#### Year 1
+
+```text
+- 50k Grape Glasses sold
+- 100k Grape Platform users
+- $5M paid to users
+- 10M involuntary ads blocked
+- 500k voluntary ads shown
+```
+
+#### Year 3
+
+```text
+- 500k Grape Glasses sold
+- 1M Grape Platform users
+- $50M paid to users
+- 100M involuntary ads blocked
+- 5M voluntary ads shown
+- Regulatory citations in 5+ countries
+```
+
+#### Year 5
+
+```text
+- 2M Grape Glasses sold
+- 5M Grape Platform users
+- $250M paid to users
+- 500M involuntary ads blocked
+- 25M voluntary ads shown
+- Industry standard for consent-based ads
+- Google forced to adapt model
+```
+
+---
+
+## Technical architecture
+
+### System overview
+
+```text
+┌─────────────────────────────────────────────────────────┐
+│                    Grape Ecosystem                       │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────────────────┐         ┌──────────────────┐     │
+│  │  Grape Glasses   │◄───────►│  Companion App   │     │
+│  │  (Hardware)      │         │  (Vex PWA)       │     │
+│  │                  │         │                  │     │
+│  │ • Camera         │         │ • Daily reports  │     │
+│  │ • ML inference   │         │ • CPI tracking   │     │
+│  │ • IMU tracking   │         │ • Analytics      │     │
+│  │ • Local storage  │         │ • Settings       │     │
+│  └──────────────────┘         └──────────────────┘     │
+│           │                            │                │
+│           │ Bluetooth                  │ HTTPS          │
+│           ▼                            ▼                │
+│  ┌─────────────────────────────────────────────┐       │
+│  │           Grape Platform (Vex)              │       │
+│  │                                             │       │
+│  │  ┌──────────────┐    ┌──────────────┐     │       │
+│  │  │ Ad Viewer    │    │ Grape Wallet │     │       │
+│  │  │ (🍇 emoji)   │    │ (Balance)    │     │       │
+│  │  └──────────────┘    └──────────────┘     │       │
+│  │                                             │       │
+│  │  ┌──────────────┐    ┌──────────────┐     │       │
+│  │  │ Matching     │    │ Payment      │     │       │
+│  │  │ Algorithm    │    │ Processing   │     │       │
+│  │  └──────────────┘    └──────────────┘     │       │
+│  └─────────────────────────────────────────────┘       │
+│           │                            │                │
+│           │                            │                │
+│           ▼                            ▼                │
+│  ┌──────────────────┐         ┌──────────────────┐     │
+│  │  Advertiser      │         │  Analytics       │     │
+│  │  Dashboard       │         │  Engine          │     │
+│  └──────────────────┘         └──────────────────┘     │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Database schema
+
+```typescript
+// Grape campaigns
+table grape_campaigns {
+  id: uuid
+  advertiser_id: uuid → users.id
+  name: text
+  budget: integer // cents
+  payout_per_view: integer // cents
+  status: enum('active', 'paused', 'completed')
+  target_audience: jsonb
+  ad_content: jsonb
+  created_at: timestamp
+  updated_at: timestamp
+}
+
+// Grape sessions (user views ads)
+table grape_sessions {
+  id: uuid
+  user_id: uuid → users.id
+  campaign_id: uuid → grape_campaigns.id
+  ads_shown: jsonb // array of ad IDs
+  engagement: jsonb // clicks, time, ratings
+  payout: integer // cents
+  status: enum('pending', 'completed', 'paid')
+  created_at: timestamp
+  completed_at: timestamp
+}
+
+// Grape wallet
+table grape_wallets {
+  id: uuid
+  user_id: uuid → users.id
+  balance: integer // cents
+  total_earned: integer
+  total_withdrawn: integer
+  updated_at: timestamp
+}
+
+// Grape glasses data
+table grape_glass_sessions {
+  id: uuid
+  user_id: uuid → users.id
+  device_id: uuid
+  ads_detected: jsonb // array of ad events
+  cpi_score: integer
+  total_ads: integer
+  total_duration: integer // seconds
+  location: jsonb // optional
+  created_at: timestamp
+}
+```
+
+---
+
+## Privacy & security
+
+### Privacy guarantees
+
+#### Grape Glasses
+
+```text
+✅ On-device ML inference
+✅ No raw images stored
+✅ No raw images transmitted
+✅ Only aggregated stats synced
+✅ Face blur by default
+✅ Location opt-in only
+✅ User owns all data
+✅ Easy data export/delete
+```
+
+#### Grape Platform
+
+```text
+✅ No tracking cookies
+✅ No shadow profiles
+✅ No data selling
+✅ Self-selected targeting
+✅ Transparent data usage
+✅ GDPR/CCPA compliant
+✅ User controls all settings
+✅ Encrypted data storage
+```
+
+### Security measures
+
+```text
+Infrastructure:
+- End-to-end encryption
+- SOC 2 compliance
+- Regular security audits
+- Bug bounty program
+- Penetration testing
+
+Payment:
+- PCI DSS compliant
+- Secure payment processing
+- Fraud detection
+- Multi-factor authentication
+- Encrypted wallet storage
+
+Data:
+- Encrypted at rest
+- Encrypted in transit
+- Regular backups
+- Disaster recovery
+- GDPR right to deletion
+```
+
+---
+
+## Legal & regulatory
+
+### Compliance
+
+#### Recording laws
+
+```text
+Varies by jurisdiction:
+- Public spaces: Generally legal
+- Private spaces: Requires consent
+- Two-party consent states: Audio recording restricted
+
+Solution:
+- Auto-disable in private mode
+- Clear LED indicator when recording
+- User education on local laws
+- Geofencing for restricted areas
+```
+
+#### Advertising regulations
+
+```text
+FTC Compliance:
+- Clear disclosure of paid ads
+- No deceptive advertising
+- Truth in advertising standards
+- User protection measures
+
+Platform Responsibilities:
+- Ad content review
+- Prohibited content policies
+- User reporting system
+- Advertiser verification
+```
+
+#### Data protection
+
+```text
+GDPR (EU):
+- Lawful basis for processing
+- User consent required
+- Right to access/delete
+- Data portability
+- Privacy by design
+
+CCPA (California):
+- Consumer rights disclosure
+- Opt-out mechanisms
+- Data sale prohibition
+- Privacy policy transparency
+```
+
+### Intellectual property
+
+```text
+Open Source:
+- MIT license
+- Patent non-assertion
+- Trademark protection (Grape name/logo)
+- Contributor agreements
+
+Proprietary:
+- Business logic (fraud detection)
+- Premium features
+- Advertiser tools
+- Brand identity
+```
+
+---
+
+## FAQ
+
+### For users
+
+**Q: How much can I really earn?**
+A: Depends on usage. Casual users (10 sessions/month) earn $15-20. Active daily users earn $50-60. Power users doing multiple sessions daily can earn $150-200/month.
+
+**Q: Is my privacy protected?**
+A: Yes. Glasses process everything on-device. Platform doesn't track you. You self-select ad interests. No shadow profiles. All data encrypted.
+
+**Q: What if I don't want to wear glasses?**
+A: You can use Grape Platform without glasses. Glasses just help you track involuntary ad exposure. Platform works standalone.
+
+**Q: Can I cash out anytime?**
+A: Free tier has 7-day hold. Grape Plus ($5/mo) gets instant cashouts. Minimum withdrawal is $10.
+
+**Q: What if ads are irrelevant?**
+A: Rate them 1-star. Our algorithm learns and improves matching. You can also block brands and adjust interests anytime.
+
+### For advertisers
+
+**Q: Why pay more per view?**
+A: Because engagement is 10-30x higher. Users voluntarily chose to see your ad. They're paying attention. Conversion rates are dramatically better than forced ads.
+
+**Q: How do you prevent fraud?**
+A: Verified users only. Engagement tracking. Pattern detection. Human review for suspicious activity. Advertiser can see detailed engagement metrics.
+
+**Q: What targeting options exist?**
+A: Users self-select interests. You can target by: interests, demographics, location, time of day, device type. No invasive tracking needed.
+
+**Q: What's the minimum budget?**
+A: $100 to start. Set your own payout per view ($1-5). Campaign runs until budget exhausted. Pause/adjust anytime.
+
+**Q: What ad formats are supported?**
+A: Video (15-60s), interactive demos, product showcases, surveys, games. More formats coming soon.
+
+### For developers
+
+**Q: Can I contribute to Grape?**
+A: Yes! It's open source (MIT). Contribute to hardware, ML models, companion app, or platform features. See CONTRIBUTING.md.
+
+**Q: Can I build on Grape?**
+A: Yes. Grape provides APIs for researchers, developers, and integrators. Licensed under MIT.
+
+**Q: Can I fork Grape?**
+A: Yes, under MIT terms. You are free to modify and distribute.
+
+**Q: How do I integrate Grape with my app?**
+A: Use our SDK. Track ad exposure in your app. Offer Grape as alternative. Share revenue with users. Contact us for partnership.
+
+---
+
+## Call to action
+
+### Join the movement
+
+**Grape is being built in public. Here's how you can help:**
+
+#### 1. Star the repo
+
+```text
+github.com/chrryai/grape
+→ Show support
+→ Get updates
+→ Join discussions
+```
+
+#### 2. Beta test
+
+```text
+Sign up: grape.chrry.ai/beta
+→ Test glasses prototype
+→ Try platform early
+→ Shape the product
+```
+
+#### 3. Contribute
+
+```text
+→ Code (ML, hardware, app)
+→ Research (ad exposure studies)
+→ Design (UI/UX, hardware)
+→ Docs (guides, translations)
+```
+
+#### 4. Spread the word
+
+```text
+→ Share on social media
+→ Write blog posts
+→ Make videos
+→ Tell friends
+```
+
+#### 5. Invest/partner
+
+```text
+→ Angel investment
+→ Strategic partnerships
+→ Corporate sponsorship
+→ Research collaborations
+```
+
+---
+
+## Contact
+
+**Project Lead:** Iliyan Velinov  
+**Organization:** chrryAI  
+**Website:** grape.chrry.ai  
+**Email:** iliyan@chrry.ai  
+**GitHub:** github.com/chrryai/grape  
+**Discord:** discord.gg/grape  
+**Twitter:** @grapevision
+
+---
+
+## License
+
+**Grape Glasses & Platform:** MIT  
+**Documentation:** CC BY-SA 4.0  
+**Brand Assets:** All rights reserved
+
+---
+
+## Acknowledgments
+
+Inspired by:
+
+- The quantified self movement
+- Privacy-first technology
+- Open source collaboration
+- Attention economy research
+- User empowerment principles
+
+Built with:
+
+- Vex AI platform
+- Open source ML models
+- Community contributions
+- User feedback
+- Mission-driven passion
+
+---
+
+**Together, we can reclaim attention from corporate exploitation and build a more ethical advertising future.**
+
+**Join us: grape.chrry.ai**
