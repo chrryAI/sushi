@@ -1,11 +1,11 @@
 ---
 title: "Native bridge IDE architecture"
-description: "Browser-first AI-driven IDE architecture using the Vex Native Bridge for zero-friction development workflows from a browser extension."
+description: "Browser-first AI-driven IDE architecture using the Vex Native Bridge for development workflows from a browser extension."
 ---
 
 ## Vision
 
-The **Vex Native Bridge** enables a browser-first, AI-driven IDE that turns your browser extension into a complete development environment. Unlike traditional VS Code extensions that are isolated to the editor, Vex leverages its position as a LifeOS overlay to provide contextual, zero-friction development workflows.
+The **Vex Native Bridge** enables a browser-first, AI-driven IDE that turns your browser extension into a complete development environment. Unlike traditional VS Code extensions that are isolated to the editor, Vex leverages its position as a LifeOS overlay to provide contextual development workflows.
 
 ## Why this is unique
 
@@ -21,17 +21,17 @@ The **Vex Native Bridge** enables a browser-first, AI-driven IDE that turns your
 
 ### Key differentiators
 
-1. **AI as Super-CLI**: Chat becomes the command interface
+1. **AI as super-CLI**: Chat becomes the command interface
    - "Agent, create a Drizzle schema for userSettings"
    - "Agent, fix the merge conflict and push"
    - "Agent, run the build and check the output"
 
-2. **Zero Context Switch**: IDE overlays on any environment
+2. **No context switch**: IDE overlays on any environment
    - Review code while on production site
    - Edit files while reading documentation
    - Commit changes while viewing design files
 
-3. **Your Power Aliases**: Direct integration with your workflow
+3. **Your power aliases**: Direct integration with your workflow
    ```bash
    alias p="pnpm run build && pnpm run publish"
    alias pu="pnpm run build:all"
@@ -67,8 +67,8 @@ The **Vex Native Bridge** enables a browser-first, AI-driven IDE that turns your
 
 ## Core principles
 
-1. **Security First**: All operations scoped to user-approved directory (`~/Documents/vex`)
-2. **User Consent**: Explicit permission required for Bridge installation
+1. **Security first**: All operations scoped to user-approved directory (`~/Documents/vex`)
+2. **User consent**: Explicit permission required for Bridge installation
 3. **Minimalism**: Only expose strictly necessary functionality
 4. **Streaming**: Real-time output for CLI commands (terminal feel)
 5. **Efficiency**: Leverage existing aliases and environment
@@ -316,18 +316,18 @@ User: "What are my uncommitted changes?"
 
 ## Security considerations
 
-1. **Directory Whitelist**: Only allow access to approved directories
-2. **Command Whitelist**: Optionally restrict dangerous commands
-3. **Local-Only**: Bridge only accepts connections from localhost
-4. **Token Auth**: Shared secret between extension and bridge
-5. **User Confirmation**: Prompt for destructive operations
+1. **Directory whitelist**: Only allow access to approved directories
+2. **Command whitelist**: Optionally restrict dangerous commands
+3. **Local-only**: Bridge only accepts connections from localhost
+4. **Token auth**: Shared secret between extension and bridge
+5. **User confirmation**: Prompt for destructive operations
 
 ## Why this beats VS Code extensions
 
-1. **Contextual Intelligence**: Sees what you're doing in the browser
-2. **Zero Friction**: No app switching, instant overlay
-3. **Your Environment**: Uses your exact `.zshrc` setup
-4. **AI-First**: Chat is the primary interface, not menus
+1. **Contextual intelligence**: Sees what you're doing in the browser
+2. **Low friction**: No app switching, instant overlay
+3. **Your environment**: Uses your exact `.zshrc` setup
+4. **AI-first**: Chat is the primary interface, not menus
 5. **Universal**: Works across all your browser tabs
 
 ## Next steps
@@ -340,4 +340,4 @@ User: "What are my uncommitted changes?"
 
 ---
 
-The architecture enables AI-driven, browser-first, zero-friction coding workflows.
+The architecture enables AI-driven, browser-first coding workflows.

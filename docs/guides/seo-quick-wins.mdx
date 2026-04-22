@@ -93,7 +93,7 @@ The `share-modal.js` error is a timing issue. It's trying to access DOM before i
 
 ```javascript
 // If you have custom scripts
-document.addEventListener("networkidle", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const modal = document.querySelector("#share-modal");
   if (modal) {
     modal.addEventListener("click", handler);

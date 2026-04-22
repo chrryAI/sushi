@@ -1,11 +1,11 @@
 ---
 title: "Spatial navigation architecture"
-description: "N-dimensional spatial navigation system enabling seamless movement between stores and apps while maintaining spatial context."
+description: "N-dimensional spatial navigation system enabling movement between stores and apps while maintaining spatial context."
 ---
 
 ## Overview
 
-The Wine ecosystem introduces an **N-dimensional spatial navigation system** that enables seamless movement between **Stores (Universes)** and **Apps (Tools)** while maintaining perfect spatial context. This goes beyond app switching — it provides dimensional navigation through an interconnected AI ecosystem.
+The Wine ecosystem introduces an **N-dimensional spatial navigation system** that enables movement between **Stores (Universes)** and **Apps (Tools)** while maintaining spatial context. It provides dimensional navigation through an interconnected AI ecosystem.
 
 ## Core concepts
 
@@ -263,7 +263,7 @@ In-Store App:   chrry.ai/vex (Vex app within Chrry store)
 Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
 ```
 
-**Key Insight:** The domain tells you which universe you're in, the path tells you which tool you're using.
+**Key insight:** The domain tells you which universe you're in, the path tells you which tool you're using.
 
 ## Analytics and tracking
 
@@ -293,12 +293,12 @@ Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
 
 ### Metrics to track
 
-1. **Navigation Depth**: How deep do users nest?
-2. **Store Affinity**: Which stores are used together?
-3. **Teleport Paths**: Most common cross-store jumps
-4. **Dead Ends**: Where do users get stuck?
-5. **Context Switches**: Same-store vs cross-store ratio
-6. **Back Button Usage**: Do users use back paths effectively?
+1. **Navigation depth**: How deep do users nest?
+2. **Store affinity**: Which stores are used together?
+3. **Teleport paths**: Most common cross-store jumps
+4. **Dead ends**: Where do users get stuck?
+5. **Context switches**: Same-store vs cross-store ratio
+6. **Back button usage**: Do users use back paths effectively?
 
 ## Design principles
 
@@ -308,7 +308,7 @@ Deep Link:      vex.chrry.ai/sushi (Sushi app within Vex store)
 - **What's missing** = Where you are
 - **What appears** = Where you came from
 
-### 2. Zero cognitive load
+### 2. Low cognitive load
 
 Users never ask:
 
@@ -316,12 +316,12 @@ Users never ask:
 - "How do I go back?" (Previous store button appears)
 - "What can I access?" (Visible buttons show options)
 
-### 3. Infinite scalability
+### 3. Scalability
 
-- Unlimited stores in the ecosystem
-- Unlimited apps per store
-- Unlimited nesting depth
-- No navigation limits
+- Supports many stores in the ecosystem
+- Many apps per store
+- Deep nesting depth
+- Flexible navigation
 
 ### 4. Context preservation
 
@@ -354,10 +354,10 @@ Each navigation is tracked, analyzed, and used to improve the ecosystem.
 | ----------------- | ---------------- | ----------------- |
 | Context switching | Manual           | Automatic         |
 | Spatial awareness | None             | Built-in          |
-| Nesting           | Limited          | Infinite          |
+| Nesting           | Limited          | Deep              |
 | Back navigation   | Linear history   | Dimensional paths |
-| Cognitive load    | High             | Zero              |
-| Scalability       | Poor             | Infinite          |
+| Cognitive load    | High             | Low               |
+| Scalability       | Poor             | High              |
 
 ## Future enhancements
 
@@ -396,7 +396,7 @@ Atlas → Peach (40% of users)
 
 ### For store creators
 
-**1. Choose Your Domain**
+**1. Choose your domain**
 
 ```typescript
 const myStore = {
@@ -406,14 +406,14 @@ const myStore = {
 };
 ```
 
-**2. Support Cross-Store Apps**
+**2. Support cross-store apps**
 
 ```typescript
 // Allow apps from other stores
 const availableApps = [...myStoreApps, ...installedFromOtherStores];
 ```
 
-**3. Track Navigation**
+**3. Track navigation**
 
 ```typescript
 // Always track spatial movements
@@ -426,14 +426,14 @@ trackEvent("spatial_navigation", {
 
 ### For app developers
 
-**1. Respect Store Context**
+**1. Respect store context**
 
 ```typescript
 // Check which universe you're in
 const currentStore = getStoreFromDomain(window.location.hostname);
 ```
 
-**2. Handle Navigation**
+**2. Handle navigation**
 
 ```typescript
 // Same store = path change
@@ -445,7 +445,7 @@ if (targetStore === currentStore) {
 }
 ```
 
-**3. Clean Up State**
+**3. Clean up state**
 
 ```typescript
 // Always clean up before navigation
@@ -461,11 +461,11 @@ useEffect(() => {
 
 Wine's spatial navigation system provides an N-dimensional navigation architecture for AI ecosystems. By treating stores as universes and apps as locations, the system provides:
 
-**Intuitive navigation** - Physical spatial metaphor
-**Zero cognitive load** - Self-documenting interface
-**Infinite scalability** - Unlimited stores and apps
-**Perfect context** - Maintained or switched cleanly
-**Analytics-ready** - Every movement tracked
-**Ecosystem integration** - Beasts feeding each other
+- **Intuitive navigation** — physical spatial metaphor
+- **Low cognitive load** — self-documenting interface
+- **Scalability** — supports many stores and apps
+- **Context preservation** — maintained or switched cleanly
+- **Analytics-ready** — every movement tracked
+- **Ecosystem integration** — beasts feeding each other
 
-The result is that users navigate complex ecosystems with minimal friction.
+The result is that users can navigate complex ecosystems efficiently.
