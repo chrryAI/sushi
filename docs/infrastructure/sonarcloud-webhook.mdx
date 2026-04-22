@@ -52,8 +52,8 @@ npm run sonar
 Check your API logs for:
 
 ```text
-🔔 SonarCloud webhook received: { project: 'chrryAI_vex', status: 'OK', ... }
-✅ Stored X metrics for chrryAI_vex
+SonarCloud webhook received: { project: 'chrryAI_vex', status: 'OK', ... }
+Stored X metrics for chrryAI_vex
 ```
 
 ## Webhook payload
@@ -156,7 +156,7 @@ LIMIT 30;
 ### Signature verification failing
 
 ```text
-❌ Invalid webhook signature
+Invalid webhook signature
 ```
 
 **Solution**: Ensure `SONAR_WEBHOOK_SECRET` in your `.env` matches the secret configured in SonarCloud.
