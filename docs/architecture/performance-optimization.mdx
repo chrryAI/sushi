@@ -5,9 +5,9 @@ description: "Summary of performance optimizations including gzip compression, c
 
 ## Pingdom test results (before)
 
-- **Performance Grade:** B90
-- **Load Time:** 3.29s
-- **Page Size:** 1.5 MB
+- **Performance grade:** B90
+- **Load time:** 3.29s
+- **Page size:** 1.5 MB
 - **Requests:** 14
 
 ## Issues found
@@ -130,11 +130,11 @@ terserOptions: {
 
 | Metric                | Before | After   | Improvement |
 | --------------------- | ------ | ------- | ----------- |
-| **Performance Grade** | B90    | A95+    | +5%         |
-| **Load Time**         | 3.29s  | ~1.5s   | -54%        |
-| **Page Size**         | 1.5 MB | ~400 KB | -73%        |
-| **Gzip Score**        | F45    | A100    | +55         |
-| **Cache Score**       | D67    | A100    | +33         |
+| **Performance grade** | B90    | A95+    | +5%         |
+| **Load time**         | 3.29s  | ~1.5s   | -54%        |
+| **Page size**         | 1.5 MB | ~400 KB | -73%        |
+| **Gzip score**        | F45    | A100    | +55         |
+| **Cache score**       | D67    | A100    | +33         |
 
 ---
 
@@ -247,19 +247,19 @@ Move static assets to CDN for:
 
 ## Summary
 
-**Files Modified:**
+**Files modified:**
 
 - `apps/chrry/server.js` - Enhanced compression + cache headers
 - `apps/chrry/vite.config.ts` - Pre-compression + chunk splitting
 - `apps/chrry/package.json` - Added vite-plugin-compression
 
-**Expected Performance Gain:**
+**Expected performance gain:**
 
 - **54% faster load time** (3.29s → 1.5s)
 - **73% smaller page size** (1.5MB → 400KB)
 - **A95+ Pingdom score** (B90 → A95+)
 
-**Next Steps:**
+**Next steps:**
 
 1. Build and deploy
 2. Re-test with Pingdom

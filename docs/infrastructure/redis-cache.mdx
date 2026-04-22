@@ -212,18 +212,18 @@ Every request = 1 Redis check (fast)
 
 ### Expected improvements
 
-**Response Times:**
+**Response times:**
 
-- Cached requests: **1-5ms** (was 50-100ms) = **10-50x faster**
+- Cached requests: **1-5ms** (was 50-100ms)
 - Overall API latency: **-40ms average**
 
-**Database Load:**
+**Database load:**
 
 - Query reduction: **95%**
 - Connection pool usage: **95% less**
-- Cost savings: **Notable** (if using managed DB)
+- Cost savings: notable (if using managed DB)
 
-**User Experience:**
+**User experience:**
 
 - Faster page loads
 - Snappier interactions
@@ -256,7 +256,7 @@ type CachedGuestData = Awaited<ReturnType<typeof getGuest>>;
 - Full TypeScript type checking
 - No manual type definitions needed
 - Stays in sync with function changes
-- IDE autocomplete works perfectly
+- IDE autocomplete works as expected
 
 ## Cache infrastructure (already exists)
 
@@ -400,31 +400,25 @@ export async function GET() {
 
 ### Phase 1: deploy and monitor (week 1)
 
-```text
-✅ Code is ready
-□ Deploy to production
-□ Monitor cache hit rates
-□ Watch for any issues
-□ Verify performance gains
-```
+- Code is ready
+- Deploy to production
+- Monitor cache hit rates
+- Watch for any issues
+- Verify performance gains
 
 ### Phase 2: expand caching (week 2-3)
 
-```text
-□ Cache app configurations
-□ Cache store data
-□ Cache public app listings
-□ Cache translations (already done)
-```
+- Cache app configurations
+- Cache store data
+- Cache public app listings
+- Cache translations (already done)
 
 ### Phase 3: optimize (week 4+)
 
-```text
-□ Adjust TTLs based on data
-□ Add cache warming for popular data
-□ Add cache preloading on login
-□ Implement cache analytics
-```
+- Adjust TTLs based on data
+- Add cache warming for popular data
+- Add cache preloading on login
+- Implement cache analytics
 
 ## Rollback plan
 
@@ -464,7 +458,7 @@ const isSimpleLookup = (email || id) && !password && process.env.NODE_ENV === "p
 
 **Benefits:**
 
-- 10-50x faster API responses (cached)
+- Significantly faster API responses (cached)
 - 95% reduction in database queries
 - Better user experience
 - Lower infrastructure costs
