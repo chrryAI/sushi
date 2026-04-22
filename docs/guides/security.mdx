@@ -18,7 +18,7 @@ Please include:
 - Potential impact
 - Any suggested fixes
 
-Expect a response within 48 hours. You can expect collaboration to address the issue.
+Expect a response within 48 hours. The team will work with you to address the issue.
 
 ## Security best practices
 
@@ -35,7 +35,7 @@ Expect a response within 48 hours. You can expect collaboration to address the i
 
 The project uses **Gitleaks** to automatically scan for secrets before every commit.
 
-**For Contributors:**
+**For contributors:**
 
 1. Install Gitleaks (if not already installed):
 
@@ -50,7 +50,7 @@ The project uses **Gitleaks** to automatically scan for secrets before every com
    - Remove the secret or add the file to `.gitignore`
    - If it's a false positive, update `gitleaks.toml` allowlist
 
-**Emergency Bypass** (use only when absolutely necessary):
+**Emergency bypass** (use only when absolutely necessary):
 
 ```bash
 SKIP=gitleaks git commit -m "your message"

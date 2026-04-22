@@ -5,7 +5,7 @@ description: "Summary of migrating app seeding logic from a monolithic file to d
 
 ## Completed migration
 
-Successfully migrated hardcoded app seeding logic from the monolithic `createStores.ts` (9356 lines) to individual app files in `packages/machine/src/dna/apps/`.
+This migration moved hardcoded app seeding logic from the monolithic `createStores.ts` (9356 lines) to individual app files in `packages/machine/src/dna/apps/`.
 
 ## Migrated apps
 
@@ -15,7 +15,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Function**: `seedAtlas()`
 - **Creates**: Compass store + Atlas app
 - **Extends**: Chrry
-- **RPG Stats**: Intelligence 60, Creativity 80, Empathy 70, Efficiency 85
+- **RPG stats**: Intelligence 60, Creativity 80, Empathy 70, Efficiency 85
 
 ### 2. Vault - finance assistant
 
@@ -23,7 +23,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Function**: `seedVault()`
 - **Creates**: Wine store + Vault app
 - **Extends**: Chrry, Vex (optional), Focus (optional)
-- **RPG Stats**: Intelligence 90, Creativity 10, Empathy 10, Efficiency 100
+- **RPG stats**: Intelligence 90, Creativity 10, Empathy 10, Efficiency 100
 
 ### 3. Bloom - wellness coach
 
@@ -31,7 +31,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Function**: `seedBloom()`
 - **Uses**: Existing LifeOS store
 - **Extends**: Chrry, Vex (optional), Focus (optional)
-- **RPG Stats**: Intelligence 60, Creativity 40, Empathy 90, Efficiency 80
+- **RPG stats**: Intelligence 60, Creativity 40, Empathy 90, Efficiency 80
 
 ### 4. Peach - social assistant
 
@@ -39,7 +39,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Function**: `seedPeach()`
 - **Uses**: Existing LifeOS store
 - **Extends**: Chrry, Vex (optional), Focus (optional)
-- **RPG Stats**: Intelligence 40, Creativity 70, Empathy 100, Efficiency 30
+- **RPG stats**: Intelligence 40, Creativity 70, Empathy 100, Efficiency 30
 
 ### 5. Focus - productivity assistant
 
@@ -47,7 +47,7 @@ Successfully migrated hardcoded app seeding logic from the monolithic `createSto
 - **Function**: `seedFocus()`
 - **Uses**: Existing Blossom store
 - **Extends**: None (base app)
-- **RPG Stats**: Not configured (can be added)
+- **RPG stats**: Not configured (can be added)
 
 ## Shared infrastructure
 
@@ -209,7 +209,7 @@ packages/machine/src/dna/
 
 ## Impact
 
-**Before**: 9356-line monolith, impossible to maintain  
+**Before**: 9356-line monolith, difficult to maintain  
 **After**: Modular, testable, reusable seed functions
 
 **Result**: Each app is now a self-contained unit with its own seeding logic, making the codebase more maintainable and the apps easier to deploy independently (e.g., for Tauri desktop apps).
