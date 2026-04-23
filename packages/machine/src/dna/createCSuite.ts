@@ -46,12 +46,14 @@ async function seedRoleMemory({
   // Generate embedding vector for semantic retrieval
   let vector: number[] | null = null
 
-  if (embedding.textEmbeddingModel) {
+  if (embedding.modelId && embedding.apiKey) {
     try {
-      const result = await embedding.textEmbeddingModel.doEmbed({
-        values: [`${chunk.title}\n\n${chunk.content}`],
-      })
-      vector = result.embeddings?.[0] ?? null
+      const { createEmbeddingLayer } = await import(
+        "../ai/sushi/embeddingProvider"
+      )
+      const layer = createEmbeddingLayer(embedding.modelId, embedding.apiKey)
+      const { runEmbed } = await import("../ai/sushi/aiProvider")
+      vector = await runEmbed(`${chunk.title}\n\n${chunk.content}`, layer)
     } catch (e) {
       console.warn(`⚠️  Embedding failed for "${chunk.title}":`, e)
     }

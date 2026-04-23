@@ -1,4 +1,4 @@
-import { type locale, locales } from "@chrryai/donut/locales"
+import { locales } from "@chrryai/donut/locales"
 import type {
   aiAgent,
   cherry,
@@ -64,12 +64,6 @@ import {
   toSafeGuest,
   toSafeUser,
 } from "./src/ai/sushi/aiProvider"
-
-import {
-  buildPromptSections,
-  resolveJoinWeights,
-  resolveMemoryPageSize,
-} from "./src/ai/sushi/promptBuilder"
 
 export * from "./src/ai/sushi/aiProvider"
 
@@ -183,6 +177,21 @@ import {
   verificationTokens,
 } from "./src/schema"
 
+export type locale =
+  | "en"
+  | "de"
+  | "es"
+  | "fr"
+  | "ja"
+  | "ko"
+  | "pt"
+  | "zh"
+  | "nl"
+  | "sv"
+  | "tr"
+  | "fa"
+  | string
+
 export type {
   aiModel,
   aiModelResponse,
@@ -222,7 +231,6 @@ export {
   guests,
   kanbanCards,
   kanbanColumns,
-  type locale,
   locales,
   MODEL_LIMITS,
   type ModelProviderResult,

@@ -2,16 +2,16 @@
 // sushi/aiProvider.ts — Effect Layer factory for AI providers
 //
 // Single source of truth for ALL AI calls.
-// Vercel AI SDK is the transport layer for most providers.
+// @effect/ai-openrouter is the transport layer for most providers.
 // @providerprotocol/ai handles reasoning, multi-turn, middleware.
 // Effect is the orchestration layer throughout.
 //
 // Capabilities:
-//   • Model routing      (delegates to provider.ts)
-//   • Streaming          (Effect Stream over Vercel streamText)
-//   • Generate text      (Effect-wrapped generateText)
-//   • Structured output  (Effect-wrapped + Schema validation)
-//   • Embeddings         (Effect-wrapped, batched)
+//   • Model routing      (smart tier-based fallback chains)
+//   • Streaming          (Effect Stream over @effect/ai LanguageModel)
+//   • Generate text      (Effect-native via AiLanguageModel)
+//   • Structured output  (Effect-native + Schema validation)
+//   • Embeddings         (@effect/ai-openai EmbeddingModel, batched)
 //   • Reasoning          (@providerprotocol/ai thinking blocks)
 //   • Multi-turn         (@providerprotocol/ai Thread)
 //   • Retry              (Schedule.exponential, per-operation)
@@ -22,13 +22,13 @@ import crypto from "node:crypto"
 import * as AiEmbeddingModel from "@effect/ai/EmbeddingModel"
 import * as AiLanguageModel from "@effect/ai/LanguageModel"
 import {
-  OpenAiClient,
-  OpenAiEmbeddingModel,
-  OpenAiLanguageModel,
-} from "@effect/ai-openai"
-import { OpenRouterClient, OpenRouterLanguageModel } from "@effect/ai-openrouter"
-import { AnthropicClient, AnthropicLanguageModel } from "@effect/ai-anthropic"
+  OpenRouterClient,
+  OpenRouterLanguageModel,
+} from "@effect/ai-openrouter"
 import { FetchHttpClient } from "@effect/platform"
+import * as HttpBody from "@effect/platform/HttpBody"
+import * as HttpClient from "@effect/platform/HttpClient"
+import * as HttpClientRequest from "@effect/platform/HttpClientRequest"
 // @providerprotocol/ai — for makePPModel function
 import { llm, type Turn } from "@providerprotocol/ai"
 import { anthropic, betas } from "@providerprotocol/ai/anthropic"
@@ -42,10 +42,6 @@ import {
   drizzle as postgresDrizzle,
 } from "drizzle-orm/postgres-js"
 import Redis from "ioredis"
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { createOllama } from "ollama-ai-provider" // Kept for potential future use
-
 // ─────────────────────────────────────────────────────────────────
 // vault/index.ts — Pricing data, model limits, capabilities, API key helpers
 //
@@ -58,8 +54,8 @@ import { createOllama } from "ollama-ai-provider" // Kept for potential future u
 // ─────────────────────────────────────────────────────────────────
 
 export type ModelProviderResult = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  provider: any
+  /** @deprecated Vercel AI SDK provider — only for legacy ai.ts streaming. Will be removed. */
+  provider?: any
   modelId: string
   agentName: string
   lastKey: string
@@ -271,14 +267,12 @@ export const modelCapabilities: Record<
   "openai/gpt-oss-120b:free": { tools: false, canAnalyze: true },
 }
 
-// Vercel AI SDK — primary transport for most providers
-import { generateText, type ModelMessage, streamText } from "ai"
-
 import {
   Context,
   Duration,
   Effect,
   Layer,
+  Option,
   pipe,
   Redacted,
   Schedule,
@@ -286,15 +280,12 @@ import {
   Stream,
 } from "effect"
 
-// ─────────────────────────────────────────────────────────────────
-// sushi/provider.ts — Model routing + provider resolution
-//
-// All model-selection logic lives here. vault/index.ts is now just
-// a data/types layer (prizes, limits, capabilities, API key helpers).
-// ─────────────────────────────────────────────────────────────────
+// ── Local message type (replaces Vercel AI SDK ModelMessage) ──
+type ModelMessage = {
+  role: "user" | "assistant" | "system" | "tool"
+  content: string
+}
 
-import { createDeepSeek } from "@ai-sdk/deepseek"
-import { createOpenAI } from "@ai-sdk/openai"
 import type {
   aiAgent,
   characterProfile,
@@ -307,7 +298,11 @@ import type {
   user,
 } from "@chrryai/donut/types"
 import { isDevelopment, isE2E } from "@chrryai/donut/utils"
-import { createOpenRouter } from "@openrouter/ai-sdk-provider"
+import {
+  OpenAiClient,
+  OpenAiEmbeddingModel,
+  OpenAiLanguageModel,
+} from "@effect/ai-openai"
 
 // Encryption configuration
 const ALGORITHM = "aes-256-gcm"
@@ -3429,7 +3424,7 @@ export interface PromptSections {
   assembled: string
 }
 
-export interface PromptBuilderOpts {
+export interface promptBuilderOpts {
   /**
    * Dynamic memory sizing: fewer memories as conversation grows longer
    * to stay within token limits.
@@ -3469,7 +3464,7 @@ export function buildMemoryContext(
     sushi,
     "userMemories" | "appMemories" | "threadMemories" | "dnaMemories"
   >,
-  opts?: PromptBuilderOpts,
+  opts?: promptBuilderOpts,
 ): string {
   const userMems = (sushi.userMemories ?? []) as Array<{
     category?: string | null
@@ -3532,7 +3527,7 @@ export function buildInstructionsContext(
     | "threadInstructions"
     | "dnaInstructions"
   >,
-  opts?: PromptBuilderOpts,
+  opts?: promptBuilderOpts,
 ): string {
   type Instruction = {
     emoji?: string | null
@@ -3757,7 +3752,6 @@ export function buildAppsContext(
     description?: string | null
     icon?: string | null
   }>,
-  storeName?: string,
 ): string {
   if (!storeApps.length) return ""
 
@@ -3779,7 +3773,7 @@ export function buildAppsContext(
 
 export function buildPromptSections(
   sushi: sushi,
-  opts?: PromptBuilderOpts,
+  opts?: promptBuilderOpts,
 ): PromptSections {
   const creatorName =
     (sushi as any).user?.name ?? (sushi as any).guest?.id?.slice(0, 5) ?? ""
@@ -3790,7 +3784,7 @@ export function buildPromptSections(
   const placeholders = buildPlaceholderContext(sushi)
   const dna = buildDnaContext(sushi, creatorName)
   const apps = sushi.store?.apps?.length
-    ? buildAppsContext(sushi.store.apps as any, sushi.store.name ?? undefined)
+    ? buildAppsContext(sushi.store.apps)
     : ""
 
   // Assemble sections using pattern matching for app-specific ordering
@@ -4114,8 +4108,6 @@ export function toOllamaModel(orModelId: string) {
   return OLLAMA_MODEL_MAP[orModelId.replace(":free", "")]
 }
 
-// createOllamaClient removed — using @effect/ai-openai with Ollama baseURL instead
-
 // ─────────────────────────────────────────────────────────────────
 // Internal helpers
 // ─────────────────────────────────────────────────────────────────
@@ -4424,14 +4416,8 @@ export async function getModelProvider({
   const degradedKey = orKey
 
   const fallback = (): ModelProviderResult => {
-    const { primary, fallbacks } = route("free", { needsTools: false })
+    const { primary } = route("free", { needsTools: false })
     return {
-      provider: createOpenRouter({ apiKey: process.env.OPENROUTER_API_KEY! })(
-        primary,
-        {
-          models: buildChain(fallbacks),
-        },
-      ),
       modelId: primary,
       agentName: agent.name,
       lastKey: "openrouter",
@@ -4443,11 +4429,8 @@ export async function getModelProvider({
   }
 
   const degraded = (): ModelProviderResult => {
-    const { primary, fallbacks } = route("free", { needsTools: isJob })
+    const { primary } = route("free", { needsTools: isJob })
     return {
-      provider: createOpenRouter({ apiKey: degradedKey })(primary, {
-        models: buildChain(fallbacks),
-      }),
       modelId: primary,
       agentName: agent.name,
       lastKey: isBYOK ? "byok" : "system",
@@ -4507,55 +4490,15 @@ export async function getModelProvider({
   }
 
   const modelId = routeResult.primary
-  const fallbackModels = buildChain(routeResult.fallbacks)
 
-  const ollamaModel = toOllamaModel(modelId)
-
-  const orProvider = createOpenRouter({ apiKey: orKey })(modelId, {
-    models: fallbackModels,
-  })
-
-  if (ollamaModel && !isBYOK) {
-    // Use ollama-ai-provider for Ollama models
-    const ollamaProvider = createOllama({
-      baseURL: process.env.OLLAMA_BASE_URL || "http://localhost:11434",
-    })
-    return {
-      provider: ollamaProvider(ollamaModel.name, {
-        // reasoning_effort is Ollama-specific, pass as param
-      }) as unknown as typeof orProvider,
-      modelId,
-      agentName: agent.name,
-      lastKey: "ollama",
-      supportsTools: true,
-      canAnalyze: false,
-      isBYOK: false,
-      isBELEŞ: resolvedName === "beleş",
-      isFree: false,
-    }
-  }
-
-  const DEEPSEEK_API_MODEL_MAP: Record<string, string> = {
-    "deepseek/deepseek-chat": "deepseek-chat",
-    "deepseek/deepseek-r1": "deepseek-reasoner",
-    "deepseek/deepseek-v3.2": "deepseek-chat",
-  }
-
-  const deepseekApiKey = !isBYOK ? process.env.DEEPSEEK_API_KEY : undefined
-  const deepseekApiModelId = deepseekApiKey
-    ? DEEPSEEK_API_MODEL_MAP[modelId]
-    : undefined
+  // Use OpenRouter model ID directly — Ollama cloud mapping is only for local proxy
+  const cloudModelId = modelId
 
   return {
-    provider: isEffect
-      ? null
-      : deepseekApiModelId && deepseekApiKey
-        ? createDeepSeek({ apiKey: deepseekApiKey })(deepseekApiModelId)
-        : orProvider,
-    modelId,
+    modelId: cloudModelId,
     agentName: agent.name,
-    lastKey: deepseekApiModelId ? "deepseek" : "openrouter",
-    supportsTools: modelCapabilities[modelId]?.tools ?? false,
+    lastKey: "openrouter",
+    supportsTools: modelCapabilities[cloudModelId]?.tools ?? false,
     canAnalyze: modelCapabilities[modelId]?.canAnalyze ?? false,
     isBYOK: !!byokKey,
     isBELEŞ: resolvedName === "beleş",
@@ -4600,9 +4543,8 @@ export async function getEmbeddingProvider({
   isEffect,
   source,
 }: getModelProviderOptions): Promise<{
-  provider?: ReturnType<typeof createOpenRouter>
   modelId?: string
-  textEmbeddingModel?: any
+  apiKey?: string
 }> {
   const accountKey = user?.apiKeys?.openrouter ?? guest?.apiKeys?.openrouter
   const byokKey = accountKey ? byokDecrypt(accountKey) : undefined
@@ -4615,20 +4557,9 @@ export async function getEmbeddingProvider({
     EMBEDDING_SOURCES.default ??
     "qwen/qwen3-embedding-8b"
 
-  const creditsLeft = user?.creditsLeft ?? guest?.creditsLeft ?? 1
-
-  const provider = isEffect
-    ? undefined
-    : creditsLeft === 0 || !orKey
-      ? undefined
-      : createOpenRouter({ apiKey: orKey })
-
   return {
-    provider,
     modelId,
-    textEmbeddingModel: modelId
-      ? provider?.textEmbeddingModel(modelId)
-      : undefined,
+    apiKey: orKey,
   }
 }
 
@@ -6163,7 +6094,7 @@ export type PPTurn = Turn
 
 /**
  * Build a @providerprotocol/ai llm instance from a PPModelId.
- * Returns null for providers handled by Vercel AI SDK.
+ * Returns null for providers handled by @effect/ai-openrouter.
  */
 export function makePPModel(
   modelDesc: PPModelId,
@@ -6252,8 +6183,7 @@ export type EffectModelResult = {
   isBYOK: boolean
   isBELEŞ?: boolean
   isDegraded?: boolean
-  /** Raw Vercel AI SDK provider — for streaming paths */
-  provider: any
+  isOllama?: boolean
 }
 
 export type EffectEmbeddingResult = {
@@ -6272,7 +6202,7 @@ export type StreamChunk =
 // ─────────────────────────────────────────────────────────────────
 
 export interface AiService {
-  // ── Vercel AI SDK paths (OpenRouter, DeepSeek, most providers) ──
+  // ── Effect-native AI paths (OpenRouter via @effect/ai-openrouter) ──
 
   /** Generate text — blocking, returns full string */
   generateText: (
@@ -6308,15 +6238,6 @@ export interface AiService {
    * Generate with @providerprotocol/ai.
    * Use for: Claude thinking blocks, DeepSeek reasoning,
    *          multi-turn Thread, middleware pipeline.
-   *
-   * @example
-   * const turn = yield* ai.ppGenerate(
-   *   { provider: "anthropic", model: "claude-sonnet-4-20250514" },
-   *   [{ role: "user", content: "Solve this..." }],
-   *   { thinking: true }
-   * )
-   * console.log(turn.response.text)
-   * console.log(turn.response.reasoning) // thinking blocks
    */
   ppGenerate: (
     modelDesc: PPModelId,
@@ -6327,18 +6248,6 @@ export interface AiService {
   /**
    * Stream with @providerprotocol/ai.
    * Same StreamChunk interface as streamText — drop-in for WebSocket paths.
-   *
-   * @example
-   * const stream = yield* ai.ppStream(
-   *   { provider: "anthropic", model: "claude-sonnet-4-20250514" },
-   *   messages,
-   *   { thinking: true }
-   * )
-   * yield* Stream.runForEach(stream, chunk =>
-   *   chunk.type === "text"
-   *     ? Effect.sync(() => sendToWebSocket(chunk.text))
-   *     : Effect.void
-   * )
    */
   ppStream: (
     modelDesc: PPModelId,
@@ -6426,47 +6335,115 @@ const makeOpenRouterEffectLayerForModel = (
     Layer.provide(makeOpenRouterEffectLayer(apiKey)),
   )
 
-const makeOllamaEffectLayer = (
+// ── Ollama (local + cloud) layer factories ───────────────────────────
+// Ollama Cloud exposes an OpenAI-compatible API at /v1, so we use
+// @effect/ai-openrouter (chat/completions) with apiUrl pointing to
+// Ollama instead of OpenRouter. @effect/ai-openai uses /v1/responses
+// which Ollama Cloud does not support.
+
+const OLLAMA_URL = process.env.OLLAMA_URL || "https://ollama.com/v1"
+
+// Use @effect/ai-openrouter with apiUrl override pointed at Ollama Cloud.
+// Ollama Cloud exposes an OpenAI-compatible /v1/chat/completions endpoint,
+// so OpenRouterClient + OpenRouterLanguageModel work out of the box.
+const makeOllamaEffectLayerForModel = (
   modelId: string,
 ): Layer.Layer<AiLanguageModel.LanguageModel> => {
-  // Map OpenRouter model ID to Ollama model name
-  const ollamaModel = toOllamaModel(modelId)
-  const actualModelId = ollamaModel?.name || modelId
+  const apiKey = process.env.OLLAMA_API_KEY || "ollama"
+  const url = OLLAMA_URL.replace(/\/$/, "")
 
-  // Ollama uses OpenAI-compatible API at /v1/chat/completions
-  return OpenAiLanguageModel.layer({ model: actualModelId }).pipe(
-    Layer.provide(
-      OpenAiClient.layer({
-        apiKey: Redacted.make("ollama"),
-        apiUrl: process.env.OLLAMA_BASE_URL || "http://localhost:11434/v1",
-      }).pipe(Layer.provide(FetchHttpClient.layer)),
-    ),
+  const clientLayer = OpenRouterClient.layer({
+    apiKey: Redacted.make(apiKey),
+    apiUrl: url,
+    transformClient: (client) => {
+      // 1. Remove stream_options from request body — Ollama Cloud rejects it
+      const requestPatched = HttpClient.mapRequest(client, (req) => {
+        if (req.method === "POST" && req.body._tag === "Uint8Array") {
+          try {
+            const json = JSON.parse(new TextDecoder().decode(req.body.body))
+            if (json.stream_options !== undefined) {
+              delete json.stream_options
+              return HttpClientRequest.bodyUnsafeJson(json)(req)
+            }
+          } catch {
+            // ignore parse errors, pass through unchanged
+          }
+        }
+        return req
+      })
+
+      // 2. Patch response model field — Ollama Cloud returns model IDs without
+      //    a slash (e.g. "deepseek-v3.2:cloud") but OpenRouter schema expects
+      //    ${string}/${string}. Inject a prefix so the SSE response parses.
+      return HttpClient.transformResponse(requestPatched, (effect) =>
+        Effect.map(effect, (res) => {
+          return new Proxy(res, {
+            get(target, prop: string | symbol) {
+              if (prop === "stream") {
+                return target.stream.pipe(
+                  Stream.decodeText(),
+                  Stream.map((text) =>
+                    text.replace(/"model":"([^"/]+)"/g, '"model":"ollama/$1"'),
+                  ),
+                  Stream.map((text) => new TextEncoder().encode(text)),
+                )
+              }
+              return (target as any)[prop]
+            },
+          })
+        }),
+      )
+    },
+  }).pipe(Layer.provide(FetchHttpClient.layer))
+
+  return OpenRouterLanguageModel.layer({ model: modelId }).pipe(
+    Layer.provide(clientLayer),
   )
 }
 
-const makeDeepSeekEffectLayer = (
-  modelId: string,
-): Layer.Layer<AiLanguageModel.LanguageModel> =>
-  OpenAiLanguageModel.layer({ model: modelId }).pipe(
-    Layer.provide(
-      OpenAiClient.layer({
-        apiKey: Redacted.make(process.env.DEEPSEEK_API_KEY || ""),
-        apiUrl: "https://api.deepseek.com/v1",
-      }).pipe(Layer.provide(FetchHttpClient.layer)),
-    ),
-  )
+/** Cached availability check — checks once, caches for 30s */
+let _ollamaAvailable: boolean | null = null
+let _ollamaCheckTime = 0
+const OLLAMA_CHECK_TTL = 30_000
 
-const makeAnthropicEffectLayer = (
-  modelId: string,
-  apiKey: string,
-): Layer.Layer<AiLanguageModel.LanguageModel> =>
-  AnthropicLanguageModel.layer({ model: modelId }).pipe(
-    Layer.provide(
-      AnthropicClient.layer({
-        apiKey: Redacted.make(apiKey),
-      }).pipe(Layer.provide(FetchHttpClient.layer)),
-    ),
-  )
+async function isOllamaAvailable(): Promise<boolean> {
+  const now = Date.now()
+  if (_ollamaAvailable !== null && now - _ollamaCheckTime < OLLAMA_CHECK_TTL) {
+    return _ollamaAvailable
+  }
+  const isCloud = OLLAMA_URL.includes("ollama.com")
+
+  // Cloud Ollama requires an API key; without it, fall back to OpenRouter
+  if (isCloud && !process.env.OLLAMA_API_KEY) {
+    _ollamaAvailable = false
+    console.log(`🦙 Ollama cloud skipped: no OLLAMA_API_KEY`)
+    _ollamaCheckTime = now
+    return false
+  }
+
+  const healthUrl = isCloud
+    ? "https://ollama.com/api/tags"
+    : `${OLLAMA_URL.replace(/\/v1$/, "")}/api/tags`
+  const headers: Record<string, string> = {}
+  if (process.env.OLLAMA_API_KEY) {
+    headers["Authorization"] = `Bearer ${process.env.OLLAMA_API_KEY}`
+  }
+  try {
+    const res = await fetch(healthUrl, {
+      signal: AbortSignal.timeout(isCloud ? 5000 : 2000),
+      headers,
+    })
+    _ollamaAvailable = res.ok
+    console.log(
+      `🦙 Ollama health check: ${_ollamaAvailable ? "UP" : "DOWN"} (${res.status}, ${isCloud ? "cloud" : "local"})`,
+    )
+  } catch (e) {
+    _ollamaAvailable = false
+    console.log(`🦙 Ollama health check: DOWN (${(e as Error).message})`)
+  }
+  _ollamaCheckTime = now
+  return _ollamaAvailable
+}
 
 // ─────────────────────────────────────────────────────────────────
 // getEffectModelLayer — resolves provider + builds Effect Layer
@@ -6477,32 +6454,55 @@ export async function getEffectModelLayer(
 ): Promise<EffectModelResult> {
   const result = await getModelProvider(options)
 
-  // Build Effect Layer based on provider type
-  const layer =
-    result.lastKey === "ollama"
-      ? makeOllamaEffectLayer(result.modelId)
-      : result.lastKey === "deepseek"
-        ? makeDeepSeekEffectLayer(result.modelId)
-        : result.lastKey === "anthropic"
-          ? makeAnthropicEffectLayer(
-              result.modelId,
-              isDevelopment
-                ? process.env.ANTHROPIC_API_KEY!
-                : process.env.ANTHROPIC_API_KEY!,
-            )
-          : makeOpenRouterEffectLayerForModel(
-              result.modelId,
-              isDevelopment
-                ? process.env.OPENROUTER_SUSHI!
-                : process.env.OPENROUTER_API_KEY!,
-            )
+  // ── Route to Ollama when available ──────────────────────────────
+  const ollamaMapping = toOllamaModel(result.modelId)
+  const ollamaUp = await isOllamaAvailable()
+
+  console.log(
+    `🔀 getEffectModelLayer: modelId=${result.modelId} source=${options.source ?? "none"} ollamaMapping=${ollamaMapping ? ollamaMapping.name : "null"} ollamaUp=${ollamaUp}`,
+  )
+
+  if (ollamaMapping && ollamaUp) {
+    const layer = makeOllamaEffectLayerForModel(ollamaMapping.name)
+    console.log(
+      `🦙 Routing to Ollama: ${result.modelId} → ${ollamaMapping.name} (reasoning: ${ollamaMapping.reasoning_effort || "none"})`,
+    )
+    return {
+      layer,
+      modelId: ollamaMapping.name,
+      agentName: result.agentName,
+      lastKey: "ollama",
+      isFree: true,
+      supportsTools: result.supportsTools,
+      canAnalyze: result.canAnalyze,
+      isBYOK: false,
+      isBELEŞ: true,
+      isDegraded: false,
+      isOllama: true,
+    }
+  }
+
+  if (!ollamaMapping) {
+    console.log(`☁️ No Ollama mapping for ${result.modelId} — using OpenRouter`)
+  } else if (!ollamaUp) {
+    console.log(
+      `☁️ Ollama not available — falling back to OpenRouter for ${result.modelId}`,
+    )
+  }
+
+  // ── Fallback: OpenRouter cloud ───────────────────────────────────
+  const layer = makeOpenRouterEffectLayerForModel(
+    result.modelId,
+    isDevelopment
+      ? process.env.OPENROUTER_SUSHI!
+      : process.env.OPENROUTER_API_KEY!,
+  )
 
   return {
     layer,
-    provider: result.provider as any,
     modelId: result.modelId,
     agentName: result.agentName,
-    lastKey: result.lastKey,
+    lastKey: "openrouter",
     isFree: result.isFree ?? false,
     supportsTools: result.supportsTools,
     canAnalyze: result.canAnalyze,
@@ -6527,16 +6527,14 @@ export async function getEmbeddingLayer(
     isEffect: options.isEffect ?? undefined,
   } as any)
 
-  const apiKey = isDevelopment
-    ? process.env.OPENROUTER_SUSHI!
-    : process.env.OPENROUTER_API_KEY!
-
-  const effectiveKey = result.provider
-    ? (result.provider as any).apiKey
-    : apiKey
+  const apiKey =
+    result.apiKey ??
+    (isDevelopment
+      ? process.env.OPENROUTER_SUSHI!
+      : process.env.OPENROUTER_API_KEY!)
 
   const clientLayer = OpenAiClient.layer({
-    apiKey: Redacted.make(effectiveKey),
+    apiKey: Redacted.make(apiKey),
     apiUrl: "https://openrouter.ai/api/v1",
   }).pipe(Layer.provide(FetchHttpClient.layer))
 
@@ -6548,7 +6546,7 @@ export async function getEmbeddingLayer(
   return {
     layer,
     modelId: result.modelId ?? "qwen/qwen3-embedding-8b",
-    apiKey: effectiveKey,
+    apiKey,
   }
 }
 
@@ -6565,134 +6563,166 @@ export async function getEmbeddingLayer(
 // )
 // ─────────────────────────────────────────────────────────────────
 
+// ── Config override helper ──
+// Both OpenRouter and Ollama Cloud use OpenRouterLanguageModel now,
+// so a single override path is sufficient.
+function withConfigOverride(
+  config: Record<string, any>,
+): <A, E, R>(self: Effect.Effect<A, E, R>) => Effect.Effect<A, E, R> {
+  return OpenRouterLanguageModel.withConfigOverride(config)
+}
+
 export async function makeAiServiceLayer(
   options: modelProviderOptions,
 ): Promise<Layer.Layer<AiServiceTag>> {
   const meta = await getEffectModelLayer(options)
   const embeddingMeta = await getEmbeddingLayer(options)
+  const isOllama = meta.isOllama ?? false
+
+  console.log(
+    `🏗️ makeAiServiceLayer: provider=${isOllama ? "ollama" : "openrouter"} modelId=${meta.modelId} agentName=${meta.agentName} source=${options.source ?? "none"}`,
+  )
 
   return Layer.succeed(AiServiceTag, {
     meta,
 
-    // ── generateText (Vercel AI SDK) ─────────────────────────────
+    // ── generateText (Effect-native, no Vercel) ─────────────────
     generateText: (messages, opts) =>
-      pipe(
-        Effect.tryPromise({
-          try: () =>
-            generateText({
-              model: meta.provider,
-              messages,
-              temperature: opts?.temperature ?? 0.7,
-              maxOutputTokens: opts?.maxTokens,
-              maxRetries: 0,
-            }),
-          catch: (e) => toProviderError(e, meta.modelId),
+      Effect.gen(function* () {
+        const model = yield* AiLanguageModel.LanguageModel
+        const prompt = messagesToPrompt(messages)
+        const result = yield* model.generateText({ prompt })
+        return result.text
+      }).pipe(
+        withConfigOverride({
+          temperature: opts?.temperature ?? 0.7,
+          ...(opts?.maxTokens && { max_tokens: opts.maxTokens }),
         }),
-        Effect.map((r) => r.text),
+        Effect.provide(meta.layer),
+        Effect.mapError((e) => toProviderError(e, meta.modelId)),
         Effect.retry(retrySchedule),
         Effect.withSpan("ai.generateText", {
           attributes: { modelId: meta.modelId, agentName: meta.agentName },
         }),
-      ),
+      ) as Effect.Effect<string, AiProviderError>,
 
-    // ── streamText (Vercel AI SDK) ───────────────────────────────
-    streamText: (messages, opts) =>
-      Effect.succeed(
-        Stream.asyncEffect<StreamChunk, AiProviderError>((emit) =>
-          Effect.tryPromise({
-            try: async () => {
-              let fullText = ""
-              let reasoning = ""
+    // ── streamText (Effect-native Stream) ────────────────────────
+    streamText: (messages, opts) => {
+      let fullText = ""
+      let reasoning = ""
+      let chunkCount = 0
+      let reasoningChunkCount = 0
 
-              const result = streamText({
-                model: meta.provider,
-                messages,
+      console.log(
+        `📡 streamText start: provider=${isOllama ? "ollama" : "openrouter"} modelId=${meta.modelId} messages=${messages.length}`,
+      )
+
+      const rawStream = Stream.succeed(messagesToPrompt(messages)).pipe(
+        Stream.flatMap((prompt) =>
+          Stream.unwrap(
+            Effect.gen(function* () {
+              const model = yield* AiLanguageModel.LanguageModel
+              return model.streamText({ prompt })
+            }).pipe(
+              withConfigOverride({
                 temperature: opts?.temperature ?? 0.7,
-                maxOutputTokens: opts?.maxTokens,
-                maxRetries: 0,
-              })
-
-              for await (const part of result.fullStream) {
-                if (part.type === "reasoning-delta") {
-                  reasoning += part.text
-                  await emit.single({ type: "reasoning", text: part.text })
-                } else if (part.type === "text-delta") {
-                  fullText += part.text
-                  await emit.single({ type: "text", text: part.text })
-                } else if (part.type === "finish") {
-                  await emit.single({
-                    type: "done",
-                    fullText,
-                    reasoning: reasoning || undefined,
-                  })
-                }
-              }
-              emit.end()
-            },
-            catch: (e) => toProviderError(e, meta.modelId),
-          }),
-        ).pipe(
-          Stream.withSpan("ai.streamText", {
-            attributes: { modelId: meta.modelId },
+                ...(opts?.maxTokens && { max_tokens: opts.maxTokens }),
+              }),
+              Effect.provide(meta.layer),
+            ),
+          ),
+        ),
+        Stream.tap((part) =>
+          Effect.sync(() => {
+            chunkCount++
+            if ((part as any)._tag === "text-delta") {
+              fullText += (part as any).text ?? ""
+            } else if ((part as any)._tag === "reasoning-delta") {
+              reasoning += (part as any).text ?? ""
+              reasoningChunkCount++
+            } else if ((part as any)._tag === "finish") {
+              console.log(
+                `🏁 streamText done: provider=${isOllama ? "ollama" : "openrouter"} modelId=${meta.modelId} chunks=${chunkCount} reasoningChunks=${reasoningChunkCount} textLen=${fullText.length} reasoningLen=${reasoning.length}`,
+              )
+            }
           }),
         ),
-      ),
+        Stream.filter((part) => {
+          const tag = (part as any)._tag
+          return (
+            tag === "text-delta" ||
+            tag === "reasoning-delta" ||
+            tag === "finish"
+          )
+        }),
+        Stream.map((part): StreamChunk => {
+          const tag = (part as any)._tag
+          if (tag === "text-delta") {
+            return { type: "text", text: (part as any).text ?? "" }
+          }
+          if (tag === "reasoning-delta") {
+            return { type: "reasoning", text: (part as any).text ?? "" }
+          }
+          if (tag === "finish") {
+            return { type: "done", fullText, reasoning: reasoning || undefined }
+          }
+          return { type: "text", text: "" }
+        }),
+        Stream.mapError((e) => toProviderError(e, meta.modelId)),
+        Stream.withSpan("ai.streamText", {
+          attributes: { modelId: meta.modelId },
+        }),
+      )
 
-    // ── generateStructured (Vercel AI SDK + Effect Schema) ───────
+      return Effect.succeed(rawStream) as any
+    },
+
+    // ── generateStructured (Effect-native + Schema) ──────────────
     generateStructured: <A, I>(
       schema: Schema.Schema<A, I>,
       messages: ModelMessage[],
       opts?: { temperature?: number },
     ) =>
-      pipe(
-        Effect.tryPromise({
-          try: () =>
-            generateText({
-              model: meta.provider,
-              messages: [
-                ...messages,
-                {
-                  role: "user" as const,
-                  content:
-                    "Respond ONLY with valid JSON matching the requested schema. No markdown, no explanation.",
-                },
-              ],
-              temperature: opts?.temperature ?? 0.2,
-              maxRetries: 0,
-            }),
-          catch: (e) => toProviderError(e, meta.modelId),
-        }),
-        Effect.flatMap((r) => {
-          const raw = r.text
-            .replace(/^```(?:json)?\n?/m, "")
-            .replace(/\n?```$/m, "")
-            .trim()
+      Effect.gen(function* () {
+        const model = yield* AiLanguageModel.LanguageModel
+        const prompt =
+          messagesToPrompt(messages) +
+          "\n\nRespond ONLY with valid JSON matching the requested schema. No markdown, no explanation."
 
-          return pipe(
-            Effect.try({
-              try: () => JSON.parse(raw),
-              catch: () => new AiParseError({ message: "Invalid JSON", raw }),
-            }),
-            Effect.flatMap((parsed) =>
-              Schema.decodeUnknown(schema)(parsed).pipe(
-                Effect.mapError(
-                  (e) =>
-                    new AiParseError({
-                      message: `Schema validation failed: ${e}`,
-                      raw,
-                    }),
-                ),
-              ),
-            ),
-          )
+        const result = yield* model.generateText({ prompt })
+
+        const raw = result.text
+          .replace(/^```(?:json)?\n?/m, "")
+          .replace(/\n?```$/m, "")
+          .trim()
+
+        const parsed = yield* Effect.try({
+          try: () => JSON.parse(raw),
+          catch: () => new AiParseError({ message: "Invalid JSON", raw }),
+        })
+
+        return yield* Schema.decodeUnknown(schema)(parsed).pipe(
+          Effect.mapError(
+            (e) =>
+              new AiParseError({
+                message: `Schema validation failed: ${e}`,
+                raw,
+              }),
+          ),
+        )
+      }).pipe(
+        withConfigOverride({
+          temperature: opts?.temperature ?? 0.2,
         }),
+        Effect.provide(meta.layer),
+        Effect.mapError((e) => toProviderError(e, meta.modelId)),
         Effect.retry(retrySchedule),
         Effect.withSpan("ai.generateStructured", {
           attributes: { modelId: meta.modelId },
         }),
-      ),
+      ) as any,
 
-    // ── embed (@effect/ai EmbeddingModel) ───────────────────────
+    // ── embed (@effect/ai EmbeddingModel) ────────────────────────
     embed: (text) =>
       pipe(
         Effect.gen(function* () {
@@ -6705,7 +6735,7 @@ export async function makeAiServiceLayer(
         Effect.withSpan("ai.embed"),
       ),
 
-    // ── embedMany (@effect/ai EmbeddingModel) ───────────────────
+    // ── embedMany (@effect/ai EmbeddingModel) ────────────────────
     embedMany: (texts, opts) =>
       pipe(
         Effect.gen(function* () {
@@ -6723,8 +6753,7 @@ export async function makeAiServiceLayer(
         }),
       ),
 
-    // ── ppGenerate (@providerprotocol/ai) ───────────────────────
-    // Use for: reasoning, thinking blocks, multi-turn Thread
+    // ── ppGenerate (@providerprotocol/ai) ────────────────────────
     ppGenerate: (modelDesc, messages, opts) =>
       pipe(
         Effect.tryPromise({
@@ -6756,8 +6785,7 @@ export async function makeAiServiceLayer(
         }),
       ),
 
-    // ── ppStream (@providerprotocol/ai) ─────────────────────────
-    // Same StreamChunk interface as streamText — drop-in for WebSocket paths
+    // ── ppStream (@providerprotocol/ai) ──────────────────────────
     ppStream: (modelDesc, messages, opts) =>
       Effect.succeed(
         Stream.asyncEffect<StreamChunk, AiProviderError>((emit) =>
@@ -6921,7 +6949,7 @@ export async function runEmbedMany(
 // const program = Effect.gen(function* () {
 //   const ai = yield* AiServiceTag
 //
-//   // Vercel path — fast, all providers
+//   // Effect-native path — all providers via @effect/ai-openrouter
 //   const text = yield* ai.generateText([{ role: "user", content: "Hello!" }])
 //
 //   // Structured output

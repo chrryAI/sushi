@@ -12,8 +12,8 @@ import type { nil } from "@chrryai/donut/types"
 // ─────────────────────────────────────────────────────────────────
 
 export type ModelProviderResult = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  provider: any
+  /** @deprecated Vercel AI SDK provider — only for legacy streaming. Will be removed. */
+  provider?: any
   modelId: string
   agentName: string
   lastKey: string

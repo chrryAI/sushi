@@ -47,12 +47,16 @@ export function cleanAiResponse(content: string): string {
       // Remove markdown code blocks
       .replace(/```json\s*/g, "")
       .replace(/```\s*/g, "")
+      // Remove single backtick wrappers around JSON
+      .replace(/^`+|`+$/g, "")
       // Remove rethink tags
       .replace(/<rethink>.*?<\/rethink>/gs, "")
       .replace(/<rethink>/g, "")
       .replace(/<\/rethink>/g, "")
       // Remove thinking tags (DeepSeek)
       .replace(/<thinking>.*?<\/thinking>/gs, "")
+      // Strip leading junk characters before JSON object/array
+      .replace(/^[\s?`]+/g, "")
       .trim()
   )
 }
@@ -124,12 +128,20 @@ export function parseAIJson<T = Record<string, unknown>>(
     // Continue to extraction
   }
 
-  // Step 4: Extract JSON boundaries
+  // Step 4: Extract JSON boundaries (also check for arrays)
   const firstBrace = cleaned.indexOf("{")
+  const firstBracket = cleaned.indexOf("[")
   const lastBrace = cleaned.lastIndexOf("}")
+  const lastBracket = cleaned.lastIndexOf("]")
 
-  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
-    const jsonString = cleaned.substring(firstBrace, lastBrace + 1)
+  // Determine if object or array is more likely
+  const useObject =
+    firstBrace !== -1 && (firstBracket === -1 || firstBrace < firstBracket)
+  const startIdx = useObject ? firstBrace : firstBracket
+  const endIdx = useObject ? lastBrace : lastBracket
+
+  if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+    const jsonString = cleaned.substring(startIdx, endIdx + 1)
 
     // Try parse extracted JSON
     try {

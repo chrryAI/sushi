@@ -308,10 +308,11 @@ export async function runStreamText(
   // ── Helper: enqueue a part and wake up waiters ────────────────
   function enqueuePart(part: StreamPartType) {
     allParts.push(part)
-    partQueue.push(part)
     if (partWaiters.length > 0) {
       const waiter = partWaiters.shift()!
       waiter({ done: false, value: part })
+    } else {
+      partQueue.push(part)
     }
   }
 
@@ -320,33 +321,49 @@ export async function runStreamText(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Stream.runForEach(stream as any, (part: any) =>
       Effect.sync(() => {
+        // Debug: log raw Effect stream part tags (only on unhandled types to reduce noise)
+        const debugTag = part.type ?? part._tag
+        if (debugTag === undefined) {
+          console.log(
+            `🔧 [runStreamText] raw part._tag=${part._tag} type=${part.type} keys=${Object.keys(part).join(",")}`,
+          )
+        }
+
         // Normalize Effect AI StreamPart → Vercel-like StreamPartType
-        switch (part._tag) {
-          case "textDelta":
-          case "text-delta": {
+        // Effect AI uses `type` (not `_tag`) in newer versions
+        const tag = part.type ?? part._tag
+        switch (tag) {
+          case "text-delta":
+          case "textDelta": {
             const text = part.delta ?? part.text ?? ""
             textChunks.push(text)
             enqueuePart({ type: "text-delta", text })
             break
           }
-          case "reasoningDelta":
-          case "reasoning-delta": {
+          case "text-start":
+          case "text-end":
+          case "response-metadata": {
+            // Ignore lifecycle parts that don't carry user-visible content
+            break
+          }
+          case "reasoning-delta":
+          case "reasoningDelta": {
             const text = part.delta ?? part.text ?? ""
             enqueuePart({ type: "reasoning-delta", text })
             break
           }
-          case "reasoningStart":
-          case "reasoning-start": {
+          case "reasoning-start":
+          case "reasoningStart": {
             enqueuePart({ type: "reasoning-start" })
             break
           }
-          case "reasoningEnd":
-          case "reasoning-end": {
+          case "reasoning-end":
+          case "reasoningEnd": {
             enqueuePart({ type: "reasoning-end" })
             break
           }
-          case "toolCall":
-          case "tool-call": {
+          case "tool-call":
+          case "toolCall": {
             const tc = {
               toolName: part.name ?? part.toolName,
               args: part.params ?? part.args,
@@ -359,8 +376,8 @@ export async function runStreamText(
             })
             break
           }
-          case "toolResult":
-          case "tool-result": {
+          case "tool-result":
+          case "toolResult": {
             enqueuePart({
               type: "tool-result",
               toolName: part.name ?? part.toolName,
@@ -400,6 +417,12 @@ export async function runStreamText(
               waiter({ done: true, value: undefined as any })
             }
             partWaiters = []
+            break
+          }
+          default: {
+            if (tag !== undefined) {
+              console.warn(`[runStreamText] unhandled part type: ${tag}`)
+            }
             break
           }
         }
