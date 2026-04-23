@@ -418,6 +418,9 @@ importers:
       ai:
         specifier: ^6.0.134
         version: 6.0.134(zod@4.3.6)
+      ai-json-fixer:
+        specifier: ^0.2.0
+        version: 0.2.0
       apple-signin-auth:
         specifier: ^2.0.0
         version: 2.0.0
@@ -9374,6 +9377,10 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  ai-json-fixer@0.2.0:
+    resolution: {integrity: sha512-JozOy+fPVfR4A+nqTVmshsR0GaNH6SkuIB6uU36LVs/d1FNX4BNhEzMJvJFugDEZZJcB6GUMYJqX9vd09UI/5g==}
+    engines: {node: '>=14.0.0'}
 
   ai@6.0.134:
     resolution: {integrity: sha512-YalNEaavld/kE444gOcsMKXdVVRGEe0SK77fAFcWYcqLg+a7xKnEet8bdfrEAJTfnMjj01rhgrIL10903w1a5Q==}
@@ -26076,6 +26083,8 @@ snapshots:
       resize-observer-polyfill: 1.5.1
       screenfull: 5.2.0
       tslib: 2.8.1
+
+  ai-json-fixer@0.2.0: {}
 
   ai@6.0.134(zod@3.25.76):
     dependencies:

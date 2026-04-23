@@ -21,6 +21,14 @@ export * as Option from "effect/Option"
 // Package version
 export const VERSION = "0.1.0"
 
+// Prompt builder — token-aware system prompt assembly
+export {
+  buildSystemPromptFromParts,
+  buildSystemPromptV2,
+  DEFAULT_SECTION_WEIGHTS,
+  section,
+} from "../src/ai/sushi/promptBuilder"
+
 // Free models for testing
 export { FREE_MODELS } from "./ai/index.js"
 // DNA / Seed exports

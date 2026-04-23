@@ -71,7 +71,6 @@ describe("Scheduled Jobs API", () => {
       console.log("📧 Using test email:", TEST_EMAIL)
       console.log(
         "🔑 Using secret length:",
-        AUTH_SECRET?.length,
         "value:",
         AUTH_SECRET ? "[REDACTED]" : undefined,
       )

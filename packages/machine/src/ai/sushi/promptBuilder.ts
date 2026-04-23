@@ -1,477 +1,232 @@
 /**
- * PromptBuilder — pure prompt-section assembly from sushi data
+ * PromptBuilder — token-aware, weight-driven system prompt assembler
  *
- * No HTTP, no Hono, no Handlebars. Takes raw sushi data, returns
- * formatted strings that can be composed into a system prompt.
+ * SOLID:
+ *   Single responsibility: takes assembled sections, trims to model limit.
+ *   Open/closed: new section type? just add to the array.
  *
- * Used by:
- *   - chopStick (when buildPrompt: true) → sushi.ai.promptSections
- *   - OSS chopstick npm package (same logic, different transport)
- *   - API promptBuilder.ts (adds Handlebars + runtime contexts on top)
+ * Usage (drop-in replacement for ai.ts L3937):
+ *   const { prompt: systemPrompt, tokensUsed, dropped } = buildSystemPromptV2({
+ *     sections: [ ... ],
+ *     maxTokens: modelLimit,
+ *   })
  */
 
-import type { sushi } from "@chrryai/donut/types"
-import { match, P } from "ts-pattern"
-
-// ─────────────────────────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────────────────────────
-
-export interface PromptSections {
-  memories: string
-  instructions: string
-  characterProfiles: string
-  placeholders: string
-  dna: string
-  apps: string
-  /** All sections joined — drop-in system prompt addition */
-  assembled: string
+// ─── estimation ───────────────────────────────────────────────────
+// rough but fast: 4 chars ≈ 1 token for western text.
+// conservative for CJK: 2 chars ≈ 1 token.
+function estimateTokens(text: string | undefined): number {
+  if (!text) return 0
+  let cjk = 0
+  for (const ch of text) {
+    const code = ch.charCodeAt(0)
+    if (
+      (code >= 0x4e00 && code <= 0x9fff) ||
+      (code >= 0x3400 && code <= 0x4dbf) ||
+      (code >= 0xf900 && code <= 0xfaff) ||
+      (code >= 0xac00 && code <= 0xd7af)
+    ) {
+      cjk++
+    }
+  }
+  const nonCjk = text.length - cjk
+  return Math.ceil(cjk / 2 + nonCjk / 4)
 }
 
-export interface PromptBuilderOpts {
-  /**
-   * Dynamic memory sizing: fewer memories as conversation grows longer
-   * to stay within token limits.
-   */
-  messageCount?: number
-  /**
-   * User's name — used in instruction/character headings
-   */
-  userName?: string
-  /**
-   * The app's own id — used to label cross-app instructions
-   */
-  appId?: string
+/** hard ceiling: cut string down to target tokens */
+function truncateToTokens(text: string | undefined, maxTokens: number): string {
+  if (!text) return ""
+  const charsPerToken = 3.5 // slightly more conservative than 4
+  const maxChars = Math.floor(maxTokens * charsPerToken)
+  if (text.length <= maxChars) return text
+  // cut at last space before limit to avoid mid-word breaks
+  let cut = maxChars
+  while (cut > 0 && text[cut] !== " " && text[cut] !== "\n") cut--
+  if (cut <= 0) cut = maxChars // no space found, hard cut
+  return text.slice(0, cut) + "\n\n...[truncated for token limit]"
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Memory section
-// ─────────────────────────────────────────────────────────────────
+// ─── types ────────────────────────────────────────────────────────
 
-const CATEGORY_EMOJI: Record<string, string> = {
-  preference: "⚙️",
-  fact: "📌",
-  context: "💭",
-  instruction: "📝",
-  relationship: "👥",
-  goal: "🎯",
-  character: "🎭",
+export interface PromptSection {
+  /** unique key for logging / debug */
+  key: string
+  /** raw section content (may be empty) */
+  content: string | undefined
+  /** priority: 0..1, higher = harder to drop.  system=1.0, memories=0.8 … */
+  weight: number
+  /** soft cap in tokens. section is shrunk to this first */
+  maxTokens: number
+  /** if false, section is omitted from the start */
+  enabled?: boolean
 }
 
-function memoryLine(m: { category?: string | null; content: string }): string {
-  const emoji = CATEGORY_EMOJI[m.category ?? "context"] ?? "💭"
-  return `${emoji} ${m.content}`
+export interface BuildResult {
+  prompt: string
+  tokensUsed: number
+  droppedSections: string[]
 }
 
-export function buildMemoryContext(
-  sushi: Pick<
-    sushi,
-    "userMemories" | "appMemories" | "threadMemories" | "dnaMemories"
-  >,
-  opts?: PromptBuilderOpts,
-): string {
-  const userMems = (sushi.userMemories ?? []) as Array<{
-    category?: string | null
-    content: string
-  }>
-  const appMems = (sushi.appMemories ?? []) as Array<{
-    category?: string | null
-    content: string
-    userId?: string | null
-    guestId?: string | null
-  }>
-  const threadMems = (sushi.threadMemories ?? []) as Array<{
-    category?: string | null
-    content: string
-  }>
+// ─── default weights (mirror the pipeline schema) ────────────────
+/** override per app-slug if needed */
+export const DEFAULT_SECTION_WEIGHTS: Record<
+  string,
+  { weight: number; maxTokens: number }
+> = {
+  // core: never drop
+  system: { weight: 1.0, maxTokens: 4000 },
+  devBanner: { weight: 0.98, maxTokens: 50 },
+  piiRedaction: { weight: 0.98, maxTokens: 200 },
+  aiSelfAware: { weight: 0.95, maxTokens: 500 },
 
-  if (!userMems.length && !appMems.length && !threadMems.length) return ""
+  // user context: precious
+  instructions: { weight: 0.9, maxTokens: 2000 },
+  character: { weight: 0.85, maxTokens: 1500 },
+  mood: { weight: 0.82, maxTokens: 500 },
+  memories: { weight: 0.8, maxTokens: 2000 },
+  placeholders: { weight: 0.75, maxTokens: 800 },
+  userBehavior: { weight: 0.7, maxTokens: 1000 },
+  dna: { weight: 0.7, maxTokens: 2000 },
+  branch: { weight: 0.65, maxTokens: 1500 },
 
-  const parts: string[] = []
+  // app/tool context: medium
+  moltbook: { weight: 0.55, maxTokens: 1500 },
+  tribe: { weight: 0.55, maxTokens: 1500 },
+  sato: { weight: 0.5, maxTokens: 800 },
+  store: { weight: 0.5, maxTokens: 800 },
+  calendar: { weight: 0.45, maxTokens: 1000 },
+  vault: { weight: 0.45, maxTokens: 1000 },
+  focus: { weight: 0.45, maxTokens: 800 },
+  task: { weight: 0.45, maxTokens: 800 },
+  timerTools: { weight: 0.4, maxTokens: 500 },
+  spatialNav: { weight: 0.4, maxTokens: 500 },
 
-  if (userMems.length) {
-    parts.push(
-      `\n\n## RELEVANT CONTEXT ABOUT THE USER:\n${userMems.map(memoryLine).join("\n")}\n\nUse this context to personalize your responses when relevant.`,
-    )
-  }
-
-  const characterMems = appMems.filter((m) => m.category === "character")
-  const knowledgeMems = appMems.filter((m) => m.category !== "character")
-
-  if (characterMems.length) {
-    parts.push(
-      `\n\n## 🎭 YOUR CHARACTER PROFILE (learned from interactions):\n${characterMems.map((m) => `🎭 ${m.content}`).join("\n")}\n\n⚠️ IMPORTANT: These are observations about YOUR personality and communication style. Embody them consistently.`,
-    )
-  }
-
-  if (knowledgeMems.length) {
-    parts.push(
-      `\n\n## 📚 APP KNOWLEDGE:\n${knowledgeMems.map(memoryLine).join("\n")}`,
-    )
-  }
-
-  if (threadMems.length) {
-    parts.push(
-      `\n\n## 🧵 THIS CONVERSATION:\n${threadMems.map(memoryLine).join("\n")}`,
-    )
-  }
-
-  return parts.join("")
+  // cross-app / optional: drop first
+  news: { weight: 0.35, maxTokens: 1000 },
+  analytics: { weight: 0.3, maxTokens: 1500 },
+  grape: { weight: 0.25, maxTokens: 800 },
+  pear: { weight: 0.25, maxTokens: 800 },
+  feedbackApps: { weight: 0.2, maxTokens: 1000 },
+  subscription: { weight: 0.2, maxTokens: 300 },
+  statistics: { weight: 0.2, maxTokens: 500 },
+  inheritance: { weight: 0.2, maxTokens: 500 },
+  e2e: { weight: 0.15, maxTokens: 500 },
+  burnMode: { weight: 0.15, maxTokens: 200 },
+  featureStatus: { weight: 0.15, maxTokens: 200 },
+  pearReminder: { weight: 0.1, maxTokens: 100 },
+  aiCoach: { weight: 0.1, maxTokens: 500 },
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Instructions section
-// ─────────────────────────────────────────────────────────────────
-
-export function buildInstructionsContext(
-  sushi: Pick<
-    sushi,
-    | "userInstructions"
-    | "appInstructions"
-    | "threadInstructions"
-    | "dnaInstructions"
-  >,
-  opts?: PromptBuilderOpts,
-): string {
-  type Instruction = {
-    emoji?: string | null
-    title?: string | null
-    content: string
-    appId?: string | null
-  }
-
-  const thread = (sushi.threadInstructions ?? []) as Instruction[]
-  const app = (sushi.appInstructions ?? []) as Instruction[]
-  const user = (sushi.userInstructions ?? []) as Instruction[]
-  const dna = (sushi.dnaInstructions ?? []) as Instruction[]
-
-  // Priority: thread > app > user > dna
-  const selected = match([thread.length, app.length, user.length, dna.length])
-    .with([P.number.gt(0), P._, P._, P._], () => thread)
-    .with([0, P.number.gt(0), P._, P._], () => app)
-    .with([0, 0, P.number.gt(0), P._], () => user)
-    .with([0, 0, 0, P.number.gt(0)], () => dna)
-    .otherwise(() => [])
-
-  if (!selected.length) return ""
-
-  const isScattered = selected === user && app.length === 0
-  const sourceLabel = thread.length
-    ? "THREAD"
-    : app.length
-      ? "CURRENT APP"
-      : "SCATTERED FROM MULTIPLE APPS"
-
-  const lines = selected
-    .map((i) => {
-      const crossApp =
-        opts?.appId && i.appId && i.appId !== opts.appId
-          ? " [from other app]"
-          : ""
-      return `${i.emoji ?? "📝"} **${i.title ?? "Instruction"}**${crossApp}: ${i.content}`
-    })
-    .join("\n")
-
-  return `\n\n## 🎯 USER'S CUSTOM INSTRUCTIONS (${sourceLabel}):\nThese are personalized instructions the user has created to guide your behavior. Follow them when relevant.\n\n${lines}${isScattered ? "\n\n_Instructions scattered across apps for diverse context._" : ""}`
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Character profiles section
-// ─────────────────────────────────────────────────────────────────
-
-export function buildCharacterContext(
-  sushi: Pick<
-    sushi,
-    | "characterProfiles"
-    | "appCharacterProfiles"
-    | "threadCharacterProfiles"
-    | "dnaCharacterProfiles"
-  >,
-): string {
-  type Profile = {
-    name?: string | null
-    content: string
-    isPinned?: boolean | null
-  }
-
-  const thread = (sushi.threadCharacterProfiles ?? []) as unknown as Profile[]
-  const user = (sushi.characterProfiles ?? []) as unknown as Profile[]
-  const app = (sushi.appCharacterProfiles ?? []) as unknown as Profile[]
-  const dna = (sushi.dnaCharacterProfiles ?? []) as unknown as Profile[]
-
-  if (!thread.length && !user.length && !app.length && !dna.length) return ""
-
-  const parts: string[] = []
-
-  if (thread.length && thread[0]) {
-    parts.push(
-      `\n\n## 🎯 ACTIVE CHARACTER (This Thread):\n${thread[0].content}\n\n⚠️ IMPORTANT: This is the active character for THIS conversation. It takes precedence over general profiles.`,
-    )
-  }
-
-  const pinnedUsers = user.filter((p) => p.isPinned)
-  const otherUsers = user.filter((p) => !p.isPinned)
-  const orderedUsers = [...pinnedUsers, ...otherUsers]
-
-  if (orderedUsers.length) {
-    parts.push(
-      `\n\n## ⭐ USER CHARACTERS (Favorites first):\n${orderedUsers
-        .map((p) => `**${p.name ?? "Character"}**: ${p.content}`)
-        .join("\n\n")}`,
-    )
-  }
-
-  if (app.length) {
-    parts.push(
-      `\n\n## 🤖 APP CHARACTERS (Domain Expertise):\n${app.map((p) => `**${p.name ?? "Character"}**: ${p.content}`).join("\n\n")}`,
-    )
-  }
-
-  if (dna.length && !thread.length && !user.length) {
-    parts.push(
-      `\n\n## 🧬 CREATOR'S CHARACTERS:\n${dna.map((p) => `**${p.name ?? "Character"}**: ${p.content}`).join("\n\n")}`,
-    )
-  }
-
-  return parts.join("")
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Placeholder / conversation starters section
-// ─────────────────────────────────────────────────────────────────
-
-export function buildPlaceholderContext(
-  sushi: Pick<
-    sushi,
-    "userPlaceholders" | "appPlaceholders" | "threadPlaceholders"
-  >,
-): string {
-  type Placeholder = { text: string }
-
-  const thread = ((sushi.threadPlaceholders ?? []) as Placeholder[])[0]
-  const app = ((sushi.appPlaceholders ?? []) as Placeholder[])[0]
-  const user = ((sushi.userPlaceholders ?? []) as Placeholder[])[0]
-
-  if (!thread && !app && !user) return ""
-
-  const lines: string[] = []
-  if (user) lines.push(`- User placeholder: "${user.text}"`)
-  if (app) lines.push(`- App placeholder: "${app.text}"`)
-  if (thread) lines.push(`- Thread placeholder: "${thread.text}"`)
-
-  return `\n\n## 💬 PERSONALIZED CONVERSATION STARTERS:\nYou recently generated these suggestions for the user:\n${lines.join("\n")}\n\nThese reflect the user's interests and recent conversations.`
-}
-
-// ─────────────────────────────────────────────────────────────────
-// DNA (app-owner foundational knowledge) section
-// ─────────────────────────────────────────────────────────────────
-
-export function buildDnaContext(
-  sushi: Pick<sushi, "dnaMemories" | "dnaInstructions">,
-  creatorName?: string,
-): string {
-  type DnaMemory = {
-    content?: string | null
-    title?: string | null
-    category?: string | null
-  }
-  type DnaInstruction = {
-    emoji?: string | null
-    title?: string | null
-    content: string
-    appId?: string | null
-  }
-
-  const memories = (sushi.dnaMemories ?? []) as DnaMemory[]
-  const instructions = (sushi.dnaInstructions ?? []) as DnaInstruction[]
-
-  const knowledgeMems = memories
-    .filter((m) =>
-      match(m.category)
-        .with(P.union("preference", "relationship", "goal"), () => false)
-        .otherwise(() => true),
-    )
-    .map((m) => m.content || m.title || "")
-    .filter((c) => c.length > 10)
-    .slice(0, 10)
-
-  const filteredInstructions = instructions.slice(0, 5)
-
-  if (!knowledgeMems.length && !filteredInstructions.length) return ""
-
-  const creator = creatorName ?? "creator"
-  const parts: string[] = []
-
-  if (filteredInstructions.length) {
-    parts.push(
-      `\n\n## 🎯 CREATOR'S WORKFLOW PATTERNS (from ${creator}):\n${filteredInstructions
-        .map(
-          (i) =>
-            `${i.emoji ?? "📝"} **${i.title ?? "Pattern"}**: ${i.content.slice(0, 200)}${i.content.length > 200 ? "..." : ""}`,
-        )
-        .join(
-          "\n",
-        )}\n\n_General workflow patterns the creator uses across apps. No personal information included._`,
-    )
-  }
-
-  if (knowledgeMems.length) {
-    parts.push(
-      `\n\n## 🧬 APP DNA (from ${creator}):\n\n**Foundational Knowledge:**\n${knowledgeMems.map((c) => `- ${c}`).join("\n")}\n\n_General knowledge about this app's purpose. No personal information included._`,
-    )
-  }
-
-  if (parts.length) {
-    parts.push(
-      `\n\n---\n⚠️ **Privacy Notice**: This context contains only general, non-personal information about the app.`,
-    )
-  }
-
-  return parts.join("")
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Store apps (Grape) section
-// ─────────────────────────────────────────────────────────────────
-
-export function buildAppsContext(
-  storeApps: Array<{
-    id: string
-    name?: string | null
-    title?: string | null
-    description?: string | null
-    icon?: string | null
-  }>,
-  storeName?: string,
-): string {
-  if (!storeApps.length) return ""
-
-  const list = storeApps
-    .map(
-      (a) =>
-        `- **${a.name}**${a.icon ? `: ${a.title ?? ""}` : ""}${a.description ? `: ${a.description}` : ""}`,
-    )
-    .join("\n")
-
-  const names = storeApps.map((a) => a.name).join(", ")
-
-  return `\n\n## 🍇 GRAPE (Discover Apps)\n\n**Available Apps** (shown in 🍇 Grape button):\n${list}\n\n**When users ask about discovering apps:**\n- Explain: "Click the 🍇 Grape button to discover apps and earn credits for feedback"\n- Available: ${names}\n- Browse → Click → Try → Feedback → Earn`
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Master builder — assembles all sections from a sushi object
-// ─────────────────────────────────────────────────────────────────
-
-export function buildPromptSections(
-  sushi: sushi,
-  opts?: PromptBuilderOpts,
-): PromptSections {
-  const creatorName =
-    (sushi as any).user?.name ?? (sushi as any).guest?.id?.slice(0, 5) ?? ""
-
-  const memories = buildMemoryContext(sushi, opts)
-  const instructions = buildInstructionsContext(sushi, opts)
-  const characterProfiles = buildCharacterContext(sushi)
-  const placeholders = buildPlaceholderContext(sushi)
-  const dna = buildDnaContext(sushi, creatorName)
-  const apps = sushi.store?.apps?.length
-    ? buildAppsContext(sushi.store.apps as any, sushi.store.name ?? undefined)
-    : ""
-
-  // Assemble sections using pattern matching for app-specific ordering
-  const assembled = match(sushi.slug)
-    .with("grape", () =>
-      [memories, instructions, characterProfiles, placeholders, dna, apps]
-        .filter(Boolean)
-        .join(""),
-    )
-    .otherwise(() =>
-      [memories, instructions, characterProfiles, placeholders, dna, apps]
-        .filter(Boolean)
-        .join(""),
-    )
-
+/** helper: create a section with defaults from the table */
+export function section(
+  key: string,
+  content: string | undefined,
+  overrides?: Partial<Omit<PromptSection, "key" | "content">>,
+): PromptSection {
+  const def = DEFAULT_SECTION_WEIGHTS[key]
   return {
-    memories,
-    instructions,
-    characterProfiles,
-    placeholders,
-    dna,
-    apps,
-    assembled,
+    key,
+    content: content || "",
+    weight: overrides?.weight ?? def?.weight ?? 0.5,
+    maxTokens: overrides?.maxTokens ?? def?.maxTokens ?? 500,
+    enabled: overrides?.enabled ?? true,
   }
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Default join weights — used when agent doesn't specify its own
-// ─────────────────────────────────────────────────────────────────
+// ─── the assembler ──────────────────────────────────────────────
 
-export interface JoinWeights {
-  memories?: { user?: number; thread?: number; app?: number; dna?: number }
-  instructions?: { user?: number; thread?: number; app?: number; dna?: number }
-  characterProfile?: {
-    user?: number
-    thread?: number
-    app?: number
-    dna?: number
+/**
+ * 1. discard empty / disabled sections
+ * 2. shrink each section to its own maxTokens
+ * 3. if total still exceeds global maxTokens, drop lowest-weight sections first
+ * 4. never drop weight >= 0.98 (system, pii, devBanner)
+ */
+export function buildSystemPromptV2(params: {
+  sections: PromptSection[]
+  maxTokens: number
+}): BuildResult {
+  const { sections, maxTokens } = params
+  const hardFloor = 1000 // always reserve ~1k for the conversation itself
+  const budget = Math.max(hardFloor, maxTokens - hardFloor)
+
+  // 1. filter out disabled / empty
+  let active = sections
+    .filter((s) => s.enabled !== false && (s.content || "").trim().length > 0)
+    .map((s) => ({
+      ...s,
+      originalTokens: estimateTokens(s.content),
+    }))
+
+  // 2. shrink each to its own maxTokens ceiling
+  active = active.map((s) => {
+    if (s.originalTokens <= s.maxTokens) return s
+    return {
+      ...s,
+      content: truncateToTokens(s.content, s.maxTokens),
+      originalTokens: s.maxTokens,
+    }
+  })
+
+  // 3. calculate running total
+  const total = () => active.reduce((sum, s) => sum + s.originalTokens, 0)
+
+  const dropped: string[] = []
+
+  // 4. drop lightest sections until we fit
+  while (total() > budget && active.length > 1) {
+    // find droppable (weight < 0.98)
+    const droppable = active
+      .filter((s) => s.weight < 0.98)
+      .sort((a, b) => a.weight - b.weight)
+
+    if (droppable.length === 0) break // nothing more we can drop
+
+    const victim = droppable[0]!
+    active = active.filter((s) => s.key !== victim.key)
+    dropped.push(victim.key)
   }
-  placeholders?: { user?: number; thread?: number; app?: number; dna?: number }
-}
 
-/**
- * Default weights for the main app in a store.
- * Agent can override via aiAgent.metadata.join
- */
-export const DEFAULT_MAIN_APP_JOIN: JoinWeights = {
-  memories: { user: 10, thread: 6, app: 6, dna: 4 },
-  instructions: { user: 7, thread: 4, app: 5, dna: 2 },
-  characterProfile: { user: 3, thread: 2, app: 2, dna: 1 },
-  placeholders: { user: 4, thread: 3, app: 4, dna: 2 },
-}
+  // 5. if STILL over budget, truncate the heaviest *non-core* section
+  if (total() > budget) {
+    const truncatable = active
+      .filter((s) => s.weight < 0.95)
+      .sort((a, b) => b.originalTokens - a.originalTokens)
 
-/**
- * Lighter weights for context (non-main) apps in a store.
- */
-export const DEFAULT_CONTEXT_APP_JOIN: JoinWeights = {
-  memories: { user: 3, thread: 2, app: 2, dna: 1 },
-  instructions: { user: 2, thread: 2, app: 2, dna: 1 },
-  characterProfile: { user: 1, thread: 1, app: 1, dna: 0 },
-  placeholders: { user: 2, thread: 2, app: 2, dna: 1 },
-}
-
-/**
- * Merge agent join config over defaults.
- * Agent wins on any field it specifies.
- */
-export function resolveJoinWeights(
-  agentJoin?: JoinWeights | null,
-  isMainApp = true,
-): JoinWeights {
-  const base = isMainApp ? DEFAULT_MAIN_APP_JOIN : DEFAULT_CONTEXT_APP_JOIN
-  if (!agentJoin) return base
-
-  return {
-    memories: { ...base.memories, ...agentJoin.memories },
-    instructions: { ...base.instructions, ...agentJoin.instructions },
-    characterProfile: {
-      ...base.characterProfile,
-      ...agentJoin.characterProfile,
-    },
-    placeholders: { ...base.placeholders, ...agentJoin.placeholders },
+    for (const s of truncatable) {
+      const excess = total() - budget
+      const newCap = Math.max(100, s.originalTokens - excess)
+      s.content = truncateToTokens(s.content, newCap)
+      s.originalTokens = estimateTokens(s.content)
+      if (total() <= budget) break
+    }
   }
+
+  // 6. preserve insertion order of the originals
+  const keyOrder = sections.map((s) => s.key)
+  const sorted = [...active].sort(
+    (a, b) => keyOrder.indexOf(a.key) - keyOrder.indexOf(b.key),
+  )
+
+  const prompt = sorted.map((s) => s.content).join("")
+  const tokensUsed = total()
+
+  // debug log (replace with structured logger when available)
+  // eslint-disable-next-line no-console
+  console.log(
+    `📐 buildSystemPromptV2: ${tokensUsed}/${budget} tokens, ` +
+      `sections=${sorted.length}, dropped=${dropped.join(",") || "none"}`,
+  )
+
+  return { prompt, tokensUsed, droppedSections: dropped }
 }
 
-/**
- * Dynamic memory page size based on conversation length.
- * Shorter convos → more memories (user is just starting, needs full context).
- * Longer convos → fewer memories (context already in-thread).
- */
-export function resolveMemoryPageSize(messageCount: number): number {
-  if (messageCount <= 5) return 25
-  if (messageCount <= 15) return 20
-  if (messageCount <= 30) return 15
-  if (messageCount <= 50) return 12
-  if (messageCount <= 75) return 5
-  if (messageCount <= 100) return 3
-  return 1
+/** drop-in adapter: converts the old `[...].join("")` array into BuildResult */
+export function buildSystemPromptFromParts(
+  parts: Record<string, string | undefined | null>,
+  maxTokens: number,
+): BuildResult {
+  const sections: PromptSection[] = Object.entries(parts).map(
+    ([key, content]) => section(key, content || undefined),
+  )
+  return buildSystemPromptV2({ sections, maxTokens })
 }

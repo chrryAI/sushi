@@ -43,21 +43,21 @@ export type PipelineError =
 // Agent bg jobda bunu okuyup ne çekeceğine karar verir
 // ============================================
 
-export const SourceWeight = Schema.Struct({
+export const sourceWeight = Schema.Struct({
   source: Schema.String, // "memories", "dna", "rag", "instructions", "news"
   weight: Schema.Number, // 0-1 arası önem
   maxTokens: Schema.Number, // bu kaynağa max ne kadar token
   required: Schema.Boolean, // olmazsa error mı verse
 })
 
-export const PromptSchema = Schema.Struct({
+export const promptSchema = Schema.Struct({
   // Model config
   modelId: Schema.String,
   temperature: Schema.Number,
   maxOutputTokens: Schema.optional(Schema.Number),
 
   // Source weights - agent bunu okur, ne çekeceğine karar verir
-  sources: Schema.Array(SourceWeight),
+  sources: Schema.Array(sourceWeight),
 
   // Rendered sections - her biri ayrı Effect
   sections: Schema.Struct({
@@ -86,8 +86,8 @@ export const PromptSchema = Schema.Struct({
   }),
 })
 
-export type PromptSchema = typeof PromptSchema.Type
-export type SourceWeight = typeof SourceWeight.Type
+export type promptSchema = typeof promptSchema.Type
+export type sourceWeight = typeof sourceWeight.Type
 
 // ============================================
 // 🎛️ CONTEXT TAG - dependency injection
@@ -149,12 +149,12 @@ export const resolveContext = (params: {
   })
 
 // ============================================
-// 🧩 STEP 2: buildPromptSchema
-// Data-driven - her source bir SourceWeight
+// 🧩 STEP 2: buildpromptSchema
+// Data-driven - her source bir sourceWeight
 // Agent bg jobda ne çekeceğine buna bakarak karar verir
 // ============================================
 
-const DEFAULT_SOURCE_WEIGHTS: SourceWeight[] = [
+const DEFAULT_SOURCE_WEIGHTS: sourceWeight[] = [
   { source: "system", weight: 1.0, maxTokens: 4000, required: true },
   { source: "memories", weight: 0.8, maxTokens: 2000, required: false },
   { source: "instructions", weight: 0.7, maxTokens: 1500, required: false },
@@ -167,7 +167,7 @@ const DEFAULT_SOURCE_WEIGHTS: SourceWeight[] = [
 
 // MIT prompt builder yaklaşımı:
 // Her source bir "slot" - agent bunları okuyup hangisini ne kadar alacağına karar verir
-export const buildPromptSchema = (params: {
+export const buildpromptSchema = (params: {
   app: sushi | null
   user: user | null
   guest: guest | null
@@ -193,7 +193,7 @@ export const buildPromptSchema = (params: {
     // Dinamik weight: az mesaj = daha fazla context, çok mesaj = daha az
     const contextBoost = messageCount < 10 ? 1.2 : messageCount > 50 ? 0.7 : 1.0
 
-    const sources: SourceWeight[] = DEFAULT_SOURCE_WEIGHTS.map((s) => ({
+    const sources: sourceWeight[] = DEFAULT_SOURCE_WEIGHTS.map((s) => ({
       ...s,
       weight: Math.min(1, s.weight * contextBoost),
       // Burn mode: memory ve dna kapatılır
@@ -223,7 +223,7 @@ export const buildPromptSchema = (params: {
       })
     }
 
-    const schema: PromptSchema = {
+    const schema: promptSchema = {
       modelId,
       temperature: app?.temperature ?? 0.7,
       sources,
@@ -251,7 +251,7 @@ export const buildPromptSchema = (params: {
 // ============================================
 
 export const renderSections = (
-  schema: PromptSchema,
+  schema: promptSchema,
   app: sushi | null,
   user: user | null,
   guest: guest | null,
@@ -315,7 +315,7 @@ export const renderSections = (
         system: systemSection,
         dna: dnaSection || undefined,
       },
-    } satisfies PromptSchema
+    } satisfies promptSchema
   })
 
 // ============================================
@@ -343,7 +343,7 @@ export type BgJobDecision = typeof BgJobDecision.Type
 
 // Agent kendi başına bg job kararı verir
 export const makeBgJobDecision = (
-  schema: PromptSchema,
+  schema: promptSchema,
   conversationStats: {
     messageCount: number
     hasFiles: boolean
@@ -457,7 +457,7 @@ export const runAiPipeline = (params: {
 
     // Step 2: build schema (data-driven)
     Effect.flatMap((app) =>
-      buildPromptSchema({
+      buildpromptSchema({
         app: app ?? null,
         user: null, // inject from session
         guest: null,
@@ -720,7 +720,7 @@ export const generateAIContentV2 = async (params: {
       agentId: params.agentId,
       conversationText,
       language: params.language,
-      modelProvider: model.provider,
+      modelProvider: model.modelId,
       modelName: model.agentName,
       memoriesEnabled:
         params.user?.memoriesEnabled || params.guest?.memoriesEnabled,
