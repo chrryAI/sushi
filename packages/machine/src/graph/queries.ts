@@ -4,13 +4,9 @@
  * Safe server-side helpers for reading graph data.
  * All functions return typed results and silently return empty arrays when
  * FalkorDB is unavailable (graceful degradation, same pattern as graph/client).
- *
- * Usage:
- *   import { getMemoriesForUser } from "@/src/graph/queries"
- *   const memories = await getMemoriesForUser(userId)
  */
 
-import { graph, isGraphAvailable } from "./client"
+import { getGraph, isGraphAvailable } from "./client"
 
 // ---------------------------------------------------------------------------
 // Types
@@ -61,10 +57,10 @@ export async function getMemoriesForUser(
   limit: number = 50,
 ): Promise<GraphMemory[]> {
   if (!isGraphAvailable) return []
-  // Ensure limit is a positive integer
   const safeLimit = Math.max(1, Math.floor(Number(limit) || 50))
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (m:Memory)-[:BELONGS_TO]->(u:User {id: $userId})
       RETURN m.id AS id, m.title AS title, m.content AS content,
@@ -92,7 +88,8 @@ export async function searchMemoriesByTag(
 ): Promise<GraphMemory[]> {
   if (!isGraphAvailable) return []
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (m:Memory)-[:BELONGS_TO]->(u:User {id: $userId})
       WHERE $tag IN m.tags
@@ -120,7 +117,8 @@ export async function getMemoriesForApp(
 ): Promise<GraphMemory[]> {
   if (!isGraphAvailable) return []
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (m:Memory)-[:BELONGS_TO]->(u:User {id: $userId})
       MATCH (m)-[:ABOUT]->(a:App {id: $appId})
@@ -151,7 +149,8 @@ export async function getCharacterProfilesForApp(
 ): Promise<GraphCharacterProfile[]> {
   if (!isGraphAvailable) return []
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (c:CharacterProfile)-[:PERSONA_OF]->(a:App {id: $appId})
       RETURN c.id AS id, c.name AS name, c.personality AS personality,
@@ -176,7 +175,8 @@ export async function getCharacterProfilesForUser(
 ): Promise<GraphCharacterProfile[]> {
   if (!isGraphAvailable) return []
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (c:CharacterProfile)-[:KNOWS]->(u:User {id: $userId})
       RETURN c.id AS id, c.name AS name, c.personality AS personality,
@@ -205,10 +205,10 @@ export async function getThreadGraphForUser(
   limit: number = 100,
 ): Promise<GraphThread[]> {
   if (!isGraphAvailable) return []
-  // Ensure limit is a positive integer
   const safeLimit = Math.max(1, Math.floor(Number(limit) || 100))
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (t:Thread)-[:OWNED_BY]->(u:User {id: $userId})
       OPTIONAL MATCH (t)-[:USES_APP]->(a:App)
@@ -238,10 +238,10 @@ export async function getRelatedApps(
   depth: number = 2,
 ): Promise<GraphApp[]> {
   if (!isGraphAvailable) return []
-  // Ensure depth is a positive integer (max 5 for safety)
   const safeDepth = Math.min(5, Math.max(1, Math.floor(Number(depth) || 2)))
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH path = (origin:App {id: $appId})-[:BELONGS_TO|EXTENDS*1..$depth]-(related:App)
       WHERE related.id <> $appId
@@ -264,7 +264,8 @@ export async function getRelatedApps(
 export async function getAppsInStore(storeId: string): Promise<GraphApp[]> {
   if (!isGraphAvailable) return []
   try {
-    const res = (await graph.query(
+    const g = await getGraph()
+    const res = (await g.query(
       `
       MATCH (a:App)-[:BELONGS_TO]->(s:Store {id: $storeId})
       RETURN a.id AS id, a.slug AS slug, a.name AS name, a.icon AS icon, 1 AS depth
@@ -300,7 +301,8 @@ export async function getFalkorHealthSummary(): Promise<
   const counts: Record<string, number> = {}
   for (const label of labels) {
     try {
-      const res = (await graph.query(
+      const g = await getGraph()
+      const res = (await g.query(
         `MATCH (n:${label}) RETURN COUNT(n) AS c`,
       )) as any
       counts[label] = res?.data?.[0]?.c ?? 0

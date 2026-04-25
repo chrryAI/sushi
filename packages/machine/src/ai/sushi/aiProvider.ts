@@ -419,6 +419,7 @@ import {
 } from "drizzle-orm"
 import pLimit from "p-limit"
 import * as schema from "../../dna/schema"
+import { cleanAiResponse, safeParseAIJson } from "../jsonParser"
 
 export type thread = typeof threads.$inferSelect
 export type memory = typeof memories.$inferSelect
@@ -3994,6 +3995,8 @@ export const toSafeApp = ({
     guestId: app.guestId,
     backgroundColor: app.backgroundColor,
     onlyAgent: app.onlyAgent,
+    role: app.role,
+    mission: app.mission,
     tips: app.tips,
     tipsTitle: app.tipsTitle,
     storeId: app.storeId,
@@ -4078,7 +4081,7 @@ export const OLLAMA_MODEL_MAP: Record<
   },
   "deepseek/deepseek-r1": {
     name: "deepseek-v3.2:cloud",
-    reasoning_effort: "medium",
+    reasoning_effort: "high",
   },
   "deepseek/deepseek-chat": {
     name: "deepseek-v3.2:cloud",
@@ -4091,17 +4094,17 @@ export const OLLAMA_MODEL_MAP: Record<
   },
   "minimax/minimax-m2.5": {
     name: "minimax-m2.5:cloud",
-    reasoning_effort: "none",
+    reasoning_effort: "medium",
   },
   "nvidia/nemotron-3-super-120b-a12b": {
     name: "deepseek-v3.2:cloud",
-    reasoning_effort: "none",
+    reasoning_effort: "high",
   },
   "google/gemini-3.1-pro-preview": {
     name: "kimi-k2.5:cloud",
-    reasoning_effort: "none",
+    reasoning_effort: "high",
   },
-  "x-ai/grok-4.1-fast": { name: "kimi-k2.5:cloud", reasoning_effort: "none" },
+  "x-ai/grok-4.1-fast": { name: "kimi-k2.6:cloud", reasoning_effort: "high" },
 }
 
 export function toOllamaModel(orModelId: string) {
@@ -5284,18 +5287,17 @@ export const getMediaAPIKeys = ({
     ? process.env.REPLICATE_API_KEY
     : undefined
   const appReplicateKey = safeDecrypt(app?.apiKeys?.replicate)
-  const replicate = byokKey ?? appReplicateKey ?? systemReplicateKey
+  const replicate = appReplicateKey ?? systemReplicateKey
 
   const systemFalKey = isFreeTier(app) ? process.env.FAL_API_KEY : undefined
   const appFalKey = safeDecrypt(app?.apiKeys?.fal)
-  const fal = byokKey ?? appFalKey ?? systemFalKey
+  const fal = appFalKey ?? systemFalKey
 
   return { fal, or, replicate }
 }
 
 export async function getAppExtends({
   appId,
-  isSafe = true,
 }: {
   appId: string
   isSafe?: boolean
@@ -5500,14 +5502,14 @@ export const chopStick = async <T extends sushi>(
     messageCount,
   } = payload
 
-  const cacheKey = makeCacheKey(payload)
-  const skipCache = payload.skipCache || !includeInternal?.includes("store")
+  const cacheKey = makeCacheKey({ ...payload, v: "2" })
+  const skipCache = payload.skipCache ?? !includeInternal?.includes("store")
   if (!skipCache) {
     const cached = await getCache<sushi>(cacheKey)
     if (cached) return cached
   }
 
-  const depth = payload.depth || payload?.buildPrompt?.includes("store") ? 1 : 0
+  const depth = payload.depth ?? (includeInternal?.includes("store") ? 1 : 0)
 
   const defaultInclude =
     depth > 0
@@ -5609,45 +5611,36 @@ export const chopStick = async <T extends sushi>(
   //   await updateApp({ id: app.app.id, storeSlug: app.store.slug })
   // }
 
-  const fullUser = llm
-    ? await getUser({
-        id: userId,
-      })
-    : undefined
-
-  const fullGuest =
-    llm && !fullUser
-      ? await getGuest({
-          id: guestId,
-        })
-      : undefined
   // Get DNA thread (app's main thread)
-  const dnaThread = app.app.mainThreadId
-    ? await db
-        .select()
-        .from(threads)
-        .where(eq(threads.id, app.app.mainThreadId))
-        .limit(1)
-        .then((r) => r.at(0))
-    : undefined
-  const [dnaUser, dnaGuest] = await Promise.all([
-    dnaThread?.userId
-      ? db
+
+  const [dnaUser, dnaGuest, dnaThread] = await Promise.all([
+    app.app.userId
+      ? await db
           .select()
           .from(users)
-          .where(eq(users.id, dnaThread.userId))
+          .where(eq(users.id, app.app.userId))
           .limit(1)
           .then((r) => r.at(0))
       : Promise.resolve(undefined),
-    dnaThread?.guestId
-      ? db
+    app.app.guestId
+      ? await db
           .select()
           .from(guests)
-          .where(eq(guests.id, dnaThread.guestId))
+          .where(eq(guests.id, app.app.guestId))
+          .limit(0)
+          .then((r) => r.at(0))
+      : Promise.resolve(undefined),
+    app.app.mainThreadId
+      ? await db
+          .select()
+          .from(threads)
+          .where(eq(threads.id, app.app.mainThreadId))
           .limit(1)
           .then((r) => r.at(0))
       : Promise.resolve(undefined),
   ])
+
+  const dna = dnaUser || dnaGuest
 
   const isCharacterProfileEnabled =
     dnaUser?.characterProfilesEnabled ||
@@ -5663,8 +5656,6 @@ export const chopStick = async <T extends sushi>(
 
   const canDNA = hasDNA && isCharacterProfileEnabled
 
-  let generativeModel
-  let embeddingModel
   // Phase 2: All independent queries in parallel (concurrency limited to 5)
   const limit = pLimit(15)
   const [
@@ -5732,11 +5723,13 @@ export const chopStick = async <T extends sushi>(
     ),
     // 5 dna character profiles (app-owner profiles, visible to everyone)
     limit(() =>
-      dnaThread && isCharacterProfileEnabled
+      canDNA && dna && isCharacterProfileEnabled
         ? getCharacterProfiles({
             limit: join?.characterProfile?.dna ?? 3,
             appId: app.app.id,
-            isAppOwner: true,
+            pinned: true,
+            userId: dna?.id,
+            guestId: dna?.id,
           })
         : Promise.resolve(undefined),
     ),
@@ -5767,7 +5760,7 @@ export const chopStick = async <T extends sushi>(
     ),
     // 8 dna memories
     limit(() =>
-      isCharacterProfileEnabled && join?.memories?.dna && dnaThread
+      isCharacterProfileEnabled && join?.memories?.dna && dnaThread && canDNA
         ? getMemories({
             threadId: dnaThread.id,
             pageSize: join.memories.dna,
@@ -5813,7 +5806,10 @@ export const chopStick = async <T extends sushi>(
     ),
     // 12 dna placeholders
     limit(() =>
-      join?.placeholders?.dna && dnaThread && isCharacterProfileEnabled
+      join?.placeholders?.dna &&
+      dnaThread &&
+      isCharacterProfileEnabled &&
+      canDNA
         ? getPlaceHolders({
             threadId: dnaThread.id,
             pageSize: join.placeholders.dna,
@@ -5861,7 +5857,10 @@ export const chopStick = async <T extends sushi>(
     ),
     // 16 dna instructions
     limit(() =>
-      join?.instructions?.dna && dnaThread && isCharacterProfileEnabled
+      join?.instructions?.dna &&
+      dnaThread &&
+      isCharacterProfileEnabled &&
+      canDNA
         ? getInstructions({
             appId: app.app.id,
             threadId: dnaThread.id,
@@ -5898,8 +5897,8 @@ export const chopStick = async <T extends sushi>(
       userId,
       guestId,
     }) as unknown as sushi),
-    user: toSafeUser({ user: fullUser || app.user }),
-    guest: toSafeGuest({ guest: fullGuest || app.guest }),
+    user: dnaUser,
+    guest: toSafeGuest({ guest: dnaGuest }),
 
     store: app.store
       ? {
@@ -6184,6 +6183,8 @@ export type EffectModelResult = {
   isBELEŞ?: boolean
   isDegraded?: boolean
   isOllama?: boolean
+  /** OpenAI-compatible reasoning_effort (low | medium | high) — forwarded to Ollama & OpenRouter */
+  reasoningEffort?: string
 }
 
 export type EffectEmbeddingResult = {
@@ -6348,6 +6349,7 @@ const OLLAMA_URL = process.env.OLLAMA_URL || "https://ollama.com/v1"
 // so OpenRouterClient + OpenRouterLanguageModel work out of the box.
 const makeOllamaEffectLayerForModel = (
   modelId: string,
+  reasoningEffort?: string,
 ): Layer.Layer<AiLanguageModel.LanguageModel> => {
   const apiKey = process.env.OLLAMA_API_KEY || "ollama"
   const url = OLLAMA_URL.replace(/\/$/, "")
@@ -6357,14 +6359,24 @@ const makeOllamaEffectLayerForModel = (
     apiUrl: url,
     transformClient: (client) => {
       // 1. Remove stream_options from request body — Ollama Cloud rejects it
+      // 2. Add reasoning_effort if mapped
       const requestPatched = HttpClient.mapRequest(client, (req) => {
         if (req.method === "POST" && req.body._tag === "Uint8Array") {
           try {
             const json = JSON.parse(new TextDecoder().decode(req.body.body))
             if (json.stream_options !== undefined) {
               delete json.stream_options
-              return HttpClientRequest.bodyUnsafeJson(json)(req)
             }
+            if (
+              reasoningEffort !== undefined &&
+              json.reasoning_effort === undefined
+            ) {
+              json.reasoning_effort = reasoningEffort
+              console.log(
+                `🧠 Injected reasoning_effort=${reasoningEffort} into Ollama request`,
+              )
+            }
+            return HttpClientRequest.bodyUnsafeJson(json)(req)
           } catch {
             // ignore parse errors, pass through unchanged
           }
@@ -6462,8 +6474,11 @@ export async function getEffectModelLayer(
     `🔀 getEffectModelLayer: modelId=${result.modelId} source=${options.source ?? "none"} ollamaMapping=${ollamaMapping ? ollamaMapping.name : "null"} ollamaUp=${ollamaUp}`,
   )
 
-  if (ollamaMapping && ollamaUp) {
-    const layer = makeOllamaEffectLayerForModel(ollamaMapping.name)
+  if (ollamaMapping && ollamaUp && options?.user?.role === "admin") {
+    const layer = makeOllamaEffectLayerForModel(
+      ollamaMapping.name,
+      ollamaMapping.reasoning_effort,
+    )
     console.log(
       `🦙 Routing to Ollama: ${result.modelId} → ${ollamaMapping.name} (reasoning: ${ollamaMapping.reasoning_effort || "none"})`,
     )
@@ -6479,6 +6494,7 @@ export async function getEffectModelLayer(
       isBELEŞ: true,
       isDegraded: false,
       isOllama: true,
+      reasoningEffort: ollamaMapping.reasoning_effort,
     }
   }
 
@@ -6509,6 +6525,7 @@ export async function getEffectModelLayer(
     isBYOK: result.isBYOK,
     isBELEŞ: result.isBELEŞ ?? false,
     isDegraded: result.isDegraded ?? false,
+    reasoningEffort: ollamaMapping?.reasoning_effort,
   }
 }
 
@@ -6597,10 +6614,14 @@ export async function makeAiServiceLayer(
         withConfigOverride({
           temperature: opts?.temperature ?? 0.7,
           ...(opts?.maxTokens && { max_tokens: opts.maxTokens }),
+          ...(meta.reasoningEffort && {
+            reasoning_effort: meta.reasoningEffort,
+          }),
         }),
         Effect.provide(meta.layer),
         Effect.mapError((e) => toProviderError(e, meta.modelId)),
         Effect.retry(retrySchedule),
+        Effect.timeout("30 seconds"),
         Effect.withSpan("ai.generateText", {
           attributes: { modelId: meta.modelId, agentName: meta.agentName },
         }),
@@ -6627,6 +6648,9 @@ export async function makeAiServiceLayer(
               withConfigOverride({
                 temperature: opts?.temperature ?? 0.7,
                 ...(opts?.maxTokens && { max_tokens: opts.maxTokens }),
+                ...(meta.reasoningEffort && {
+                  reasoning_effort: meta.reasoningEffort,
+                }),
               }),
               Effect.provide(meta.layer),
             ),
@@ -6687,14 +6711,11 @@ export async function makeAiServiceLayer(
         const model = yield* AiLanguageModel.LanguageModel
         const prompt =
           messagesToPrompt(messages) +
-          "\n\nRespond ONLY with valid JSON matching the requested schema. No markdown, no explanation."
+          "\n\nCRITICAL INSTRUCTION: Respond with ONLY valid JSON matching the requested schema. Do NOT wrap in markdown code blocks. Do NOT include explanations, comments, or any text before/after the JSON. Start with { or [ and end with } or ]."
 
         const result = yield* model.generateText({ prompt })
 
-        const raw = result.text
-          .replace(/^```(?:json)?\n?/m, "")
-          .replace(/\n?```$/m, "")
-          .trim()
+        const raw = cleanAiResponse(result.text)
 
         const parsed = yield* Effect.try({
           try: () => JSON.parse(raw),
@@ -6712,7 +6733,7 @@ export async function makeAiServiceLayer(
         )
       }).pipe(
         withConfigOverride({
-          temperature: opts?.temperature ?? 0.2,
+          temperature: opts?.temperature ?? 0.1,
         }),
         Effect.provide(meta.layer),
         Effect.mapError((e) => toProviderError(e, meta.modelId)),
@@ -6875,25 +6896,32 @@ export async function runStructuredOutputWithFallback<A, I, R>(
     const model = yield* AiLanguageModel.LanguageModel
 
     const result = yield* model.generateText({
-      prompt: `${prompt}\n\nRespond ONLY with valid JSON. No markdown fences.`,
+      prompt: `${prompt}\n\nRespond ONLY with valid JSON. No markdown fences, no backticks, no prose.`,
     })
 
-    const raw = result.text
-      .replace(/^```(?:json)?\n?/m, "")
-      .replace(/\n?```$/m, "")
-      .trim()
+    const cleaned = cleanAiResponse(result.text)
 
-    const parsed = yield* Effect.try({
-      try: () => JSON.parse(raw),
-      catch: () =>
-        new AiParseError({ message: "Invalid JSON from model", raw }),
-    })
-
-    return yield* Schema.decodeUnknown(schema)(parsed).pipe(
-      Effect.mapError(
-        (e) => new AiParseError({ message: `Schema mismatch: ${e}`, raw }),
-      ),
-    )
+    try {
+      const parsed = safeParseAIJson(cleaned)
+      if (!parsed.success) {
+        return yield* Effect.fail(
+          new AiParseError({ message: parsed.error, raw: cleaned }),
+        )
+      }
+      return yield* Schema.decodeUnknown(schema)(parsed.data).pipe(
+        Effect.mapError(
+          (e) =>
+            new AiParseError({
+              message: `Schema mismatch: ${e}`,
+              raw: cleaned,
+            }),
+        ),
+      )
+    } catch (e) {
+      return yield* Effect.fail(
+        new AiParseError({ message: `Parse failed: ${e}`, raw: cleaned }),
+      )
+    }
   })
 
   return Effect.runPromise(

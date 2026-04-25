@@ -8,7 +8,7 @@
  */
 
 import { db } from "../../index"
-import { graph } from "../graph/client"
+import { queryGraph } from "../graph/client"
 
 // ---------------------------------------------------------------------------
 // Stores
@@ -22,7 +22,7 @@ export async function seedStoresToFalkorDB() {
   console.log(`📦 Seeding ${rows.length} stores…`)
 
   for (const s of rows) {
-    await graph.query(
+    await queryGraph(
       `
       MERGE (store:Store {id: $id})
       SET store.slug = $slug, store.name = $name,
@@ -54,7 +54,7 @@ export async function seedAppsToFalkorDB() {
   console.log(`🤖 Seeding ${rows.length} apps…`)
 
   for (const a of rows) {
-    await graph.query(
+    await queryGraph(
       `
       MERGE (app:App {id: $id})
       SET app.slug = $slug, app.name = $name,
@@ -88,7 +88,7 @@ export async function seedAppsToFalkorDB() {
     )
 
     if (a.storeId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (app:App {id: $appId})
         MATCH (store:Store {id: $storeId})
@@ -99,7 +99,7 @@ export async function seedAppsToFalkorDB() {
     }
 
     if (a.userId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (app:App {id: $appId})
         MERGE (user:User {id: $userId})
@@ -129,7 +129,7 @@ export async function seedMemoriesToFalkorDB(userId?: string) {
   console.log(`🧠 Seeding ${rows.length} memories…`)
 
   for (const m of rows) {
-    await graph.query(
+    await queryGraph(
       `
       MERGE (mem:Memory {id: $id})
       SET mem.title = $title, mem.content = $content,
@@ -150,7 +150,7 @@ export async function seedMemoriesToFalkorDB(userId?: string) {
     )
 
     if (m.userId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (mem:Memory {id: $memId})
         MERGE (u:User {id: $userId})
@@ -161,7 +161,7 @@ export async function seedMemoriesToFalkorDB(userId?: string) {
     }
 
     if (m.appId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (mem:Memory {id: $memId})
         MATCH (a:App {id: $appId})
@@ -172,7 +172,7 @@ export async function seedMemoriesToFalkorDB(userId?: string) {
     }
 
     if (m.sourceThreadId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (mem:Memory {id: $memId})
         MERGE (t:Thread {id: $threadId})
@@ -205,7 +205,7 @@ export async function seedCharacterProfilesToFalkorDB(userId?: string) {
   console.log(`🎭 Seeding ${rows.length} character profiles…`)
 
   for (const p of rows) {
-    await graph.query(
+    await queryGraph(
       `
       MERGE (c:CharacterProfile {id: $id})
       SET c.name = $name, c.personality = $personality,
@@ -224,7 +224,7 @@ export async function seedCharacterProfilesToFalkorDB(userId?: string) {
 
     // CharacterProfile relates to a specific App (agentId)
     if (p.agentId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (c:CharacterProfile {id: $profileId})
         MATCH (a:App {id: $agentId})
@@ -235,7 +235,7 @@ export async function seedCharacterProfilesToFalkorDB(userId?: string) {
     }
 
     if (p.userId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (c:CharacterProfile {id: $profileId})
         MERGE (u:User {id: $userId})
@@ -265,7 +265,7 @@ export async function seedThreadsToFalkorDB(userId?: string) {
   console.log(`💬 Seeding ${rows.length} threads…`)
 
   for (const t of rows) {
-    await graph.query(
+    await queryGraph(
       `
       MERGE (th:Thread {id: $id})
       SET th.title = $title, th.createdOn = $createdOn
@@ -280,7 +280,7 @@ export async function seedThreadsToFalkorDB(userId?: string) {
     )
 
     if (t.userId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (th:Thread {id: $threadId})
         MERGE (u:User {id: $userId})
@@ -291,7 +291,7 @@ export async function seedThreadsToFalkorDB(userId?: string) {
     }
 
     if (t.appId) {
-      await graph.query(
+      await queryGraph(
         `
         MATCH (th:Thread {id: $threadId})
         MATCH (a:App {id: $appId})
@@ -309,14 +309,14 @@ export async function seedThreadsToFalkorDB(userId?: string) {
 // ---------------------------------------------------------------------------
 
 export async function seedEcosystemToFalkorDB() {
-  await graph.query(`
+  await queryGraph(`
     MERGE (lifeos:Ecosystem {id: 'lifeos'})
     SET lifeos.name = 'LifeOS',
         lifeos.description = 'Suite of specialized AI agents and apps',
         lifeos.url = 'https://chrry.ai'
   `)
 
-  await graph.query(`
+  await queryGraph(`
     MATCH (lifeos:Ecosystem {id: 'lifeos'})
     MATCH (store:Store)
     MERGE (store)-[:PART_OF]->(lifeos)
@@ -364,7 +364,7 @@ export async function getFalkorDBOverview() {
     ["Thread", "MATCH (n:Thread) RETURN COUNT(n) AS c"],
     ["Relationship", "MATCH ()-[r]->() RETURN COUNT(r) AS c"],
   ] as const) {
-    const res = (await graph.query(cypher)) as any
+    const res = (await queryGraph(cypher)) as any
     counts[label] = res?.data?.[0]?.c ?? 0
   }
 

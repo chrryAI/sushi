@@ -186,7 +186,7 @@ Thank you for considering contributing to Vex! 🎉
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/chrryai/vex.git
+   git clone https://github.com/chrryai/sushi.git
    cd vex
    ```
 

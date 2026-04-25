@@ -40,7 +40,7 @@ checked and one authoritative answer written.
 
 ### W2 — CI trigger is a push to `ramen`, not a PR
 
-Section 8 says: *"Trigger: Pull requests to `ramen` branch."*  
+Section 8 says: _"Trigger: Pull requests to `ramen` branch."_  
 The actual workflow (`pr.yml`) uses `on: push: branches: [ramen]` — there is
 no `pull_request` trigger. This misleads agents about when CI fires and what
 branch strategy to follow.
@@ -78,7 +78,7 @@ or that `ramen` is the integration branch (not `main`).
 
 The packages table says `packages/donut` has no npm name (`—`) and is an
 "Internal UI playground / demo app", but the workspace tree marks it PRIVATE.
-The actual role (playground for `@chrryai/chrry` components) is never
+The actual role (playground for `@chrryai/donut` components) is never
 explained, so agents don't know whether to add new component demos there.
 
 ---
@@ -134,6 +134,7 @@ that Arcjet handles rate-limiting (so they shouldn't implement their own).
 
 No "do not do this" section beyond the commit blocklist. Missing explicit
 warnings such as:
+
 - Do not run `pnpm install` directly (use `vp install`).
 - Do not import from `vitest` or `vite` directly.
 - Do not add a new Drizzle migration manually — always use `pnpm run generate`.
@@ -178,9 +179,11 @@ PRIVATE annotation from the tree.
 
 **Section:** 8 (CI/CD)  
 **Replace:**
+
 > Trigger: Pull requests to `ramen` branch.
 
 **With:**
+
 > Trigger: Push to `ramen` branch (not a PR trigger — direct pushes and
 > auto-merged commits both fire CI).
 
@@ -203,11 +206,11 @@ commit" and rewrite the list to match the actual `pre-commit` script:
 **Section:** 4 (Vite+ Commands)  
 **Add** to the commands table:
 
-| Command | Purpose |
-|---------|---------|
-| `vp install` | Install all dependencies (replaces `pnpm install`) |
-| `vp add <pkg>` | Add a dependency to the current package |
-| `vp remove <pkg>` | Remove a dependency |
+| Command           | Purpose                                            |
+| ----------------- | -------------------------------------------------- |
+| `vp install`      | Install all dependencies (replaces `pnpm install`) |
+| `vp add <pkg>`    | Add a dependency to the current package            |
+| `vp remove <pkg>` | Remove a dependency                                |
 
 Also add the explicit anti-pattern: **never run `pnpm add` or `npm install`
 directly** — this bypasses the Vite+ toolchain.
@@ -338,6 +341,7 @@ pnpm local:setup
 **Add** under "Business docs in root":
 
 > Place docs under `docs/` using these subdirectories:
+>
 > - `docs/architecture/` — technical design and system diagrams
 > - `docs/guides/` — how-to guides for contributors and operators
 > - `docs/setup/` — third-party service setup instructions
@@ -350,17 +354,17 @@ pnpm local:setup
 
 ## Priority Order for Implementation
 
-| Priority | Spec | Reason |
-|----------|------|--------|
-| P0 | SPEC-1 | Active contradiction causes wrong OSS sync decisions |
-| P0 | SPEC-2 | Wrong CI trigger description causes incorrect branch assumptions |
-| P0 | SPEC-6 | Missing branching model is the most common agent failure point |
-| P1 | SPEC-5 | SCSS workflow affects every UI change |
-| P1 | SPEC-10 | Anti-patterns prevent the most frequent mistakes |
-| P1 | SPEC-4 | `vp` dependency commands are referenced but undefined |
-| P2 | SPEC-3 | Hook count is wrong but low-stakes |
-| P2 | SPEC-9 | Env var rules prevent subtle build/runtime bugs |
-| P2 | SPEC-11 | `local:setup` shortcut saves time but isn't blocking |
-| P3 | SPEC-7 | White-label config needed for brand-specific work |
-| P3 | SPEC-8 | Effect.js conventions needed for machine package work |
-| P3 | SPEC-12 | Docs naming convention is cosmetic but reduces noise |
+| Priority | Spec    | Reason                                                           |
+| -------- | ------- | ---------------------------------------------------------------- |
+| P0       | SPEC-1  | Active contradiction causes wrong OSS sync decisions             |
+| P0       | SPEC-2  | Wrong CI trigger description causes incorrect branch assumptions |
+| P0       | SPEC-6  | Missing branching model is the most common agent failure point   |
+| P1       | SPEC-5  | SCSS workflow affects every UI change                            |
+| P1       | SPEC-10 | Anti-patterns prevent the most frequent mistakes                 |
+| P1       | SPEC-4  | `vp` dependency commands are referenced but undefined            |
+| P2       | SPEC-3  | Hook count is wrong but low-stakes                               |
+| P2       | SPEC-9  | Env var rules prevent subtle build/runtime bugs                  |
+| P2       | SPEC-11 | `local:setup` shortcut saves time but isn't blocking             |
+| P3       | SPEC-7  | White-label config needed for brand-specific work                |
+| P3       | SPEC-8  | Effect.js conventions needed for machine package work            |
+| P3       | SPEC-12 | Docs naming convention is cosmetic but reduces noise             |

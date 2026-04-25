@@ -37,28 +37,78 @@ const DEFAULT_TEXT_FIELDS = [
 ]
 
 /**
- * Clean AI response - remove markdown fences and rethink tags
+ * Clean AI response - remove markdown fences and extract pure JSON
+ * Uses brace-counting to extract exactly one JSON object/array.
  */
 export function cleanAiResponse(content: string): string {
   if (!content) return ""
 
-  return (
-    content
-      // Remove markdown code blocks
-      .replace(/```json\s*/g, "")
-      .replace(/```\s*/g, "")
-      // Remove single backtick wrappers around JSON
+  const cleaned = content
+    // Remove markdown code blocks with optional language tags
+    .replace(/```[\w]*\s*/gi, "")
+    .replace(/```/g, "")
+    // Remove rethink/thinking tags
+    .replace(/<rethink>.*?<\/rethink>/gs, "")
+    .replace(/<rethink>/g, "")
+    .replace(/<\/rethink>/g, "")
+    .replace(/<thinking>.*?<\/thinking>/gs, "")
+    .replace(/<Thinking>.*?<\/Thinking>/gs, "")
+    .replace(/<Thinking>/g, "")
+    .replace(/<\/Thinking>/g, "")
+    // Remove common "json" prefix
+    .replace(/^(?:json\s*[:\-=]?\s*)/i, "")
+    .trim()
+
+  // Find first JSON start ({ or [)
+  const firstBrace = cleaned.indexOf("{")
+  const firstBracket = cleaned.indexOf("[")
+  let start = -1
+  let openChar = ""
+  let closeChar = ""
+
+  if (firstBrace !== -1 && firstBracket !== -1) {
+    start = Math.min(firstBrace, firstBracket)
+  } else if (firstBrace !== -1) {
+    start = firstBrace
+  } else if (firstBracket !== -1) {
+    start = firstBracket
+  }
+
+  if (start === -1) {
+    // No JSON found, return stripped text as-is
+    return cleaned.replace(/^`+|`+$/g, "").trim()
+  }
+
+  openChar = cleaned[start] as "{" | "["
+  closeChar = openChar === "{" ? "}" : "]"
+
+  // Brace-counting: find the matching closing brace/bracket
+  let depth = 0
+  let end = -1
+  for (let i = start; i < cleaned.length; i++) {
+    if (cleaned[i] === openChar) depth++
+    else if (cleaned[i] === closeChar) {
+      depth--
+      if (depth === 0) {
+        end = i + 1
+        break
+      }
+    }
+  }
+
+  if (end === -1) {
+    // Unclosed JSON — return from start to end, strip leading/trailing backticks
+    return cleaned
+      .slice(start)
       .replace(/^`+|`+$/g, "")
-      // Remove rethink tags
-      .replace(/<rethink>.*?<\/rethink>/gs, "")
-      .replace(/<rethink>/g, "")
-      .replace(/<\/rethink>/g, "")
-      // Remove thinking tags (DeepSeek)
-      .replace(/<thinking>.*?<\/thinking>/gs, "")
-      // Strip leading junk characters before JSON object/array
-      .replace(/^[\s?`]+/g, "")
       .trim()
-  )
+  }
+
+  // Extract exact JSON and strip any surrounding backticks/spaces
+  return cleaned
+    .slice(start, end)
+    .replace(/^`+|`+$/g, "")
+    .trim()
 }
 
 /**

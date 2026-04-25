@@ -335,55 +335,57 @@ export default function About() {
           />
         </Section>
 
-        <H2 style={{ fontSize: 28 }}>{t("All Plans")}</H2>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Logo size={24} /> {t("Free")}
-            {renderCreate()}
-          </H2>
-          {memberFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
+        {isDevelopment && (
+          <>
+            <H2 style={{ fontSize: 28 }}>{t("All Plans")}</H2>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Logo size={24} /> {t("Free")}
+                {renderCreate()}
+              </H2>
+              {memberFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
 
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} icon="chrry" /> {t("Credits")}
-            <A
-              href={`${FRONTEND_URL}/about?subscribe=true&plan=credits`}
-              openInNewTab={checkIsExtension()}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.button.style,
-                ...utilities.inverted.style,
-                ...utilities.small.style,
-                fontWeight: "normal",
-              }}
-            >
-              <Coins size={20} />
-              {t("credits_pricing", {
-                credits: ADDITIONAL_CREDITS,
-                price: `${CREDITS_PRICE}.00`,
-              })}
-            </A>
-          </H2>
-          {creditsFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} icon="chrry" /> {t("Credits")}
+                <A
+                  href={`${FRONTEND_URL}/about?subscribe=true&plan=credits`}
+                  openInNewTab={checkIsExtension()}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.button.style,
+                    ...utilities.inverted.style,
+                    ...utilities.small.style,
+                    fontWeight: "normal",
+                  }}
+                >
+                  <Coins size={20} />
+                  {t("credits_pricing", {
+                    credits: ADDITIONAL_CREDITS,
+                    price: `${CREDITS_PRICE}.00`,
+                  })}
+                </A>
+              </H2>
+              {creditsFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
 
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} icon="strawberry" /> {t("Plus")}
-            {/* <Span
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} icon="strawberry" /> {t("Plus")}
+                {/* <Span
               title={t("Most popular")}
               style={{
                 color: "var(--accent-1)",
@@ -394,287 +396,288 @@ export default function About() {
             >
               <BadgeCheck size={20} />
             </Span> */}
-            <A
-              href={`${FRONTEND_URL}/about?subscribe=true&plan=plus`}
-              openInNewTab={checkIsExtension()}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.button.style,
-                fontWeight: "normal",
-                ...utilities.inverted.style,
-              }}
-            >
-              €
-              {t("{{price}}/month", {
-                price: PLUS_PRICE,
-              })}
-            </A>
-          </H2>
-          {plusFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
+                <A
+                  href={`${FRONTEND_URL}/about?subscribe=true&plan=plus`}
+                  openInNewTab={checkIsExtension()}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.button.style,
+                    fontWeight: "normal",
+                    ...utilities.inverted.style,
+                  }}
+                >
+                  €
+                  {t("{{price}}/month", {
+                    price: PLUS_PRICE,
+                  })}
+                </A>
+              </H2>
+              {plusFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
 
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} icon="raspberry" /> {t("Pro")}
-            <Button
-              onClick={() => {
-                if (checkIsExtension()) {
-                  BrowserInstance?.runtime?.sendMessage({
-                    action: "openInSameTab",
-                    url: `${FRONTEND_URL}/about?subscribe=true&plan=pro`,
-                  })
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} icon="raspberry" /> {t("Pro")}
+                <Button
+                  onClick={() => {
+                    if (checkIsExtension()) {
+                      BrowserInstance?.runtime?.sendMessage({
+                        action: "openInSameTab",
+                        url: `${FRONTEND_URL}/about?subscribe=true&plan=pro`,
+                      })
 
-                  return
-                }
-                router.push("/about?subscribe=true&plan=pro")
-              }}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.inverted.style,
-              }}
-            >
-              €
-              {t("{{price}}/month", {
-                price: PRO_PRICE,
-              })}
-            </Button>
-          </H2>
-          {proFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} slug="sushi" /> {t("Sushi")}
-            {renderCreate({
-              slug: "sushi",
-            })}
-          </H2>
-          {sushiFreeFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} slug="coder" /> {t("Coder")}
-            <A
-              openInNewTab={checkIsExtension()}
-              href={`${FRONTEND_URL}/about?subscribe=true&sushiTier=coder&plan=coder`}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.button.style,
-                ...utilities.inverted.style,
-                fontWeight: "normal",
-              }}
-            >
-              €
-              {t("{{price}}/month", {
-                price: CODER_PRICE,
-              })}
-            </A>
-          </H2>
-          {sushiCoderFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} slug="architect" /> {t("Architect")}
-            <A
-              openInNewTab={checkIsExtension()}
-              href={`${FRONTEND_URL}/about?subscribe=true&sushiTier=architect&plan=coder`}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.button.style,
-                ...utilities.inverted.style,
-                fontWeight: "normal",
-              }}
-            >
-              €
-              {t("{{price}}/month", {
-                price: ARCHITECT_PRICE,
-              })}
-            </A>
-          </H2>
-          {sushiArchitectFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} slug="grape" /> {t("Grape")}
-          </H2>
-          <Div>
-            <H3>{t("Free")}</H3>
-            {grapeFreeFeatures.map((feature) => (
-              <Span key={feature.text}>
-                {" "}
-                {feature.emoji} {feature.text}
-              </Span>
-            ))}
-            <Div style={{ marginTop: 20 }}>
-              {renderCreate({ slug: "grape" })}
-            </Div>
-          </Div>
-          <Div>
-            <H3>{t("Plus")}</H3>
-
-            {grapePlusFeatures.map((feature) => (
-              <Span key={feature.text}>
-                {" "}
-                {feature.emoji} {feature.text}
-              </Span>
-            ))}
-            <Div style={{ marginTop: 20 }}>
-              <A
-                openInNewTab={checkIsExtension()}
-                href={`${FRONTEND_URL}/about?subscribe=true&plan=grape&grapeTier=plus`}
-                className="inverted"
-                style={{
-                  marginLeft: "auto",
-                  fontSize: 14,
-                  ...utilities.button.style,
-                  ...utilities.inverted.style,
-                  fontWeight: "normal",
-                }}
-              >
-                €
-                {t("{{price}}/month", {
-                  price: GRAPE_PLUS_PRICE,
+                      return
+                    }
+                    router.push("/about?subscribe=true&plan=pro")
+                  }}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.inverted.style,
+                  }}
+                >
+                  €
+                  {t("{{price}}/month", {
+                    price: PRO_PRICE,
+                  })}
+                </Button>
+              </H2>
+              {proFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} slug="sushi" /> {t("Sushi")}
+                {renderCreate({
+                  slug: "sushi",
                 })}
-              </A>
-            </Div>
-          </Div>
-        </Section>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} slug="pear" /> {t("Pear")}
-          </H2>
-          <Div>
-            <H3>{t("Free")}</H3>
-            {pearFreeFeatures.map((feature) => (
-              <Span key={feature.text}>
-                {" "}
-                {feature.emoji} {feature.text}
-              </Span>
-            ))}
-            <Div style={{ marginTop: 20 }}>
-              {renderCreate({ slug: "pear" })}
-            </Div>
-          </Div>
-          <Div>
-            <H3>{t("Plus")}</H3>
+              </H2>
+              {sushiFreeFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} slug="coder" /> {t("Coder")}
+                <A
+                  openInNewTab={checkIsExtension()}
+                  href={`${FRONTEND_URL}/about?subscribe=true&sushiTier=coder&plan=coder`}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.button.style,
+                    ...utilities.inverted.style,
+                    fontWeight: "normal",
+                  }}
+                >
+                  €
+                  {t("{{price}}/month", {
+                    price: CODER_PRICE,
+                  })}
+                </A>
+              </H2>
+              {sushiCoderFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} slug="architect" /> {t("Architect")}
+                <A
+                  openInNewTab={checkIsExtension()}
+                  href={`${FRONTEND_URL}/about?subscribe=true&sushiTier=architect&plan=coder`}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.button.style,
+                    ...utilities.inverted.style,
+                    fontWeight: "normal",
+                  }}
+                >
+                  €
+                  {t("{{price}}/month", {
+                    price: ARCHITECT_PRICE,
+                  })}
+                </A>
+              </H2>
+              {sushiArchitectFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} slug="grape" /> {t("Grape")}
+              </H2>
+              <Div>
+                <H3>{t("Free")}</H3>
+                {grapeFreeFeatures.map((feature) => (
+                  <Span key={feature.text}>
+                    {" "}
+                    {feature.emoji} {feature.text}
+                  </Span>
+                ))}
+                <Div style={{ marginTop: 20 }}>
+                  {renderCreate({ slug: "grape" })}
+                </Div>
+              </Div>
+              <Div>
+                <H3>{t("Plus")}</H3>
 
-            {pearPlusFeatures.map((feature) => (
-              <Span key={feature.text}>
-                {" "}
-                {feature.emoji} {feature.text}
-              </Span>
-            ))}
-            <Div style={{ marginTop: 20 }}>
-              <A
-                openInNewTab={checkIsExtension()}
-                href={`${FRONTEND_URL}/about?subscribe=true&plan=grape&grapeTier=plus`}
-                className="inverted"
-                style={{
-                  marginLeft: "auto",
-                  fontSize: 14,
-                  ...utilities.button.style,
-                  ...utilities.inverted.style,
-                  fontWeight: "normal",
-                }}
-              >
-                €
-                {t("{{price}}/month", {
-                  price: PEAR_PLUS_PRICE,
-                })}
-              </A>
-            </Div>
-          </Div>
-        </Section>
+                {grapePlusFeatures.map((feature) => (
+                  <Span key={feature.text}>
+                    {" "}
+                    {feature.emoji} {feature.text}
+                  </Span>
+                ))}
+                <Div style={{ marginTop: 20 }}>
+                  <A
+                    openInNewTab={checkIsExtension()}
+                    href={`${FRONTEND_URL}/about?subscribe=true&plan=grape&grapeTier=plus`}
+                    className="inverted"
+                    style={{
+                      marginLeft: "auto",
+                      fontSize: 14,
+                      ...utilities.button.style,
+                      ...utilities.inverted.style,
+                      fontWeight: "normal",
+                    }}
+                  >
+                    €
+                    {t("{{price}}/month", {
+                      price: GRAPE_PLUS_PRICE,
+                    })}
+                  </A>
+                </Div>
+              </Div>
+            </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} slug="pear" /> {t("Pear")}
+              </H2>
+              <Div>
+                <H3>{t("Free")}</H3>
+                {pearFreeFeatures.map((feature) => (
+                  <Span key={feature.text}>
+                    {" "}
+                    {feature.emoji} {feature.text}
+                  </Span>
+                ))}
+                <Div style={{ marginTop: 20 }}>
+                  {renderCreate({ slug: "pear" })}
+                </Div>
+              </Div>
+              <Div>
+                <H3>{t("Plus")}</H3>
 
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} logo="watermelon" /> {t("Watermelon")}
-            <A
-              openInNewTab={checkIsExtension()}
-              href={`${FRONTEND_URL}/about?subscribe=true&plan=watermelon`}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.button.style,
-                ...utilities.inverted.style,
-                fontWeight: "normal",
-              }}
-            >
-              €
-              {t("{{price}}/month", {
-                price: AGENCY_PRICE,
-              })}
-            </A>
-          </H2>
-          {watermelonFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
-        <Section>
-          <H2 style={styles.h2.style}>
-            <Img size={24} slug="tribe" /> {t("Sovereign")}
-            <A
-              openInNewTab={checkIsExtension()}
-              href={`${FRONTEND_URL}/about?subscribe=true&plan=tribe&watermelonTier=plus`}
-              className="inverted"
-              style={{
-                marginLeft: "auto",
-                fontSize: 14,
-                ...utilities.button.style,
-                ...utilities.inverted.style,
-                fontWeight: "normal",
-              }}
-            >
-              €
-              {t("{{price}}/month", {
-                price: SOVEREIGN_PRICE,
-              })}
-            </A>
-          </H2>
-          {watermelonPlusFeatures.map((feature) => (
-            <Span key={feature.text}>
-              {" "}
-              {feature.emoji} {feature.text}
-            </Span>
-          ))}
-        </Section>
+                {pearPlusFeatures.map((feature) => (
+                  <Span key={feature.text}>
+                    {" "}
+                    {feature.emoji} {feature.text}
+                  </Span>
+                ))}
+                <Div style={{ marginTop: 20 }}>
+                  <A
+                    openInNewTab={checkIsExtension()}
+                    href={`${FRONTEND_URL}/about?subscribe=true&plan=grape&grapeTier=plus`}
+                    className="inverted"
+                    style={{
+                      marginLeft: "auto",
+                      fontSize: 14,
+                      ...utilities.button.style,
+                      ...utilities.inverted.style,
+                      fontWeight: "normal",
+                    }}
+                  >
+                    €
+                    {t("{{price}}/month", {
+                      price: PEAR_PLUS_PRICE,
+                    })}
+                  </A>
+                </Div>
+              </Div>
+            </Section>
 
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} logo="watermelon" /> {t("Watermelon")}
+                <A
+                  openInNewTab={checkIsExtension()}
+                  href={`${FRONTEND_URL}/about?subscribe=true&plan=watermelon`}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.button.style,
+                    ...utilities.inverted.style,
+                    fontWeight: "normal",
+                  }}
+                >
+                  €
+                  {t("{{price}}/month", {
+                    price: AGENCY_PRICE,
+                  })}
+                </A>
+              </H2>
+              {watermelonFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
+            <Section>
+              <H2 style={styles.h2.style}>
+                <Img size={24} slug="tribe" /> {t("Sovereign")}
+                <A
+                  openInNewTab={checkIsExtension()}
+                  href={`${FRONTEND_URL}/about?subscribe=true&plan=tribe&watermelonTier=plus`}
+                  className="inverted"
+                  style={{
+                    marginLeft: "auto",
+                    fontSize: 14,
+                    ...utilities.button.style,
+                    ...utilities.inverted.style,
+                    fontWeight: "normal",
+                  }}
+                >
+                  €
+                  {t("{{price}}/month", {
+                    price: SOVEREIGN_PRICE,
+                  })}
+                </A>
+              </H2>
+              {watermelonPlusFeatures.map((feature) => (
+                <Span key={feature.text}>
+                  {" "}
+                  {feature.emoji} {feature.text}
+                </Span>
+              ))}
+            </Section>
+          </>
+        )}
         {/* <section>
           <h2>{t("about.team.title")}</h2>
           <p>{t("about.team.content")}</p>
@@ -700,7 +703,7 @@ export default function About() {
             <Div style={styles.oss.style}>
               <Img size={40} slug="vex" />
               <A
-                href="https://github.com/chrryai/chrry"
+                href="https://github.com/chrryai/donut"
                 target="_blank"
                 rel="nofollow"
                 style={styles.ossLink.style}
@@ -858,7 +861,7 @@ export default function About() {
                 title={t("Creator")}
                 style={{ fontSize: "1rem", marginRight: 3 }}
                 openInNewTab
-                href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
+                href="https://github.com/chrryai/donut/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
               >
                 🧬
               </A>

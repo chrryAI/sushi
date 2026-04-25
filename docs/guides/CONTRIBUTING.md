@@ -1,0 +1,143 @@
+# Contributing to Sushi
+
+Thank you for considering contributing! 🎉
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js ≥20
+- pnpm 10+
+- PostgreSQL 16+ (with `pgvector` extension)
+
+### Setup
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/chrryai/sushi.git
+   cd vex
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+
+   ```bash
+   cp .env.local.template .env.local
+   # Edit .env.local with your credentials
+   ```
+
+4. **Set up database**
+
+   ```bash
+   pnpm docker:start
+   pnpm migrate
+   pnpm seed
+   ```
+
+5. **Start development**
+
+   ```bash
+   pnpm dev
+   ```
+
+## Project Structure
+
+```
+vex/
+├── apps/
+│   ├── api/         # Core API (private)
+│   ├── chrry/       # Main PWA (private)
+│   ├── extension/   # Browser extension
+│   ├── desktop/     # Tauri desktop app
+│   ├── mobile/      # Capacitor mobile app
+│   ├── bridge/      # Native messaging bridge
+│   └── agent/       # Autonomous AI agent
+├── packages/
+│   ├── ui/          # @chrryai/donut — UI library
+│   ├── pepper/      # @chrryai/pepper — universal router
+│   ├── waffles/     # @chrryai/waffles — testing utilities
+│   ├── machine/     # @chrryai/machine — AI state machines
+│   ├── calendar/    # @chrryai/calendar
+│   ├── focus/       # @chrryai/focus
+│   ├── db/          # Drizzle schema (private)
+│   └── shared/      # Shared contexts (private)
+├── infra/           # Docker, nginx, deployment
+├── scripts/         # Automation scripts
+└── docs/            # Documentation
+```
+
+## Public vs Private
+
+- **Public packages** (`@chrryai/*`) are MIT-licensed and synced to `chrryai/vex`. Contributions welcome.
+- **Private code** (`apps/api`, `apps/chrry`, `packages/vault`, `packages/shared`) stays in the private monorepo. Do not move proprietary logic into public packages.
+
+## Development Workflow
+
+1. **Create a branch**
+
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+
+2. **Make your changes**
+   - Follow existing code style
+   - Add tests for new features
+   - Update documentation
+
+3. **Test your changes**
+
+   ```bash
+   # Format, lint, and type-check
+   vp check
+
+   # Run tests
+   vp test
+   ```
+
+4. **Commit**
+
+   ```bash
+   git commit -m "feat: add amazing feature"
+   ```
+
+5. **Push and open a PR**
+
+   ```bash
+   git push origin feat/your-feature-name
+   ```
+
+## Code Style
+
+- **TypeScript**: Strict mode enabled
+- **Formatting & Linting**: Biome (`vp lint` / `vp fmt`)
+- **Components**: Functional components with hooks
+
+## Commit Convention
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` New features
+- `fix:` Bug fixes
+- `docs:` Documentation changes
+- `style:` Code style changes (formatting, etc.)
+- `refactor:` Code refactoring
+- `test:` Adding or updating tests
+- `chore:` Maintenance tasks
+
+## Security
+
+- Never commit secrets or `.env` files
+- Use environment variables for API keys
+- Report vulnerabilities responsibly (see SECURITY.md)
+
+## Questions?
+
+- **Issues**: [GitHub Issues](https://github.com/chrryai/vex/issues)
+
+Thank you for contributing! 🚀

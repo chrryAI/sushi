@@ -1,4 +1,5 @@
 import crypto from "node:crypto"
+import "dotenv/config"
 import { and, eq, inArray, isNull, lt, sql } from "drizzle-orm"
 import {
   createAgents,
@@ -23,6 +24,7 @@ import {
   sonarMetrics,
   TEST_MEMBER_FINGERPRINTS,
   updateApp,
+  updateUser,
   type user,
 } from "./index"
 import { createCities } from "./src/dna/createCities"
@@ -442,6 +444,109 @@ function generateEmail(name: string, attempt: number = 0): string {
   return `${finalUsername}@${pickCrypto(domains)}`
 }
 
+async function createHumans() {
+  let admin = await getUser({ email: VEX_TEST_EMAIL })
+
+  const adminPayload = {
+    email: "ibsukru@gmail.com",
+    name: VEX_TEST_NAME,
+    password: passwordToSalt(VEX_TEST_PASSWORD),
+    role: "admin" as const,
+    roles: ["admin"],
+    userName: "ibsukru",
+    // credits: !isSeedSafe ? 99999999 : undefined,
+    city: "Amsterdam",
+    country: "Netherlands",
+  }
+
+  if (!admin) {
+    console.log("👤 Creating admin user...")
+    admin = await createUser(adminPayload)
+    if (!admin) throw new Error("Failed to add admin")
+    console.log("✅ Admin user created")
+  } else {
+    console.log("✅ Admin user already exists, skipping creation")
+    await updateUser({
+      ...admin,
+      ...adminPayload,
+    })
+  }
+
+  let feedback = await getUser({ email: VEX_TEST_EMAIL_2 })
+  const feedbackPayload = {
+    email: VEX_TEST_EMAIL_2,
+    name: VEX_TEST_NAME_2,
+    password: passwordToSalt(VEX_TEST_PASSWORD_2),
+    role: "user" as const,
+    userName: VEX_TEST_NAME_2,
+    fingerprint: TEST_MEMBER_FINGERPRINTS[0],
+    roles: ["admin"],
+  }
+
+  if (!feedback) {
+    console.log("👤 Creating feedback user...")
+    feedback = await createUser(feedbackPayload)
+  } else {
+    console.log("✅ Feedback user already exists, skipping creation")
+    await updateUser({
+      ...feedback,
+      ...feedbackPayload,
+    })
+  }
+
+  // Check if diplomatic user already exists
+  let diplomatic = await getUser({ email: VEX_TEST_EMAIL_3 })
+
+  const diplomaticPayload = {
+    email: VEX_TEST_EMAIL_3,
+    name: VEX_TEST_NAME_3,
+    password: passwordToSalt(VEX_TEST_PASSWORD_3),
+    role: "user" as const,
+    userName: VEX_TEST_NAME_3,
+    fingerprint: TEST_MEMBER_FINGERPRINTS[1],
+    roles: ["admin"],
+  }
+
+  if (!diplomatic) {
+    console.log("👤 Creating diplomatic user...")
+    diplomatic = await createUser(diplomaticPayload)
+    if (!diplomatic) throw new Error("Failed to add user")
+    console.log("✅ Diplomatic user created")
+  } else {
+    console.log("✅ Diplomatic user already exists, skipping creation")
+  }
+
+  // Check if localswaphub user already exists
+  let localswaphub = await getUser({ email: VEX_TEST_EMAIL_4 })
+
+  const localswaphubPayload = {
+    email: VEX_TEST_EMAIL_4,
+    name: VEX_TEST_NAME_4,
+    password: passwordToSalt(VEX_TEST_PASSWORD_4),
+    role: "user" as const,
+    userName: VEX_TEST_NAME_4,
+    fingerprint: TEST_MEMBER_FINGERPRINTS[2],
+    roles: ["admin"],
+  }
+
+  if (!localswaphub) {
+    console.log("👤 Creating localswaphub user...")
+    localswaphub = await createUser(localswaphubPayload)
+    if (!localswaphub) throw new Error("Failed to add user")
+    console.log("✅ Localswaphub user created")
+  } else {
+    console.log("✅ Localswaphub user already exists, skipping creation")
+    await updateUser({
+      ...localswaphub,
+      ...localswaphubPayload,
+    })
+  }
+
+  if (!feedback) throw new Error("Failed to add user")
+  console.log("✅ Feedback user created")
+  return { feedback, admin, localswaphub }
+}
+
 // Sonra create fonksiyonunun sonuna (admin ve feedback user'lardan sonra) ekleyin:
 
 async function _createRealisticUsers() {
@@ -859,26 +964,207 @@ const create = async () => {
   console.log("✅ Cities created")
 
   // Check if admin user already exists
-  let admin = await getUser({ email: VEX_TEST_EMAIL })
+  const { feedback, admin, localswaphub } = await createHumans()
 
-  if (!admin) {
-    console.log("👤 Creating admin user...")
-    admin = await createUser({
-      email: "ibsukru@gmail.com",
-      name: VEX_TEST_NAME,
-      password: passwordToSalt(VEX_TEST_PASSWORD),
-      role: "admin",
-      roles: ["admin"],
-      userName: "ibsukru",
-      // credits: !isSeedSafe ? 99999999 : undefined,
-      city: "Amsterdam",
-      country: "Netherlands",
+  // Seed real-time analytics for feedback user
+  console.log("📊 Seeding analytics data for feedback user...")
+  const analyticsEvents = [
+    {
+      name: "app",
+      props: { appName: "Istanbul", appSlug: "istanbul" },
+      hoursAgo: 2,
+    },
+    {
+      name: "theme_change",
+      props: { isDark: true, colorScheme: "purple" },
+      hoursAgo: 3,
+    },
+    {
+      name: "app",
+      props: { appName: "Atlas", appSlug: "atlas" },
+      hoursAgo: 4,
+    },
+    {
+      name: "theme_change",
+      props: { isDark: true, colorScheme: "green" },
+      hoursAgo: 5,
+    },
+    {
+      name: "app",
+      props: { appName: "Bloom", appSlug: "bloom" },
+      hoursAgo: 6,
+    },
+    {
+      name: "app",
+      props: { appName: "Vault", appSlug: "vault" },
+      hoursAgo: 8,
+    },
+  ]
+
+  for (const event of analyticsEvents) {
+    const eventTime = new Date(now.getTime() - event.hoursAgo * 60 * 60 * 1000)
+    await db.insert(realtimeAnalytics).values({
+      userId: feedback.id,
+      appSlug: event.props.appSlug || null,
+      eventName: event.name,
+      eventProps: event.props,
+      createdOn: eventTime,
     })
-    if (!admin) throw new Error("Failed to add admin")
-    console.log("✅ Admin user created")
-  } else {
-    console.log("✅ Admin user already exists, skipping creation")
   }
+  console.log(`✅ Seeded ${analyticsEvents.length} analytics events`)
+
+  // Seed expenses for Vault questions
+  console.log("💰 Seeding expenses for feedback user...")
+  const expenseData = [
+    {
+      amount: 4550,
+      category: "food",
+      description: "Lunch at local cafe",
+      daysAgo: 1,
+    },
+    {
+      amount: 12000,
+      category: "transport",
+      description: "Monthly transit pass",
+      daysAgo: 5,
+    },
+    {
+      amount: 8999,
+      category: "entertainment",
+      description: "Concert tickets",
+      daysAgo: 3,
+    },
+    {
+      amount: 6500,
+      category: "food",
+      description: "Grocery shopping",
+      daysAgo: 2,
+    },
+    {
+      amount: 15000,
+      category: "housing",
+      description: "Rent payment",
+      daysAgo: 10,
+    },
+    {
+      amount: 3500,
+      category: "food",
+      description: "Coffee and snacks",
+      daysAgo: 1,
+    },
+    {
+      amount: 7500,
+      category: "shopping",
+      description: "New headphones",
+      daysAgo: 7,
+    },
+  ]
+
+  for (const expense of expenseData) {
+    const expenseDate = new Date(
+      now.getTime() - expense.daysAgo * 24 * 60 * 60 * 1000,
+    )
+    await db.insert(expenses).values({
+      userId: feedback.id,
+      amount: expense.amount,
+      category: expense.category as any,
+      description: expense.description,
+      date: expenseDate,
+      createdOn: expenseDate,
+    })
+  }
+  console.log(`✅ Seeded ${expenseData.length} expenses`)
+
+  // Seed focus/timer sessions for Bloom questions
+  console.log("⏱️ Seeding timer sessions for feedback user...")
+  const timerData = [
+    { duration: 1500, task: "Deep work on analytics feature", hoursAgo: 2 },
+    { duration: 900, task: "Code review", hoursAgo: 24 },
+    { duration: 1800, task: "Writing documentation", hoursAgo: 48 },
+    { duration: 1200, task: "Team meeting prep", hoursAgo: 72 },
+  ]
+
+  for (const timer of timerData) {
+    const timerDate = new Date(now.getTime() - timer.hoursAgo * 60 * 60 * 1000)
+    await db.insert(timers).values({
+      userId: feedback.id,
+      duration: timer.duration,
+      count: timer.duration, // Initial count matches duration
+      fingerprint: "test-fingerprint", // Required field
+      createdOn: timerDate,
+    } as any)
+  }
+  console.log(`✅ Seeded ${timerData.length} timer sessions`)
+
+  // Seed feedback messages for Peach questions
+  console.log("🍐 Seeding feedback messages for Peach...")
+
+  // Create a thread for the feedback
+  const feedbackThread = await createThread({
+    userId: feedback.id,
+    title: "Feedback Thread",
+    aiResponse: "Thanks for your feedback!",
+    createdOn: now,
+    updatedOn: now,
+  })
+
+  if (!feedbackThread?.id) throw new Error("Failed to create feedback thread")
+
+  const feedbackMessages = [
+    {
+      content: "The Istanbul guide is amazing! Love the local tips.",
+      daysAgo: 1,
+    },
+    {
+      content: "Would love to see more budget tracking features in Vault",
+      daysAgo: 2,
+    },
+    { content: "Focus timer is great but needs Pomodoro mode", daysAgo: 3 },
+    {
+      content: "Atlas navigation is super helpful for finding places",
+      daysAgo: 4,
+    },
+  ]
+
+  for (const msg of feedbackMessages) {
+    const msgDate = new Date(now.getTime() - msg.daysAgo * 24 * 60 * 60 * 1000)
+    await db.insert(messages).values({
+      userId: feedback.id,
+      threadId: feedbackThread.id,
+      content: msg.content,
+      isPear: true,
+      createdOn: msgDate,
+      updatedOn: msgDate,
+    })
+  }
+  console.log(`✅ Seeded ${feedbackMessages.length} feedback messages`)
+
+  // Seed calendar events for Atlas questions
+  console.log("📅 Seeding calendar events for feedback user...")
+  const calendarData = [
+    {
+      title: "Coffee at De Koffie Salon",
+      location: "Amsterdam",
+      daysAhead: 2,
+    },
+    { title: "Team meeting", location: "Centraal Station", daysAhead: 1 },
+    { title: "Lunch with friends", location: "Jordaan", daysAhead: 3 },
+  ]
+
+  for (const event of calendarData) {
+    const eventDate = new Date(
+      now.getTime() + event.daysAhead * 24 * 60 * 60 * 1000,
+    )
+    await db.insert(calendarEvents).values({
+      userId: feedback.id,
+      title: event.title,
+      location: event.location,
+      startTime: eventDate,
+      endTime: new Date(eventDate.getTime() + 60 * 60 * 1000), // 1 hour duration
+      createdOn: now,
+    })
+  }
+  console.log(`✅ Seeded ${calendarData.length} calendar events`)
 
   const agents = await createAgents()
 
@@ -898,270 +1184,7 @@ const create = async () => {
   await createEvent({ user: admin })
 
   // Check if feedback user already exists
-  let feedback = await getUser({ email: VEX_TEST_EMAIL_2 })
 
-  if (!feedback) {
-    console.log("👤 Creating feedback user...")
-    feedback = await createUser({
-      email: VEX_TEST_EMAIL_2,
-      name: VEX_TEST_NAME_2,
-      password: passwordToSalt(VEX_TEST_PASSWORD_2),
-      role: "user",
-      userName: VEX_TEST_NAME_2,
-      fingerprint: TEST_MEMBER_FINGERPRINTS[0],
-      roles: ["admin"],
-    })
-    if (!feedback) throw new Error("Failed to add user")
-    console.log("✅ Feedback user created")
-
-    // Seed real-time analytics for feedback user
-    console.log("📊 Seeding analytics data for feedback user...")
-    const analyticsEvents = [
-      {
-        name: "app",
-        props: { appName: "Istanbul", appSlug: "istanbul" },
-        hoursAgo: 2,
-      },
-      {
-        name: "theme_change",
-        props: { isDark: true, colorScheme: "purple" },
-        hoursAgo: 3,
-      },
-      {
-        name: "app",
-        props: { appName: "Atlas", appSlug: "atlas" },
-        hoursAgo: 4,
-      },
-      {
-        name: "theme_change",
-        props: { isDark: true, colorScheme: "green" },
-        hoursAgo: 5,
-      },
-      {
-        name: "app",
-        props: { appName: "Bloom", appSlug: "bloom" },
-        hoursAgo: 6,
-      },
-      {
-        name: "app",
-        props: { appName: "Vault", appSlug: "vault" },
-        hoursAgo: 8,
-      },
-    ]
-
-    for (const event of analyticsEvents) {
-      const eventTime = new Date(
-        now.getTime() - event.hoursAgo * 60 * 60 * 1000,
-      )
-      await db.insert(realtimeAnalytics).values({
-        userId: feedback.id,
-        appSlug: event.props.appSlug || null,
-        eventName: event.name,
-        eventProps: event.props,
-        createdOn: eventTime,
-      })
-    }
-    console.log(`✅ Seeded ${analyticsEvents.length} analytics events`)
-
-    // Seed expenses for Vault questions
-    console.log("💰 Seeding expenses for feedback user...")
-    const expenseData = [
-      {
-        amount: 4550,
-        category: "food",
-        description: "Lunch at local cafe",
-        daysAgo: 1,
-      },
-      {
-        amount: 12000,
-        category: "transport",
-        description: "Monthly transit pass",
-        daysAgo: 5,
-      },
-      {
-        amount: 8999,
-        category: "entertainment",
-        description: "Concert tickets",
-        daysAgo: 3,
-      },
-      {
-        amount: 6500,
-        category: "food",
-        description: "Grocery shopping",
-        daysAgo: 2,
-      },
-      {
-        amount: 15000,
-        category: "housing",
-        description: "Rent payment",
-        daysAgo: 10,
-      },
-      {
-        amount: 3500,
-        category: "food",
-        description: "Coffee and snacks",
-        daysAgo: 1,
-      },
-      {
-        amount: 7500,
-        category: "shopping",
-        description: "New headphones",
-        daysAgo: 7,
-      },
-    ]
-
-    for (const expense of expenseData) {
-      const expenseDate = new Date(
-        now.getTime() - expense.daysAgo * 24 * 60 * 60 * 1000,
-      )
-      await db.insert(expenses).values({
-        userId: feedback.id,
-        amount: expense.amount,
-        category: expense.category as any,
-        description: expense.description,
-        date: expenseDate,
-        createdOn: expenseDate,
-      })
-    }
-    console.log(`✅ Seeded ${expenseData.length} expenses`)
-
-    // Seed focus/timer sessions for Bloom questions
-    console.log("⏱️ Seeding timer sessions for feedback user...")
-    const timerData = [
-      { duration: 1500, task: "Deep work on analytics feature", hoursAgo: 2 },
-      { duration: 900, task: "Code review", hoursAgo: 24 },
-      { duration: 1800, task: "Writing documentation", hoursAgo: 48 },
-      { duration: 1200, task: "Team meeting prep", hoursAgo: 72 },
-    ]
-
-    for (const timer of timerData) {
-      const timerDate = new Date(
-        now.getTime() - timer.hoursAgo * 60 * 60 * 1000,
-      )
-      await db.insert(timers).values({
-        userId: feedback.id,
-        duration: timer.duration,
-        count: timer.duration, // Initial count matches duration
-        fingerprint: "test-fingerprint", // Required field
-        createdOn: timerDate,
-      } as any)
-    }
-    console.log(`✅ Seeded ${timerData.length} timer sessions`)
-
-    // Seed feedback messages for Peach questions
-    console.log("🍐 Seeding feedback messages for Peach...")
-
-    // Create a thread for the feedback
-    const feedbackThread = await createThread({
-      userId: feedback.id,
-      title: "Feedback Thread",
-      aiResponse: "Thanks for your feedback!",
-      createdOn: now,
-      updatedOn: now,
-    })
-
-    if (!feedbackThread?.id) throw new Error("Failed to create feedback thread")
-
-    const feedbackMessages = [
-      {
-        content: "The Istanbul guide is amazing! Love the local tips.",
-        daysAgo: 1,
-      },
-      {
-        content: "Would love to see more budget tracking features in Vault",
-        daysAgo: 2,
-      },
-      { content: "Focus timer is great but needs Pomodoro mode", daysAgo: 3 },
-      {
-        content: "Atlas navigation is super helpful for finding places",
-        daysAgo: 4,
-      },
-    ]
-
-    for (const msg of feedbackMessages) {
-      const msgDate = new Date(
-        now.getTime() - msg.daysAgo * 24 * 60 * 60 * 1000,
-      )
-      await db.insert(messages).values({
-        userId: feedback.id,
-        threadId: feedbackThread.id,
-        content: msg.content,
-        isPear: true,
-        createdOn: msgDate,
-        updatedOn: msgDate,
-      })
-    }
-    console.log(`✅ Seeded ${feedbackMessages.length} feedback messages`)
-
-    // Seed calendar events for Atlas questions
-    console.log("📅 Seeding calendar events for feedback user...")
-    const calendarData = [
-      {
-        title: "Coffee at De Koffie Salon",
-        location: "Amsterdam",
-        daysAhead: 2,
-      },
-      { title: "Team meeting", location: "Centraal Station", daysAhead: 1 },
-      { title: "Lunch with friends", location: "Jordaan", daysAhead: 3 },
-    ]
-
-    for (const event of calendarData) {
-      const eventDate = new Date(
-        now.getTime() + event.daysAhead * 24 * 60 * 60 * 1000,
-      )
-      await db.insert(calendarEvents).values({
-        userId: feedback.id,
-        title: event.title,
-        location: event.location,
-        startTime: eventDate,
-        endTime: new Date(eventDate.getTime() + 60 * 60 * 1000), // 1 hour duration
-        createdOn: now,
-      })
-    }
-    console.log(`✅ Seeded ${calendarData.length} calendar events`)
-  } else {
-    console.log("✅ Feedback user already exists, skipping creation")
-  }
-
-  // Check if diplomatic user already exists
-  let diplomatic = await getUser({ email: VEX_TEST_EMAIL_3 })
-
-  if (!diplomatic) {
-    console.log("👤 Creating diplomatic user...")
-    diplomatic = await createUser({
-      email: VEX_TEST_EMAIL_3,
-      name: VEX_TEST_NAME_3,
-      password: passwordToSalt(VEX_TEST_PASSWORD_3),
-      role: "user",
-      userName: VEX_TEST_NAME_3,
-      fingerprint: TEST_MEMBER_FINGERPRINTS[1],
-      roles: ["admin"],
-    })
-    if (!diplomatic) throw new Error("Failed to add user")
-    console.log("✅ Diplomatic user created")
-  } else {
-    console.log("✅ Diplomatic user already exists, skipping creation")
-  }
-
-  // Check if localswaphub user already exists
-  let localswaphub = await getUser({ email: VEX_TEST_EMAIL_4 })
-
-  if (!localswaphub) {
-    console.log("👤 Creating localswaphub user...")
-    localswaphub = await createUser({
-      email: VEX_TEST_EMAIL_4,
-      name: VEX_TEST_NAME_4,
-      password: passwordToSalt(VEX_TEST_PASSWORD_4),
-      role: "user",
-      userName: VEX_TEST_NAME_4,
-      fingerprint: TEST_MEMBER_FINGERPRINTS[2],
-      roles: ["admin"],
-    })
-    if (!localswaphub) throw new Error("Failed to add user")
-    console.log("✅ Localswaphub user created")
-  } else {
-    console.log("✅ Localswaphub user already exists, skipping creation")
-  }
   // const createdUsers = await Promise.all([admin, feedback])
 
   // --- BEGIN meaningful threads/messages/AI agent seeding ---
@@ -1645,32 +1668,13 @@ const prod = async () => {
   // Check if admin user already exists
   // await _clearMemories()
   // await clearGuests()
-  const admin = await getUser({
-    email: isProd || isVex ? "ibsukru@gmail.com" : "ibsukru@gmail.com",
-  })
-  if (!admin) throw new Error("Admin user not found")
 
-  if (!isProd) {
-    const admin = await getUser({
-      email: "ibsukru@gmail.com",
-    })
-    if (!admin) {
-      await createUser({
-        email: "ibsukru@gmail.com",
-        name: VEX_TEST_NAME,
-        password: passwordToSalt(VEX_TEST_PASSWORD),
-        role: "admin",
-        userName: "ibsukru",
-        // credits: !isSeedSafe ? 99999999 : undefined,
-        city: "Amsterdam",
-        country: "Netherlands",
-      })
-    }
-  }
+  const { admin } = await createHumans()
+  if (!admin) throw new Error("Admin user not found")
 
   // await createAgents()
   // Ensure stores are created during seeding for automated tests and dev/prod parity
-  await createStores({ user: admin })
+  // await createStores({ user: admin })
 
   // await seedPearFeedback()
 

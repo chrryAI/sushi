@@ -119,10 +119,11 @@ export default function AppLink({
             return
           }
 
+          e.preventDefault()
+
           props.onClick?.(e)
 
           setIsLoading(true)
-          e.preventDefault()
 
           if (!currentApp) {
             setLoadingApp(app)

@@ -55,11 +55,11 @@ These packages are published under the `@chrryai` scope and synced to the public
 
 | Package             | Description                                   | License |
 | ------------------- | --------------------------------------------- | ------- |
-| `@chrryai/donut`    | Cross-platform web, extension, and mobile     | AGPL     |
-| `@chrryai/waffles`  | Playwright + Vitest testing primitives        | AGPL     |
-| `@chrryai/machine`  | Effect.js + XState AI orchestration utilities | AGPL     |
-| `@chrryai/calendar` | Calendar primitives for extensions            | AGPL     |
-| `@chrryai/focus`    | Pomodoro / focus mode components              | AGPL     |
+| `@chrryai/donut`    | Cross-platform web, extension, and mobile     | AGPL    |
+| `@chrryai/waffles`  | Playwright + Vitest testing primitives        | AGPL    |
+| `@chrryai/machine`  | Effect.js + XState AI orchestration utilities | AGPL    |
+| `@chrryai/calendar` | Calendar primitives for extensions            | AGPL    |
+| `@chrryai/focus`    | Pomodoro / focus mode components              | AGPL    |
 
 ## 🔒 Private Packages
 

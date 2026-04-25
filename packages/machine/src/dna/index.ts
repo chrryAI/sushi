@@ -34,18 +34,18 @@ export {
   getExampleInstructions,
 } from "./getExampleInstructions"
 export { handleAppExtends } from "./helpers"
-export {
-  closeFalkorDB,
-  getFalkorDBOverview,
-  seedAppsToFalkorDB,
-  seedCharacterProfilesToFalkorDB,
-  seedChrryToFalkorDB,
-  seedEcosystemToFalkorDB,
-  seedMemoriesToFalkorDB,
-  seedStoresToFalkorDB,
-  seedThreadsToFalkorDB,
-  seedUserToFalkorDB,
-} from "./seedFalkorDB"
+// export {
+//   closeFalkorDB,
+//   getFalkorDBOverview,
+//   seedAppsToFalkorDB,
+//   seedCharacterProfilesToFalkorDB,
+//   seedChrryToFalkorDB,
+//   seedEcosystemToFalkorDB,
+//   seedMemoriesToFalkorDB,
+//   seedStoresToFalkorDB,
+//   seedThreadsToFalkorDB,
+//   seedUserToFalkorDB,
+// } from "./seedFalkorDB"
 export { seedPearFeedback } from "./seedPearFeedback"
 export { seedScheduledTribeJobs } from "./seedScheduledTribeJobs"
 export { seedTribeEngagement } from "./seedTribeEngagement"
