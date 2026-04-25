@@ -585,11 +585,11 @@ export default function Account({
               }}
             >
               {t("You can use this key while building with")}{" "}
-              <A openInNewTab href="https://github.com/chrryAI/chrry">
+              <A openInNewTab href="https://github.com/chrryai/donut">
                 {t("Chrry")}
               </A>{" "}
               {t("from")}{" "}
-              <A openInNewTab href="https://github.com/chrryAI/chrry">
+              <A openInNewTab href="https://github.com/chrryai/donut">
                 {t("Github")}
               </A>{" "}
               {t("and using")}{" "}

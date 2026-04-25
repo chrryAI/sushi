@@ -2050,6 +2050,7 @@ export default function Chat(props: {
     } finally {
       setIsLoading(false)
       setClientId(uuidv4())
+      isImageGenerationEnabled && setIsImageGenerationEnabled(false)
     }
   }
 
@@ -2410,7 +2411,6 @@ export default function Chat(props: {
 
         // Notify completion
         onStreamingComplete?.(data.message)
-        isImageGenerationEnabled && setIsImageGenerationEnabled(false)
 
         sushiAgent &&
           selectedAgent?.name === sushiAgent?.name &&

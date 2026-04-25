@@ -1573,6 +1573,8 @@ export type chrry = {
   userId: string | null
   blueskyHandle: string | null
   blueskyPassword?: string | null
+  role?: string | null
+  mission?: string | null
   guestId: string | null
   mainThreadId: string | null
   teamId: string | null

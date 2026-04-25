@@ -184,6 +184,8 @@ const AuthContext = createContext<
       tribes?: paginatedTribes
       setShowTribe: (show: boolean) => void
       showTribe: boolean | undefined
+      showRamen: boolean
+      setShowRamen: (show: boolean) => void
       setSkipAppCacheTemp: (show: boolean) => void
       skipAppCacheTemp: boolean | undefined
       tribePosts?: paginatedTribePosts
@@ -256,6 +258,7 @@ const AuthContext = createContext<
       siteConfig: SiteConfig
       isManagingApp: boolean
       minimize: boolean
+      isSystemPromptEnabled: boolean
       setMinimize: (value: boolean) => void
       setIsManagingApp: (value: boolean) => void
       isRemovingApp: boolean
@@ -589,8 +592,13 @@ export function AuthProvider({
 
   const pathname = (typeof window === "undefined" ? props.pathname : pn) || "/"
   const postIdInitial = getPostId(pathname)
-  const [postIdSecond, setPostId] = useState(postIdInitial)
-  const postId = postIdSecond || postIdInitial
+  const [postId, setPostId] = useState(postIdInitial)
+  useEffect(() => {
+    const newPostId = getPostId(pathname)
+    if (newPostId !== postId) {
+      setPostId(newPostId)
+    }
+  }, [pathname, postId])
   // Ensure searchParams always has .get() method for compatibility
   const searchParams = (typeof window === "undefined"
     ? props.searchParams
@@ -1008,6 +1016,15 @@ export function AuthProvider({
     "deviceId",
     undefined as string | undefined,
   )
+
+  const [isSystemPromptEnabledInternal] = useLocalStorage(
+    `systemPromptEnabled`,
+    false,
+  )
+
+  const isSystemPromptEnabled =
+    // message?.message?.metadata?.systemPrompt &&
+    !!(isSystemPromptEnabledInternal || user?.role === "admin" || isDevelopment)
 
   const deviceId = deviceIdExtension
 
@@ -2819,7 +2836,15 @@ export function AuthProvider({
     boolean | undefined | null
   >("showTribe", showTribeInitial)
 
-  const showTribe = !!showTribeInternal
+  const isRamen = pathname === "/ramen"
+
+  const [showRamen, setShowRamen] = useLocalStorage("ramen", isRamen)
+
+  useEffect(() => {
+    setShowRamen(isRamen)
+  }, [isRamen])
+
+  const showTribe = !!showTribeInternal || !!postId
 
   const showTribeProfileInternal = canBeTribeProfile
 
@@ -3877,6 +3902,7 @@ export function AuthProvider({
         language,
         setLanguage,
         tribes,
+        isSystemPromptEnabled,
         tribePosts,
         tribePost,
         setTribes,
@@ -4062,6 +4088,8 @@ export function AuthProvider({
         PRO_PRICE,
         setPostId,
         PLUS_PRICE,
+        showRamen,
+        setShowRamen,
         selectedInstruction,
         setSelectedInstruction,
         FREE_DAYS,

@@ -42,11 +42,11 @@ The repository is split across two GitHub remotes:
 
 | Package                      | Name                      | Purpose                                              |
 | ---------------------------- | ------------------------- | ---------------------------------------------------- |
-| `packages/donut`                | `@chrryai/chrry`          | Cross-platform React UI component library (AGPL-3.0) |
+| `packages/donut`             | `@chrryai/donut`          | Cross-platform React UI component library (AGPL-3.0) |
 | `packages/pepper`            | `@chrryai/pepper`         | Universal router for web/native/extension (AGPL-3.0) |
 | `packages/waffles`           | `@chrryai/waffles`        | Playwright + Vitest testing utilities (AGPL-3.0)     |
 | `packages/machine`           | `@chrryai/machine`        | Effect.js + XState AI orchestration primitives       |
-`packages/vault`             | `@chrryai/machine`        | Drizzle ORM schemas, migrations, AI vault, cache     |
+| `packages/vault`             | `@chrryai/machine`        | Drizzle ORM schemas, migrations, AI vault, cache     |
 | `packages/shared`            | `@repo/shared`            | Shared React contexts, hooks, platform adapters      |
 | `packages/donut`             | —                         | Internal UI playground / demo app                    |
 | `packages/sushi`             | —                         | Legacy nested sub-workspace (not integrated)         |
@@ -87,7 +87,7 @@ sushi/
 │   ├── shared/         # @repo/shared — PRIVATE
 │   ├── sushi/          # Nested legacy workspace — PRIVATE
 │   ├── typescript-config/ # @repo/typescript-config
-│   ├── ui/             # @chrryai/chrry
+│   ├── ui/             # @chrryai/donut
 │   └── waffles/        # @chrryai/waffles
 ├── infra/              # Docker, nginx, deployment scripts
 │   ├── docker/         # All Docker Compose files
@@ -269,7 +269,7 @@ An AI-generated commit message hook runs automatically if the commit message is 
 | Package / App      | Test Location                                                          | Runner               |
 | ------------------ | ---------------------------------------------------------------------- | -------------------- |
 | `packages/waffles` | `src/__tests__/` (unit/integration), root `*.spec.ts` (Playwright E2E) | Vitest + Playwright  |
-| `packages/donut`      | `__tests__/*.test.tsx`                                                 | Vitest (happy-dom)   |
+| `packages/donut`   | `__tests__/*.test.tsx`                                                 | Vitest (happy-dom)   |
 | `packages/vault`   | `__tests__/*.test.ts`                                                  | Vitest (v8 coverage) |
 | `packages/machine` | `src/__tests__/unit/`, `src/__tests__/integration/`                    | Vitest               |
 | `apps/api`         | `hono/routes/*.test.ts`, `lib/*.test.ts`, `test/*.test.ts`             | Vitest               |
@@ -315,7 +315,7 @@ pnpm run e2e
 | ------------------ | -------- |
 | `apps/api`         | v8       |
 | `apps/chrry`       | v8       |
-| `packages/donut`      | istanbul |
+| `packages/donut`   | istanbul |
 | `packages/vault`   | v8       |
 | `packages/machine` | v8       |
 

@@ -48,6 +48,7 @@ import { v4 as uuidv4 } from "uuid"
 import {
   chopStick,
   collectHipIdsFromMessage,
+  db,
   getApp,
   getGuest,
   getHipId,
@@ -224,6 +225,7 @@ export {
   codebaseIssues,
   codebaseQueries,
   codeEmbeddings,
+  db,
   // createStores,
   // type getEmbeddingProvider,
   // type getMediaAPIKeys,
@@ -673,17 +675,6 @@ const client = postgres(
             : false,
       },
 )
-
-const getDb = (): PostgresJsDatabase<typeof schema> => {
-  if (NODE_ENV !== "production" && !isCI) {
-    if (!globalThis.db) globalThis.db = postgresDrizzle(client, { schema })
-    return globalThis.db!
-  } else {
-    return postgresDrizzle(client, { schema })
-  }
-}
-
-export const db: PostgresJsDatabase<typeof schema> = getDb()
 
 // Export schema for accessing tables dynamically
 export { schema }

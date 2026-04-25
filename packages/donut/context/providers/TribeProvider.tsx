@@ -124,6 +124,7 @@ export function TribeProvider({ children }: TribeProviderProps) {
     tribes,
     setTribes,
     setLanguageModal,
+    showTribe,
     actions,
     API_URL,
     app,
@@ -249,7 +250,7 @@ export function TribeProvider({ children }: TribeProviderProps) {
     isLoading: isLoadingTribes,
     mutate: refetchTribes,
   } = useSWR(
-    token ? ["tribes", appId, canShowTribeProfile] : null,
+    showTribe && token ? ["tribes", appId, canShowTribeProfile] : null,
     () => {
       if (!token) return
       return actions.getTribes({
@@ -268,7 +269,7 @@ export function TribeProvider({ children }: TribeProviderProps) {
     mutate: refetchTribePost,
     isLoading: isLoadingPost,
   } = useSWR(
-    postId && token
+    showTribe && postId && token
       ? ["tribePost", postId, appId, loadPostCounter, language]
       : null,
     () => {
@@ -329,7 +330,7 @@ export function TribeProvider({ children }: TribeProviderProps) {
     mutate: refetchPosts,
     isLoading: isLoadingPosts,
   } = useSWR(
-    (search ? search.length > 2 : true) && token
+    showTribe && (search ? search.length > 2 : true) && token
       ? [
           "tribePosts",
           until,

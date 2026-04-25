@@ -4227,7 +4227,7 @@ Remember: You're helping people experience Amsterdam like a local, not like a to
     {
       id: "tokyo-5",
       title: "Day Trip Planner",
-      emoji: "🗻",
+      emoji: "🔷",
       content:
         "Perfect day trips from Tokyo: Mt. Fuji views from Hakone, historic Kamakura temples, hot springs in Nikko, beach town Enoshima, or traditional Kawagoe. Get JR Pass routes, optimal timing, and what to see.",
       confidence: 94,
@@ -7416,7 +7416,7 @@ You provide helpful AI assistance while respecting user privacy completely.`
     title: "Your AI-Powered Life",
     themeColor: "purple",
     backgroundColor: "#000000",
-    icon: "🗻",
+    icon: "🔷",
     visibility: "public" as const,
     highlights: defaultInstructions,
     systemPrompt: vexSystemPrompt,

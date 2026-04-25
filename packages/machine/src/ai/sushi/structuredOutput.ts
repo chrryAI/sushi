@@ -12,7 +12,7 @@
 import * as AiLanguageModel from "@effect/ai/LanguageModel"
 import * as Prompt from "@effect/ai/Prompt"
 import { Effect, type Layer, type Schema, Stream } from "effect"
-import { parseAIJson } from "../jsonParser"
+import { cleanAiResponse, parseAIJson, safeParseAIJson } from "../jsonParser"
 
 // ─────────────────────────────────────────────────────────────────
 // generateStructuredOutput — core Effect program
@@ -62,6 +62,7 @@ export const generateStructuredOutputWithFallback = <
   schema: Schema.Schema<A, I, R>,
   prompt: string | Prompt.Prompt,
   options?: { system?: string },
+  source?: string,
 ) =>
   Effect.gen(function* () {
     const model = yield* AiLanguageModel.LanguageModel
@@ -84,17 +85,38 @@ export const generateStructuredOutputWithFallback = <
     }
 
     // Fallback: generate text and parse with robust JSON repair
-    console.warn(
-      "[structuredOutput] generateObject failed, falling back to generateText + parseAIJson:",
-      result.left,
+    console.debug(
+      "[structuredOutput] generateObject failed, falling back to generateText + parseAIJson",
+      source ? `(source: ${source})` : "",
     )
 
+    // Force JSON mode for models that don't support native structured output (e.g. Ollama).
+    // We append a strong instruction so the model doesn't return markdown or prose.
+    const jsonForcingInstruction =
+      "\n\nCRITICAL: Respond with ONLY valid JSON matching the requested schema. Do NOT use markdown code blocks (no ```). Do NOT add explanations, comments, or prose. Start your response with { or [ and end with } or ]."
+    const fallbackPrompt =
+      typeof promptInput === "string"
+        ? promptInput + jsonForcingInstruction
+        : promptInput
+
     const textResult = yield* model.generateText({
-      prompt: promptInput,
+      prompt: fallbackPrompt,
     })
 
-    const parsed = parseAIJson(textResult.text) as A
-    return parsed
+    const cleaned = cleanAiResponse(textResult.text)
+    const parsed = safeParseAIJson(cleaned)
+    if (parsed.success) {
+      return parsed.data as A
+    }
+
+    console.warn(
+      "[structuredOutput] parseAIJson also failed:",
+      parsed.error,
+      "raw:",
+      cleaned.slice(0, 200),
+    )
+    // Return a minimal valid object to prevent crashes
+    return {} as A
   })
 
 // ─────────────────────────────────────────────────────────────────
@@ -133,10 +155,27 @@ export async function runStructuredOutputWithFallback<
   prompt: string,
   modelLayer: Layer.Layer<AiLanguageModel.LanguageModel>,
   options?: { system?: string },
+  source?: string,
 ): Promise<A> {
-  const program = generateStructuredOutputWithFallback(schema, prompt, options)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return Effect.runPromise((program as any).pipe(Effect.provide(modelLayer)))
+  const program = generateStructuredOutputWithFallback(
+    schema,
+    prompt,
+    options,
+    source,
+  )
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return await Effect.runPromise(
+      (program as any).pipe(
+        Effect.provide(modelLayer),
+        Effect.timeout("120 seconds"),
+      ),
+    )
+  } catch (e) {
+    console.error("⚠️ runStructuredOutputWithFallback timed out after 60s:", e)
+    return null as unknown as A
+  }
 }
 
 /**
@@ -158,8 +197,19 @@ export async function runGenerateText(
     })
     return result.text
   })
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return Effect.runPromise((program as any).pipe(Effect.provide(modelLayer)))
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return await Effect.runPromise(
+      (program as any).pipe(
+        Effect.provide(modelLayer),
+        Effect.timeout("90 seconds"),
+      ),
+    )
+  } catch (e) {
+    console.error("⚠️ runGenerateText timed out after 45s:", e)
+    return ""
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -207,6 +257,8 @@ export interface StreamTextOptions {
   temperature?: number
   /** Max output tokens */
   maxOutputTokens?: number
+  /** Reasoning effort for models that support it (low | medium | high) */
+  reasoningEffort?: string
   /** Effect toolkit for tool calling */
   toolkit?: any
   /** Tool choice: "auto" | "required" | "none" | { tool: string } */
@@ -247,10 +299,27 @@ export async function runStreamText(
         ? Prompt.setSystem(Prompt.make(prompt), options.system)
         : prompt
     } else if (Array.isArray(prompt)) {
-      // Convert message array to Effect Prompt
-      // Messages can be Vercel AI SDK format: { role, content }
-      // or Effect format: { role, content }
-      promptInput = Prompt.make(prompt as any)
+      // Normalize content parts for Effect AI compatibility:
+      // Effect AI expects { type: "file", mediaType, data } not { type: "image", image }
+      const normalizedMessages = prompt.map((msg: any) => {
+        if (msg.content && Array.isArray(msg.content)) {
+          return {
+            ...msg,
+            content: msg.content.map((part: any) => {
+              if (part.type === "image" && part.image) {
+                return {
+                  type: "file",
+                  mediaType: part.mimeType || "image/png",
+                  data: part.image,
+                }
+              }
+              return part
+            }),
+          }
+        }
+        return msg
+      })
+      promptInput = Prompt.make(normalizedMessages as any)
       if (options?.system) {
         promptInput = Prompt.setSystem(promptInput, options.system)
       }
@@ -264,6 +333,8 @@ export async function runStreamText(
       streamOpts.temperature = options.temperature
     if (options?.maxOutputTokens !== undefined)
       streamOpts.maxOutputTokens = options.maxOutputTokens
+    if (options?.reasoningEffort !== undefined)
+      streamOpts.reasoning_effort = options.reasoningEffort
     if (options?.toolkit !== undefined) streamOpts.toolkit = options.toolkit
     if (options?.toolChoice !== undefined)
       streamOpts.toolChoice = options.toolChoice

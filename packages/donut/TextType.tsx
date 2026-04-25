@@ -235,7 +235,7 @@ const TextType = ({
         flexDirection: vertical ? "column" : "row",
         justifyContent: "flex-start",
         width: "fit-content",
-        maxWidth: viewPortWidth - 50,
+        maxWidth: viewPortWidth - 250,
         overflow: vertical ? "visible" : "hidden",
         ...style,
       }}

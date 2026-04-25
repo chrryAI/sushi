@@ -1,45 +1,37 @@
-"use client"
+"use client";
 
-import {
-  type ComponentType,
-  lazy,
-  memo,
-  Suspense,
-  useCallback,
-  useEffect,
-  useState,
-} from "react"
-import "./sentry"
+import { type ComponentType, lazy, memo, Suspense, useCallback, useEffect, useState } from "react";
+import "./sentry";
 
-import AddToHomeScreen from "./addToHomeScreen/AddToHomeScreen"
-import { useApp } from "./context/providers"
-import { useAuth } from "./context/providers/AuthProvider"
-import { useNavigationContext } from "./context/providers/NavigationProvider"
-import { useTribe } from "./context/providers/TribeProvider"
-import { useStyles } from "./context/StylesContext"
-import { ErrorBoundary } from "./ErrorBoundary"
-import Home from "./Home"
-import Img from "./Image"
-import Loading from "./Loading"
-import Modal from "./Modal"
-import { Button, Div, useLocalStorage, usePlatform, VexToast } from "./platform"
-import { useSidebarStyles } from "./Sidebar.styles"
-import Thread from "./Thread"
-import { getAppAndStoreSlugs } from "./utils/url"
+import AddToHomeScreen from "./addToHomeScreen/AddToHomeScreen";
+import { useApp } from "./context/providers";
+import { useAuth } from "./context/providers/AuthProvider";
+import { useNavigationContext } from "./context/providers/NavigationProvider";
+import { useTribe } from "./context/providers/TribeProvider";
+import { useStyles } from "./context/StylesContext";
+import { ErrorBoundary } from "./ErrorBoundary";
+import Home from "./Home";
+import Img from "./Image";
+import Loading from "./Loading";
+import Modal from "./Modal";
+import { Button, Div, useLocalStorage, usePlatform, VexToast } from "./platform";
+import { useSidebarStyles } from "./Sidebar.styles";
+import Thread from "./Thread";
+import { getAppAndStoreSlugs } from "./utils/url";
 
-const Store = lazy(() => import("./Store"))
-const Calendar = lazy(() => import("./Calendar"))
-const Why = lazy(() => import("./Why"))
-const Privacy = lazy(() => import("./Privacy"))
-const Terms = lazy(() => import("./Terms"))
-const About = lazy(() => import("./about"))
-const Threads = lazy(() => import("./Threads"))
-const Users = lazy(() => import("./Users"))
+const Store = lazy(() => import("./Store"));
+const Calendar = lazy(() => import("./Calendar"));
+const Why = lazy(() => import("./Why"));
+const Privacy = lazy(() => import("./Privacy"));
+const Terms = lazy(() => import("./Terms"));
+const About = lazy(() => import("./about"));
+const Threads = lazy(() => import("./Threads"));
+const Users = lazy(() => import("./Users"));
 
-const Programme = lazy(() => import("./Store"))
+const Programme = lazy(() => import("./Store"));
 
-import Grape from "./Grape"
-import Watermelon from "./Watermelon"
+import Grape from "./Grape";
+import Watermelon from "./Watermelon";
 
 // Maybe later
 // const Affiliate = lazy(() => import("./affiliate"))
@@ -58,31 +50,32 @@ const ROUTES: Record<string, ComponentType<any>> = {
   // affiliate: Affiliate,
   // "affiliate/dashboard": AffiliateDashboard,
   u: Users,
-}
+};
 
 export const Hey = memo(
   function Hey({
     children,
   }: {
-    className?: string
-    children?: React.ReactNode
-    useExtensionIcon?: (slug?: string) => void
+    className?: string;
+    children?: React.ReactNode;
+    useExtensionIcon?: (slug?: string) => void;
   }) {
-    const { pathname } = useNavigationContext()
+    const { pathname } = useNavigationContext();
 
-    const { isExtension, isCapacitor, os } = usePlatform()
+    const { isExtension, isCapacitor, os } = usePlatform();
 
-    const styles = useSidebarStyles()
+    const styles = useSidebarStyles();
 
-    const [_pathnameLocal, setPathnameLocal] = useLocalStorage<
-      string | undefined
-    >("pathname", isExtension ? pathname : undefined)
+    const [_pathnameLocal, setPathnameLocal] = useLocalStorage<string | undefined>(
+      "pathname",
+      isExtension ? pathname : undefined,
+    );
 
     useEffect(() => {
       if (isExtension) {
-        setPathnameLocal(pathname)
+        setPathnameLocal(pathname);
       }
-    }, [pathname, isExtension])
+    }, [pathname, isExtension]);
 
     const {
       app,
@@ -106,35 +99,33 @@ export const Hey = memo(
       // user,
       isDonutOpen,
       token,
-    } = useAuth()
+    } = useAuth();
 
-    const { utilities } = useStyles()
+    const { utilities } = useStyles();
 
-    const { tribeSlug, isLoadingTribes } = useTribe()
+    const { tribeSlug, isLoadingTribes } = useTribe();
 
     const { appSlug } = getAppAndStoreSlugs(pathname, {
       defaultAppSlug: baseApp?.slug || siteConfig.slug,
       defaultStoreSlug: baseApp?.store?.slug || siteConfig.storeSlug,
-    })
+    });
 
-    const { currentStore } = useApp()
+    const { currentStore } = useApp();
 
-    const lastPathSegment = pathname.split("/").pop()?.split("?")[0]
+    const lastPathSegment = pathname.split("/").pop()?.split("?")[0];
 
-    const ssrRoutes = ["blog"]
-    const ssrPrefixes = ["/blog"]
+    const ssrRoutes = ["blog"];
+    const ssrPrefixes = ["/blog"];
     const isSSRRoute =
       (lastPathSegment && ssrRoutes.includes(lastPathSegment)) ||
-      ssrPrefixes.some((prefix) => pathname.startsWith(prefix))
+      ssrPrefixes.some((prefix) => pathname.startsWith(prefix));
 
     const pathWithoutLocale = pathname
       .replace(/^\/[a-z]{2}\//, "/")
       .slice(1)
-      .split("?")[0]
+      .split("?")[0];
 
-    const isStorePage = storeApps?.find(
-      (app) => app.store?.slug === pathWithoutLocale,
-    )
+    const isStorePage = storeApps?.find((app) => app.store?.slug === pathWithoutLocale);
 
     const RouteComponent = isStorePage
       ? Store
@@ -142,7 +133,7 @@ export const Hey = memo(
         ? ROUTES[pathWithoutLocale]
         : lastPathSegment && ROUTES[lastPathSegment]
           ? ROUTES[lastPathSegment]
-          : null
+          : null;
 
     const isClientRoute =
       isExtension ||
@@ -153,14 +144,12 @@ export const Hey = memo(
           pathname === "/" ||
           pathname === "/api" ||
           app ||
-          currentStore))
+          currentStore));
 
-    const showTribeLogo = showTribe
-      ? canShowAllTribe || tribeSlug || postId
-      : false
+    const showTribeLogo = showTribe ? canShowAllTribe || tribeSlug || postId : false;
 
-    const [isImageLoaded, setIsImageLoaded] = useState(false)
-    const [minSplashTimeElapsed] = useState(true)
+    const [isImageLoaded, setIsImageLoaded] = useState(false);
+    const [minSplashTimeElapsed] = useState(true);
 
     // useEffect(() => {
     //   if (!isImageLoaded) return
@@ -173,8 +162,8 @@ export const Hey = memo(
 
     const getSplash = useCallback(
       (isSplash: boolean) => {
-        const splashStyle = styles.splash
-        const hiddenStyle = styles.splashHidden
+        const splashStyle = styles.splash;
+        const hiddenStyle = styles.splashHidden;
 
         return (
           <Div
@@ -186,7 +175,7 @@ export const Hey = memo(
             <Img
               key={app?.slug || appSlug}
               onLoad={(_src) => {
-                setIsImageLoaded(true)
+                setIsImageLoaded(true);
               }}
               slug={
                 showWatermelon || showWatermelonInitial
@@ -220,32 +209,29 @@ export const Hey = memo(
               }
             />
           </Div>
-        )
+        );
       },
       [app, isSplash, appSlug, showTribeLogo],
-    )
-    const splash = getSplash(isSplash)
+    );
+    const splash = getSplash(isSplash);
 
     useEffect(() => {
       // Preload toast icons
-      const preloadImages = [
-        `${FRONTEND_URL}/frog.png`,
-        `${FRONTEND_URL}/hamster.png`,
-      ]
+      const preloadImages = [`${FRONTEND_URL}/frog.png`, `${FRONTEND_URL}/hamster.png`];
 
       if (typeof Image !== "undefined") {
         preloadImages.forEach((src) => {
-          const img = new Image()
-          img.src = src
-        })
+          const img = new Image();
+          img.src = src;
+        });
       }
 
       // Enable body scroll on Capacitor
       if (isCapacitor && os === "ios") {
-        document.body.style.overflow = "auto"
-        ;(document.body.style as any).WebkitOverflowScrolling = "touch"
+        document.body.style.overflow = "auto";
+        (document.body.style as any).WebkitOverflowScrolling = "touch";
       }
-    }, [FRONTEND_URL, isCapacitor, os])
+    }, [FRONTEND_URL, isCapacitor, os]);
 
     useEffect(() => {
       isSplash &&
@@ -254,16 +240,8 @@ export const Hey = memo(
         minSplashTimeElapsed &&
         app?.store?.apps?.length &&
         token &&
-        setIsSplash(false)
-    }, [
-      isImageLoaded,
-      isHydrated,
-      isLoadingTribes,
-      isSplash,
-      minSplashTimeElapsed,
-      token,
-      app,
-    ])
+        setIsSplash(false);
+    }, [isImageLoaded, isHydrated, isLoadingTribes, isSplash, minSplashTimeElapsed, token, app]);
 
     const Wrapper = ({ children }: { children: React.ReactNode }) =>
       donut ? (
@@ -284,7 +262,7 @@ export const Hey = memo(
         >
           {children}
         </Div>
-      )
+      );
 
     return (
       <Div
@@ -326,12 +304,9 @@ export const Hey = memo(
           </Suspense>
         </ErrorBoundary>
       </Div>
-    )
+    );
   },
   (prevProps, nextProps) => {
-    return (
-      prevProps.className === nextProps.className &&
-      prevProps.children === nextProps.children
-    )
+    return prevProps.className === nextProps.className && prevProps.children === nextProps.children;
   },
-)
+);

@@ -52,7 +52,7 @@ export const dojo = {
     name: "Ecosystem & Core Apps",
     apps: [
       { slug: "chrry", name: "Chrry", emoji: "🍒" },
-      { slug: "vex", name: "Vex", emoji: "🗻" },
+      { slug: "vex", name: "Vex", emoji: "🔷" },
       { slug: "focus", name: "Focus", emoji: "🎯" },
       { slug: "burn", name: "Burn", emoji: "🔥" },
       { slug: "hippo", name: "Hippo", emoji: "🦛" },
@@ -181,7 +181,7 @@ export const chrryDev = {
   logo: "/assets/cherry-logo.svg", // Cross-platform SVG
   primaryColor: "#E91E63", // Cherry pink
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     npm: "https://www.npmjs.com/package/@chrryai/donut",
     // docs: "https://chrry.dev/docs",
     // demo: "https://chrry.dev/demo",
@@ -206,35 +206,35 @@ export const chrryDev = {
       title: "Components",
       description: "100+ production-ready UI components",
       icon: "🎨",
-      link: "https://github.com/chrryai/chrry",
+      link: "https://github.com/chrryai/donut",
       isOpenSource: true,
     },
     {
       title: "Styles",
       description: "SCSS to TypeScript converter",
       icon: "🎭",
-      link: "https://github.com/chrryai/chrry/tree/main/scripts/scss-to-universal.js",
+      link: "https://github.com/chrryai/donut/tree/main/scripts/scss-to-universal.js",
       isOpenSource: true,
     },
     {
       title: "Hooks",
       description: "Reusable React hooks",
       icon: "🪝",
-      link: "https://github.com/chrryai/chrry/tree/hooks",
+      link: "https://github.com/chrryai/donut/tree/hooks",
       isOpenSource: true,
     },
     {
       title: "Context",
       description: "State management providers",
       icon: "🔄",
-      link: "https://github.com/chrryai/chrry/blob/context",
+      link: "https://github.com/chrryai/donut/blob/context",
       isOpenSource: true,
     },
     {
       title: "Platform",
       description: "Cross-platform utilities",
       icon: "📱",
-      link: "https://github.com/chrryai/chrry/tree/platform",
+      link: "https://github.com/chrryai/donut/tree/platform",
       isOpenSource: true,
     },
   ],
@@ -258,7 +258,7 @@ const vault = {
   logo: "🏦",
   primaryColor: "#059669", // Emerald green
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://vault.chrry.ai/docs",
   },
   features: [
@@ -297,7 +297,7 @@ const pear = {
   logo: "🍐",
   primaryColor: "#84CC16", // Lime green
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://pear.chrry.ai/docs",
   },
   features: [
@@ -336,7 +336,7 @@ const chrryAI = {
   logo: "🍒",
   primaryColor: "#E91E63", // Cherry pink
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://chrry.ai/docs",
     // store: "https://chrry.store",
   },
@@ -450,7 +450,7 @@ const focus = {
   logo: "⏱️",
   primaryColor: "#3B82F6", // Blue
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://focus.chrry.ai/docs",
   },
   features: [
@@ -531,7 +531,7 @@ const atlas = {
   logo: "🌍",
   primaryColor: "#10B981", // Green
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://atlas.chrry.ai/docs",
   },
   features: [
@@ -620,7 +620,7 @@ const istanbul = {
   logo: "🇹🇷",
   primaryColor: "#E30A17", // Turkish red
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://istanbul.chrry.ai/docs",
   },
   features: [
@@ -702,7 +702,7 @@ const amsterdam = {
   logo: "🇳🇱",
   primaryColor: "#FF6B35", // Dutch orange
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://amsterdam.chrry.ai/docs",
   },
   features: [
@@ -784,7 +784,7 @@ const tokyo = {
   logo: "🇯🇵",
   primaryColor: "#BC002D", // Japanese red
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://tokyo.chrry.ai/docs",
   },
   features: [
@@ -866,7 +866,7 @@ const newYork = {
   logo: "🗽",
   primaryColor: "#0039A6", // NYC blue
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://newyork.chrry.ai/docs",
   },
   features: [
@@ -950,7 +950,7 @@ const popcorn = {
   logo: "🍿",
   primaryColor: "#DC2626", // Cinema red
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://popcorn.chrry.ai/docs",
   },
   features: [
@@ -1063,7 +1063,7 @@ const zarathustra = {
   logo: "🦋",
   primaryColor: "#7C3AED", // Purple/violet for wisdom
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://zarathustra.chrry.ai/docs",
   },
   features: [
@@ -1176,7 +1176,7 @@ const search = {
   logo: "🔍",
   primaryColor: "#3B82F6", // Blue
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://search.chrry.ai/docs",
   },
   features: [
@@ -1381,7 +1381,7 @@ const vex = {
   logo: "🤖",
   primaryColor: "#6366F1", // Indigo
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://vex.chrry.ai/docs",
   },
   features: [
@@ -1467,7 +1467,7 @@ const burn = {
   logo: "🔥",
   primaryColor: "#F97316", // Orange/fire color
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://burn.chrry.ai/docs",
   },
   features: [
@@ -1582,7 +1582,7 @@ const sushi = {
   logo: "🍣",
   primaryColor: "#10B981", // Emerald green (coding/terminal theme)
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://sushi.chrry.ai/docs",
   },
   features: [
@@ -1648,7 +1648,7 @@ const grape = {
   logo: "🍇",
   primaryColor: "#9333EA", // Purple
   links: {
-    github: "https://github.com/chrryai/chrry",
+    github: "https://github.com/chrryai/donut",
     docs: "https://grape.chrry.ai/docs",
   },
   features: [

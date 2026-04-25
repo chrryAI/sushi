@@ -1699,7 +1699,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                             <A
                               key="chrry-nav-link"
                               openInNewTab
-                              href="https://github.com/chrryai/chrry/blob/main/SPATIAL_NAVIGATION.md"
+                              href="https://github.com/chrryai/donut/blob/main/SPATIAL_NAVIGATION.md"
                             />
                           ),
                           sushi ? (
@@ -1722,7 +1722,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                             <A
                               key="sushi-patent-link"
                               openInNewTab
-                              href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
+                              href="https://github.com/chrryai/donut/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
                             />
                           ),
                         ]}
@@ -1879,7 +1879,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                     {app?.store?.app?.slug === "sushi" ? (
                       <A
                         openInNewTab
-                        href="https://github.com/chrryai/chrry/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
+                        href="https://github.com/chrryai/donut/blob/main/.sato/COMPREHENSIVE_SPATIAL_PATENT.md"
                       >
                         {t("🍣 Sato Dojo©")}
                       </A>
@@ -1889,11 +1889,28 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                           display: "flex",
                           marginLeft: rtl ? undefined : "auto",
                           marginRight: !rtl ? undefined : "auto",
+                          position: "relative",
                         }}
                         openInNewTab
-                        href="https://github.com/chrryai/chrry/blob/main/SPATIAL_NAVIGATION.md"
+                        href="/ramen"
                       >
-                        {t("🌀 Çapa")} IPA: /tʃɑ.ˈpɑ/
+                        <Img size={34} src="/images/food/ramen.png" />
+                        {t("拉麺")}
+                        <Span
+                          style={{
+                            position: "absolute",
+                            backgroundColor: COLORS.red,
+                            color: "white",
+                            borderRadius: "20px",
+                            padding: ".15rem .4rem",
+                            bottom: "-.8rem",
+                            right: "-1rem",
+                            fontSize: "0.55rem",
+                          }}
+                        >
+                          {" "}
+                          {t("Ramen")}
+                        </Span>
                       </A>
                     )}
                   </Div>

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import A from "./a/A"
 import ConfirmButton from "./ConfirmButton"
-import { useAppContext } from "./context/AppContext"
+import { COLORS, useAppContext } from "./context/AppContext"
+
 import {
   useApp,
   useAuth,
@@ -36,7 +37,7 @@ import { Button, Div, Input, P, Span, usePlatform, useTheme } from "./platform"
 import { MotiView } from "./platform/MotiView"
 import { useSubscribeStyles } from "./Subscribe.styles"
 import type { subscription, user } from "./types"
-import { apiFetch, capitalizeFirstLetter, isDevelopment } from "./utils"
+import { apiFetch, capitalizeFirstLetter } from "./utils"
 import { ANALYTICS_EVENTS } from "./utils/analyticsEvents"
 import { getFeatures } from "./utils/subscription"
 
@@ -890,9 +891,6 @@ export default function Subscribe({
                   className="small"
                   data-testid="btcpay-checkout"
                   onClick={() => {
-                    if (!isDevelopment) {
-                      return
-                    }
                     addHapticFeedback()
                     createBtcpayInvoice()
                   }}
@@ -928,7 +926,6 @@ export default function Subscribe({
                                       ? `Pay €${PRO_PRICE}/mo`
                                       : "Pay with Bitcoin"}
                       </Span>
-                      (Soon)
                     </>
                   )}
                 </Button>
@@ -947,32 +944,32 @@ export default function Subscribe({
                       alignItems: "center",
                       justifyContent: "center",
                       zIndex: 9999,
-                      padding: "20px",
+                      padding: "10px",
                     }}
                   >
                     <Div
                       style={{
-                        backgroundColor: "#fff",
+                        backgroundColor: "var(--foreground)",
                         borderRadius: "16px",
-                        padding: "28px",
+                        padding: "20px 10px",
                         maxWidth: "400px",
-                        width: "100%",
+                        minWidth: "300px",
                         textAlign: "center",
                       }}
                     >
                       <h2
                         style={{
                           margin: "0 0 8px",
-                          color: "#f7931a",
+                          color: COLORS.orange,
                           fontSize: "1.5rem",
                         }}
                       >
-                        ₿ Pay with Bitcoin (soon)
+                        ₿ Pay with Bitcoin
                       </h2>
                       <p
                         style={{
                           margin: "0 0 4px",
-                          color: "#333",
+                          color: "var(--shade-1)",
                           fontSize: "1.1rem",
                           fontWeight: "bold",
                         }}
@@ -982,7 +979,7 @@ export default function Subscribe({
                       <p
                         style={{
                           margin: "0 0 16px",
-                          color: "#999",
+                          color: "var(--shade-2)",
                           fontSize: "0.75rem",
                         }}
                       >
@@ -995,18 +992,11 @@ export default function Subscribe({
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
-                            display: "inline-block",
-                            background:
-                              "linear-gradient(135deg, #f7931a, #e67e00)",
-                            color: "#fff",
-                            padding: "16px 32px",
-                            borderRadius: "12px",
-                            textDecoration: "none",
-                            fontWeight: "bold",
-                            fontSize: "1.1rem",
+                            ...utilities.button.style,
+                            background: COLORS.orange,
                           }}
                         >
-                          ⚡ Open Payment Page
+                          <Img slug="sushi" /> Open Payment Page
                         </a>
                       </Div>
 
@@ -1014,21 +1004,25 @@ export default function Subscribe({
                         style={{
                           marginTop: "16px",
                           padding: "12px",
-                          backgroundColor: "#f8f9fa",
+                          // backgroundColor: "var(--shade-8)",
                           borderRadius: "8px",
                         }}
                       >
                         <p
                           style={{
                             fontSize: "13px",
-                            color: "#666",
+                            color: "var(--shade-4)",
                             margin: "0 0 4px",
                           }}
                         >
                           ⏳ Waiting for confirmation...
                         </p>
                         <p
-                          style={{ fontSize: "11px", color: "#999", margin: 0 }}
+                          style={{
+                            fontSize: "11px",
+                            color: "var(--shade-5)",
+                            margin: 0,
+                          }}
                         >
                           Lightning Network + On-chain
                         </p>
@@ -1038,7 +1032,7 @@ export default function Subscribe({
                         onClick={() => setBtcpayInvoice(null)}
                         style={{
                           marginTop: "20px",
-                          color: "#999",
+                          color: "var(--shade-5)",
                           fontSize: "0.9rem",
                         }}
                         className="link"
@@ -1423,8 +1417,6 @@ export default function Subscribe({
 
   const [animationKey, setAnimationKey] = useState(0)
 
-  const isObsolete = !isDevelopment
-  if (isObsolete) return
   return (
     <Div style={style}>
       <Modal

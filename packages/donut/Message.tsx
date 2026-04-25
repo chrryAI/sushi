@@ -13,10 +13,13 @@ import {
   useNavigationContext,
 } from "./context/providers"
 import { useStyles } from "./context/StylesContext"
+import useLocalStorage from "./hooks/useLocalStorage"
 import { useWebSocket } from "./hooks/useWebSocket"
 import Img from "./Image"
 import {
+  Brain,
   Check,
+  CircleX,
   Claude,
   Coins,
   Copy,
@@ -108,6 +111,7 @@ function Message({
     plausible,
     isPear,
     actions,
+    isSystemPromptEnabled,
   } = useAuth()
 
   const styles = useMessageStyles()
@@ -139,6 +143,7 @@ function Message({
   ])
 
   const [tryAppCharacterProfile, setTryAppCharacterProfile] = useState(false)
+  const [showSystemPrompt, setShowSystemPrompt] = useState(false)
 
   // Get template context for variable replacement
   const templateContext = useMemo(() => {
@@ -1061,6 +1066,7 @@ function Message({
                   {copied ? <Check size={18} /> : <Copy size={18} />}
                 </Button>
                 {getDeleteMessage()}
+
                 <Span style={styles.userMessageTime.style}>
                   {timeAgo(message.message.createdOn, language)}
                 </Span>
@@ -1322,7 +1328,11 @@ function Message({
                 </Div>
               )}
               <MarkdownContent
-                content={formatMessageTemplates(cleanContent, templateContext)}
+                content={
+                  showSystemPrompt && message.message?.metadata?.systemPrompt
+                    ? message.message?.metadata?.systemPrompt
+                    : formatMessageTemplates(cleanContent, templateContext)
+                }
                 webSearchResults={message.message.webSearchResult || undefined}
               />
               {isStreaming && message.message.isImageGenerationEnabled ? (
@@ -1425,6 +1435,19 @@ function Message({
                 </Div>
               )}
               <Div style={styles.left.style}>
+                {isSystemPromptEnabled && (
+                  <Button
+                    className="button inverted small"
+                    onClick={() => setShowSystemPrompt(!showSystemPrompt)}
+                  >
+                    {showSystemPrompt ? (
+                      <CircleX color={COLORS.orange} size={16} />
+                    ) : (
+                      <Brain color={COLORS.blue} size={16} />
+                    )}
+                    {t("System Prompt")}
+                  </Button>
+                )}
                 {message?.message?.tribePostId && (
                   <A
                     href={`/p/${message.message.tribePostId}`}
