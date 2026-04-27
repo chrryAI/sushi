@@ -1,12 +1,12 @@
 {
   "name": "vex",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "private": true,
-  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
+  "type": "module",
   "scripts": {
     "browser": "bash scripts/run-browser.sh",
     "build": "turbo build",
@@ -66,16 +66,6 @@
     "update-version": "node scripts/update-version.js",
     "validate:chrry": "node scripts/validate-chrry-config.js"
   },
-  "overrides": {
-    "@types/react": "^19.1.12",
-    "@types/react-dom": "^19.1.12",
-    "minimist": "^1.2.8",
-    "node-forge": "^1.3.2",
-    "prismjs": "1.30.0",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
-    "zod": "^4.1.5"
-  },
   "dependencies": {
     "@auth/core": "^0.37.4",
     "@axiomhq/pino": "^1.5.0",
@@ -126,10 +116,20 @@
     "vite-plus": "catalog:",
     "vitest": "catalog:"
   },
-  "packageManager": "pnpm@10.33.0",
+  "overrides": {
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.12",
+    "minimist": "^1.2.8",
+    "node-forge": "^1.3.2",
+    "prismjs": "1.30.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "zod": "^4.1.5"
+  },
   "engines": {
     "node": ">=20.19"
   },
+  "packageManager": "pnpm@10.33.0",
   "pnpm": {
     "overrides": {
       "@hono/node-server@<1.19.10": ">=1.19.10",

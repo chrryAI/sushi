@@ -1784,6 +1784,32 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                           <Img slug="pear" size={20} /> {t("Let's Pear")}
                         </Button>
                       )}
+                      <A
+                        style={{
+                          display: "flex",
+                          position: "relative",
+                        }}
+                        openInNewTab={false}
+                        href="https://ramen.chrry.ai"
+                      >
+                        <Img size={34} src="/images/food/ramen.png" />
+                        {t("拉麺")}
+                        <Span
+                          style={{
+                            position: "absolute",
+                            backgroundColor: COLORS.red,
+                            color: "white",
+                            borderRadius: "20px",
+                            padding: ".15rem .4rem",
+                            bottom: "-.8rem",
+                            right: "-1rem",
+                            fontSize: "0.55rem",
+                          }}
+                        >
+                          {" "}
+                          {t("Ramen")}
+                        </Span>
+                      </A>
                       {back && (
                         <AppLink
                           isTribe
@@ -1892,7 +1918,7 @@ export default function Tribe({ children }: { children?: React.ReactNode }) {
                           position: "relative",
                         }}
                         openInNewTab
-                        href="/ramen"
+                        href="https://ramen.chrry.ai"
                       >
                         <Img size={34} src="/images/food/ramen.png" />
                         {t("拉麺")}

@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  redis-waffles:
+    image: redis:7.2
+    container_name: vex-redis-waffles
+    ports:
+      - "127.0.0.1:6381:6379" # Bind to localhost only for security
+    volumes:
+      - ../../redis_waffles_data:/data
+    restart: unless-stopped
+    # Enable authentication - set REDIS_PASSWORD in .env file
+    command: >
+      sh -c "test -n \"$$REDIS_PASSWORD\" || { echo 'ERROR: REDIS_PASSWORD must be set'; exit 1; } && redis-server 
+      --appendonly no 
+      --save 60 1000 
+      --requirepass $$REDIS_PASSWORD"
+    environment:
+      - REDIS_PASSWORD
+    networks:
+      - vex-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis_waffles_data:
+    driver: local
+
+networks:
+  vex-network:
+    driver: bridge

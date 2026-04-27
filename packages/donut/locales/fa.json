@@ -2543,5 +2543,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 AI پرچمدار Google با زمینه بزرگ 2 میلیون توکن. عالی برای تجزیه و تحلیل کلیه پایگاه‌های کد، اسناد طولانی و وظایف استدلال چند مرحله‌ای پیچیده.",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 AI شبیه‌ترین به انسان Anthropic. استثنایی در مکالمات ریزدقیق، تحلیل اسناد و نوشتن با دقت. عالی برای پروژه‌های خلاقانه و بازخورد دقیق.",
   "Try {{name}} now": "همین حالا {{name}} را امتحان کنید",
-  "Nothing liked yet": "هنوز چیزی پسندیده نشده است"
+  "Nothing liked yet": "هنوز چیزی پسندیده نشده است",
+  "Top up anytime": "هر زمان شارژ کنید €{{price}}"
 }

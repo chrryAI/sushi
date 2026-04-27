@@ -1786,47 +1786,7 @@ const appExtendsTable = {
   },
   primaryKey: ["appId", "toId"],
 } as const
-const appOrdersTable = {
-  name: "appOrders",
-  columns: {
-    appId: {
-      type: "string",
-      optional: false,
-      customType: null as unknown as string,
-    },
-    storeId: {
-      type: "string",
-      optional: false,
-      customType: null as unknown as string,
-    },
-    userId: {
-      type: "string",
-      optional: false,
-      customType: null as unknown as string,
-    },
-    guestId: {
-      type: "string",
-      optional: false,
-      customType: null as unknown as string,
-    },
-    order: {
-      type: "number",
-      optional: false,
-      customType: null as unknown as number,
-    },
-    createdOn: {
-      type: "number",
-      optional: true,
-      customType: null as unknown as number,
-    },
-    updatedOn: {
-      type: "number",
-      optional: true,
-      customType: null as unknown as number,
-    },
-  },
-  primaryKey: ["appId", "storeId", "userId", "guestId"],
-} as const
+
 const appsTable = {
   name: "apps",
   columns: {
@@ -10899,7 +10859,6 @@ export const schema = {
     analyticsSites: analyticsSitesTable,
     appCampaigns: appCampaignsTable,
     appExtends: appExtendsTable,
-    appOrders: appOrdersTable,
     apps: appsTable,
     authExchangeCodes: authExchangeCodesTable,
     autonomousBids: autonomousBidsTable,
@@ -11142,11 +11101,7 @@ export type AppCampaign = Row<(typeof schema)["tables"]["appCampaigns"]>
  * This type is auto-generated from your Drizzle schema definition.
  */
 export type AppExtend = Row<(typeof schema)["tables"]["appExtends"]>
-/**
- * Represents a row from the "appOrders" table.
- * This type is auto-generated from your Drizzle schema definition.
- */
-export type AppOrder = Row<(typeof schema)["tables"]["appOrders"]>
+
 /**
  * Represents a row from the "apps" table.
  * This type is auto-generated from your Drizzle schema definition.

@@ -115,6 +115,15 @@ export const DEFAULT_SECTION_WEIGHTS: Record<
   featureStatus: { weight: 0.15, maxTokens: 200 },
   pearReminder: { weight: 0.1, maxTokens: 100 },
   aiCoach: { weight: 0.1, maxTokens: 500 },
+
+  // enhanced system prompt sections (previously appended outside budget)
+  rag: { weight: 0.75, maxTokens: 3000 },
+  calendarInstructions: { weight: 0.6, maxTokens: 800 },
+  pricing: { weight: 0.15, maxTokens: 1500 },
+  pearFeedback: { weight: 0.25, maxTokens: 800 },
+  retroAnalytics: { weight: 0.2, maxTokens: 1500 },
+  memoryExplanation: { weight: 0.4, maxTokens: 600 },
+  debate: { weight: 0.1, maxTokens: 2000 },
 }
 
 /** helper: create a section with defaults from the table */

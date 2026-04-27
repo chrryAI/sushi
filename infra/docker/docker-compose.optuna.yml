@@ -1,0 +1,129 @@
+# =============================================================================
+# Self-Hosted Hyperparameter Tuning - Vertex AI Alternative
+# 128GB VPS için Optuna + n8n + Parallel Workers
+# =============================================================================
+#
+# Kullanım:
+#   docker compose -f docker-compose.optuna.yml up -d
+#
+# Dashboard'lar:
+#   - Optuna Dashboard: http://localhost:8080
+#   - n8n: http://localhost:5678
+#
+# =============================================================================
+
+services:
+  # ===========================================================================
+  # PostgreSQL - Optuna storage + trial history
+  # ===========================================================================
+  optuna-storage:
+    image: postgres:16-alpine
+    container_name: optuna-db
+    environment:
+      POSTGRES_DB: optuna
+      POSTGRES_USER: optuna
+      POSTGRES_PASSWORD: ${OPTUNA_DB_PASS:-optuna_pass_123}
+    volumes:
+      - optuna_data:/var/lib/postgresql/data
+    networks:
+      - optuna-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U optuna"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ===========================================================================
+  # Optuna Dashboard - Real-time trial monitoring
+  # ===========================================================================
+  optuna-dashboard:
+    image: ghcr.io/optuna/optuna-dashboard:latest
+    container_name: optuna-dashboard
+    ports:
+      - "8080:8080"
+    environment:
+      OPTUNA_STORAGE: postgresql://optuna:${OPTUNA_DB_PASS:-optuna_pass_123}@optuna-storage:5432/optuna
+    networks:
+      - optuna-net
+    depends_on:
+      optuna-storage:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===========================================================================
+  # n8n - Workflow orchestration
+  # ===========================================================================
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    ports:
+      - "5678:5678"
+    environment:
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_USER:-admin}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_PASS:-n8n_pass_123}
+      WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://localhost:5678}
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: optuna-storage
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: n8n
+      DB_POSTGRESDB_USER: optuna
+      DB_POSTGRESDB_PASSWORD: ${OPTUNA_DB_PASS:-optuna_pass_123}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - optuna-net
+      - vex-net
+    depends_on:
+      optuna-storage:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===========================================================================
+  # Trial Worker - Python worker for parallel trials
+  # Scale: docker compose up -d --scale trial-worker=8
+  # ===========================================================================
+  trial-worker:
+    build:
+      context: ../../workers/trial-worker
+      dockerfile: Dockerfile
+    container_name: optuna-worker
+    environment:
+      OPTUNA_STORAGE: postgresql://optuna:${OPTUNA_DB_PASS:-optuna_pass_123}@optuna-storage:5432/optuna
+      API_URL: ${API_URL:-http://api:3002}
+      TRIAL_USER_ID: ${TRIAL_USER_ID:-}
+      STUDY_NAME: ${STUDY_NAME:-chopstick-join-optimizer}
+    networks:
+      - optuna-net
+      - vex-net
+    depends_on:
+      optuna-storage:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 4 # 128GB VPS'de 10-20'ye çıkarabilirsiniz
+
+  # ===========================================================================
+  # Redis - n8n queue + caching
+  # ===========================================================================
+  optuna-redis:
+    image: redis:7.2-alpine
+    container_name: optuna-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - optuna_redis_data:/data
+    networks:
+      - optuna-net
+    restart: unless-stopped
+
+volumes:
+  optuna_data:
+  n8n_data:
+  optuna_redis_data:
+
+networks:
+  optuna-net:
+    driver: bridge
+  vex-net:
+    external: true

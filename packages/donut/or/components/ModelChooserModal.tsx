@@ -1,0 +1,400 @@
+import { X } from "lucide-react"
+import { useCallback, useEffect } from "react"
+import { Button, Div } from "../../platform"
+import { useFiltering } from "../hooks/useFiltering"
+import { useModelData } from "../hooks/useModelData"
+import type { ModelChooserModalProps } from "../types"
+import { FilterBar } from "./FilterBar"
+import { ErrorState, LoadingState } from "./LoadingState"
+import { ModelTable } from "./ModelTable"
+
+export function ModelChooserModal({
+  isOpen,
+  onClose,
+  selectedModel,
+  onModelChange,
+  onModelSelect,
+  apiEndpoint,
+  fallbackModels,
+  theme = "light",
+  maxHeight = "80vh",
+  maxWidth,
+  className,
+  categorizeByType = false,
+}: ModelChooserModalProps) {
+  const { models, freeModels, paidModels, loading, error, refresh } =
+    useModelData(apiEndpoint, fallbackModels)
+
+  const {
+    filteredModels,
+    filterState,
+    sortConfig,
+    updateFilter,
+    clearFilters,
+    setSort,
+    availableProviders,
+    filterStats,
+  } = useFiltering(models)
+
+  // Handle escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape)
+      // Prevent body scroll when modal is open
+      document.body.style.overflow = "hidden"
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+      document.body.style.overflow = ""
+    }
+  }, [isOpen, onClose])
+
+  const handleModelSelect = useCallback(
+    (modelId: string) => {
+      // CRITICAL: Pass exact model ID without any modification
+      onModelChange(modelId)
+
+      // Also call the enhanced callback with full model info if provided
+      if (onModelSelect) {
+        const model = models.find((m) => m.id === modelId)
+        if (model) {
+          onModelSelect(model)
+        }
+      }
+    },
+    [onModelChange, onModelSelect, models],
+  )
+
+  const handleSelectAndClose = useCallback(() => {
+    if (selectedModel) {
+      onClose()
+    }
+  }, [selectedModel, onClose])
+
+  if (!isOpen) return null
+
+  const renderCategorizedModels = () => {
+    if (!categorizeByType) {
+      return (
+        <ModelTable
+          models={filteredModels}
+          selectedModel={selectedModel}
+          onModelSelect={handleModelSelect}
+          sortConfig={sortConfig}
+          onSort={setSort}
+        />
+      )
+    }
+
+    // Categorize filtered models
+    const categorizedFree = filteredModels.filter((m) => m.costTier === "free")
+    const categorizedPaid = filteredModels.filter((m) => m.costTier !== "free")
+
+    return (
+      <div className="categorized-models">
+        {categorizedFree.length > 0 && (
+          <div className="model-category">
+            <h3
+              style={{
+                fontSize: "1rem",
+                fontWeight: "600",
+                margin: "0.75rem 0 0.5rem",
+                color: "#10b981",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              Free Models ({categorizedFree.length})
+            </h3>
+            <ModelTable
+              models={categorizedFree}
+              selectedModel={selectedModel}
+              onModelSelect={handleModelSelect}
+              sortConfig={sortConfig}
+              onSort={setSort}
+            />
+          </div>
+        )}
+
+        {categorizedPaid.length > 0 && (
+          <div className="model-category">
+            <h3
+              style={{
+                fontSize: "1rem",
+                fontWeight: "600",
+                margin: "1rem 0 0.5rem",
+                color: "var(--or-text)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+              }}
+            >
+              Paid Models ({categorizedPaid.length})
+            </h3>
+            <ModelTable
+              models={categorizedPaid}
+              selectedModel={selectedModel}
+              onModelSelect={handleModelSelect}
+              sortConfig={sortConfig}
+              onSort={setSort}
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className={`openrouter-modal ${theme === "dark" ? "dark" : ""} ${className || ""}`}
+    >
+      {/* Backdrop */}
+      <Div className="modal-overlay" onClick={onClose}>
+        {/* Modal */}
+        <Div
+          className="modal-content"
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            maxHeight,
+            ...(maxWidth && { maxWidth, width: maxWidth }),
+          }}
+        >
+          {/* Header */}
+          <div className="modal-header">
+            <h2 className="modal-title">
+              Choose OpenRouter LLM Model
+              {!loading && !error && models.length > 0 && (
+                <span
+                  style={{
+                    fontWeight: "400",
+                    fontSize: "0.875rem",
+                    color: "var(--or-text-secondary)",
+                    marginLeft: "0.5rem",
+                  }}
+                >
+                  ({models.length} models
+                  {freeModels.length > 0 &&
+                    `: ${freeModels.length} free, ${paidModels.length} paid`}
+                  )
+                </span>
+              )}
+            </h2>
+
+            <Button onClick={onClose} className="modal-close-button">
+              <X style={{ width: "1.25rem", height: "1.25rem" }} />
+            </Button>
+          </div>
+
+          {/* Content */}
+          <div className="modal-body">
+            {loading ? (
+              <LoadingState message="Loading available models..." />
+            ) : error ? (
+              <ErrorState error={error} onRetry={refresh} />
+            ) : (
+              <>
+                <FilterBar
+                  filterState={filterState}
+                  onFilterChange={updateFilter}
+                  onClearFilters={clearFilters}
+                  availableProviders={availableProviders}
+                  filterStats={filterStats}
+                />
+
+                {renderCategorizedModels()}
+              </>
+            )}
+          </div>
+
+          {/* Reasoning Detection Warning */}
+          {filteredModels.some((model) => model.reasoning) && (
+            <div
+              style={{
+                padding: "0.75rem 1.5rem",
+                borderTop: "1px solid var(--or-border)",
+                backgroundColor: "#fef3c7",
+                borderLeft: "4px solid #f59e0b",
+                fontSize: "0.75rem",
+                color: "#92400e",
+                lineHeight: "1.4",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.5rem",
+                }}
+              >
+                <span style={{ fontSize: "0.875rem" }}>⚠️</span>
+                <div>
+                  <strong>Reasoning Detection Notice:</strong> Reasoning
+                  capabilities are detected using pattern matching for known
+                  models (o1, DeepSeek R1, Gemini Thinking, etc.). This may not
+                  detect all reasoning models or may change as new models are
+                  released. OpenRouter doesn't provide an official reasoning
+                  capability field.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Footer */}
+          <div
+            style={{
+              padding: "1rem 1.5rem",
+              borderTop: filteredModels.some((model) => model.reasoning)
+                ? "none"
+                : "1px solid var(--or-border)",
+              backgroundColor: "rgba(0, 0, 0, 0.02)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div>
+              {selectedModel &&
+                (() => {
+                  const model = models.find((m) => m.id === selectedModel)
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.25rem",
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: "0.875rem",
+                          color: "var(--or-text-secondary)",
+                        }}
+                      >
+                        Selected:{" "}
+                        <span
+                          style={{
+                            fontWeight: "500",
+                            color: "var(--or-text)",
+                            fontFamily: "monospace",
+                            fontSize: "0.8rem",
+                          }}
+                        >
+                          {selectedModel}
+                        </span>
+                      </div>
+                      {model && (
+                        <div
+                          style={{
+                            display: "flex",
+                            gap: "0.5rem",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "0.75rem",
+                              color: "var(--or-text-secondary)",
+                            }}
+                          >
+                            {model.name} • {model.provider}
+                          </span>
+                          {model.reasoning && (
+                            <span
+                              style={{
+                                padding: "0.125rem 0.375rem",
+                                fontSize: "0.7rem",
+                                backgroundColor: "#8b5cf6",
+                                color: "white",
+                                borderRadius: "0.25rem",
+                                fontWeight: "500",
+                              }}
+                            >
+                              🧠 Reasoning
+                            </span>
+                          )}
+                          {model.multimodal && (
+                            <span
+                              style={{
+                                padding: "0.125rem 0.375rem",
+                                fontSize: "0.7rem",
+                                backgroundColor: "#10b981",
+                                color: "white",
+                                borderRadius: "0.25rem",
+                                fontWeight: "500",
+                              }}
+                            >
+                              👁 Vision
+                            </span>
+                          )}
+                          {model.streamCancel && (
+                            <span
+                              style={{
+                                padding: "0.125rem 0.375rem",
+                                fontSize: "0.7rem",
+                                backgroundColor: "#f59e0b",
+                                color: "white",
+                                borderRadius: "0.25rem",
+                                fontWeight: "500",
+                              }}
+                            >
+                              ⏹️ Stream Cancel
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
+            </div>
+
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+            >
+              <Button
+                onClick={onClose}
+                style={{
+                  padding: "0.5rem 1rem",
+                  color: "var(--or-text)",
+                  backgroundColor: "var(--or-background)",
+                  border: "1px solid var(--or-border)",
+                  borderRadius: "0.5rem",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                onClick={handleSelectAndClose}
+                disabled={!selectedModel}
+                style={{
+                  padding: "0.5rem 1.5rem",
+                  borderRadius: "0.5rem",
+                  fontWeight: "500",
+                  fontSize: "0.875rem",
+                  border: "none",
+                  cursor: selectedModel ? "pointer" : "not-allowed",
+                  backgroundColor: selectedModel
+                    ? "var(--or-primary-color)"
+                    : "#d1d5db",
+                  color: selectedModel ? "white" : "#6b7280",
+                }}
+              >
+                Select Model
+              </Button>
+            </div>
+          </div>
+        </Div>
+      </Div>
+    </div>
+  )
+}

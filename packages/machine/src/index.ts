@@ -29,6 +29,16 @@ export {
   section,
 } from "../src/ai/sushi/promptBuilder"
 
+// Prompt composer — teleprompt + golden ratio bridge (dedup-aware)
+export {
+  composeSection,
+  PromptComposer,
+  type SectionTracking,
+  type VexContext,
+  type VexFlags,
+  type VexVars,
+} from "../src/ai/sushi/promptComposer"
+
 // Free models for testing
 export { FREE_MODELS } from "./ai/index.js"
 // DNA / Seed exports

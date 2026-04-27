@@ -1,6 +1,6 @@
 {
   "name": "@chrryai/machine",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "description": "",
   "keywords": [],
   "license": "ISC",
@@ -41,6 +41,7 @@
     "@ai-sdk/google": "^3.0.52",
     "@ai-sdk/openai": "^3.0.47",
     "@ai-sdk/perplexity": "^3.0.25",
+    "@anythingai/teleprompt": "^0.3.0",
     "@auth/drizzle-adapter": "^1.11.1",
     "@aws-sdk/client-s3": "^3.1014.0",
     "@aws-sdk/s3-request-presigner": "^3.1024.0",

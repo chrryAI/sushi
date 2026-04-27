@@ -11,7 +11,6 @@
       "**",
       "!!packages/sushi",
       "!!**/__tests__/**/*.styles.ts",
-      "!apps/chrry/public/nato/quick_tips.html",
       "!packages/donut/src/ai/chrry.ts"
     ]
   },

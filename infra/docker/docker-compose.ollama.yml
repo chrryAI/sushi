@@ -1,0 +1,31 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: vex-ollama
+    network_mode: host
+    restart: unless-stopped
+    volumes:
+      - vex_ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: vex-open-webui
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      - OLLAMA_BASE_URL=http://127.0.0.1:11434
+      - WEBUI_URL=http://127.0.0.1:3009
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY:?WEBUI_SECRET_KEY gerekli}
+      - WEBUI_AUTH=true
+      - ADMIN_EMAIL=${ADMIN_EMAIL:?ADMIN_EMAIL gerekli}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD gerekli}
+    ports:
+      - "3009:8080"
+    volumes:
+      - vex_openwebui_data:/app/backend/data
+
+volumes:
+  vex_ollama_data:
+  vex_openwebui_data:

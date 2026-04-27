@@ -101,9 +101,9 @@ jobs:
 
           echo "Resolved: slug=$SLUG mode=$MODE has_extension=$HAS_EXT is_dojo=$IS_DOJO"
 
-# ─────────────────────────────────────────────────────────────
-# STEP 2: Install shared deps (cached)
-# ─────────────────────────────────────────────────────────────
+  # ─────────────────────────────────────────────────────────────
+  # STEP 2: Install shared deps (cached)
+  # ─────────────────────────────────────────────────────────────
   install:
     name: Install dependencies
     permissions:
@@ -142,9 +142,9 @@ jobs:
             packages/*/node_modules
           key: nm-${{ github.sha }}
 
-# ─────────────────────────────────────────────────────────────
-# STEP 3a: Flash (web SSR) build
-# ─────────────────────────────────────────────────────────────
+  # ─────────────────────────────────────────────────────────────
+  # STEP 3a: Flash (web SSR) build
+  # ─────────────────────────────────────────────────────────────
   chrry:
     name: Flash build (${{ needs.detect.outputs.slug }})
     permissions:
@@ -186,9 +186,9 @@ jobs:
       - name: Unit tests
         run: pnpm --filter chrry test
 
-# ─────────────────────────────────────────────────────────────
-# STEP 3b: Extension build (only for supported slugs)
-# ─────────────────────────────────────────────────────────────
+  # ─────────────────────────────────────────────────────────────
+  # STEP 3b: Extension build (only for supported slugs)
+  # ─────────────────────────────────────────────────────────────
   extension:
     name: Extension build (${{ needs.detect.outputs.slug }})
     permissions:
@@ -238,9 +238,9 @@ jobs:
           path: apps/extension/dist-chrome-${{ needs.detect.outputs.slug }}.zip
           retention-days: 7
 
-# ─────────────────────────────────────────────────────────────
-# STEP 4: Summary — single status check for branch protection
-# ─────────────────────────────────────────────────────────────
+  # ─────────────────────────────────────────────────────────────
+  # STEP 4: Summary — single status check for branch protection
+  # ─────────────────────────────────────────────────────────────
   dojo-ok:
     name: Dojo OK
     runs-on: ubuntu-latest

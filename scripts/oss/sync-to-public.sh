@@ -57,12 +57,17 @@ rm -rf \
   packages/sushi \
   packages/cache
 
-# Remove private infrastructure
+# Remove private infrastructure (infra komple gider, sadece docker compose dosyaları geri gelir)
 echo "🗑️  Removing private infrastructure..."
 rm -rf \
   infra \
   .hetzner \
   .vps
+
+# Sadece docker compose dosyalarını geri kopyala
+echo "📦 Keeping public docker compose files..."
+mkdir -p infra/docker
+find "$SOURCE_DIR/infra/docker" -maxdepth 1 -name 'docker-compose*.yml' -exec cp {} infra/docker/ \;
 
 # Remove private/internal tools and scripts
 rm -rf \

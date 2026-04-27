@@ -2543,5 +2543,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 Googles flaggskepps-AI med massiv 2M-tokenkontext. Perfekt för att analysera hela kodbasen, långa dokument och komplexa flerstegsresonemangsuppgifter.",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 Anthropics mest mänskliga AI. Exceptionell på nyanserade konversationer, dokumentanalys och genomtänkt skrivande. Utmärkt för kreativa projekt och detaljerad feedback.",
   "Try {{name}} now": "Prova {{name}} nu",
-  "Nothing liked yet": "Inget gillat ännu"
+  "Nothing liked yet": "Inget gillat ännu",
+  "Top up anytime": "Fyll på när som helst €{{price}}"
 }

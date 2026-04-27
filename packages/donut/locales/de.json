@@ -2556,5 +2556,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 Googles Flaggschiff-KI mit massivem 2M-Token-Kontext. Perfekt für die Analyse ganzer Codebasen, langer Dokumente und komplexer mehrstufiger Denkaufgaben.",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 Anthropics menschenähnlichste KI. Außergewöhnlich bei nuancierten Gesprächen, Dokumentenanalyse und durchdachtem Schreiben. Ideal für kreative Projekte und detailliertes Feedback.",
   "Try {{name}} now": "Probieren Sie {{name}} jetzt aus",
-  "Nothing liked yet": "Noch nichts gemocht"
+  "Nothing liked yet": "Noch nichts gemocht",
+  "Top up anytime": "Jederzeit aufladen €{{price}}"
 }

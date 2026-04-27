@@ -1038,6 +1038,8 @@ export const threads = pgTable("threads", {
       }[]
     >(),
 
+  ramenId: text("ramenId"),
+
   // Golden Ratio φ-Engine
   messageCount: integer("messageCount").default(0).notNull(),
   lastTriggeredFeatures: jsonb("lastTriggeredFeatures")
@@ -1326,6 +1328,13 @@ export const messages = pgTable(
           tokensOut?: number
           costUsd?: number
           resolvedAt: string
+          /** Section tracking — visibility into prompt composition */
+          sectionTracking?: {
+            includedSections: string[]
+            excludedSections: string[]
+            droppedSections: string[]
+            systemPromptTokens: number
+          }
         }
       }>()
       .default({}),
@@ -3945,51 +3954,6 @@ export const feedbackSubmissions = pgTable("feedbackSubmission", {
     .notNull(),
   approvedOn: timestamp("approvedOn", { mode: "date", withTimezone: true }),
 })
-
-export const appOrders = pgTable(
-  "appOrders",
-  {
-    appId: uuid("appId")
-      .references(() => apps.id, { onDelete: "cascade" })
-      .notNull(),
-    storeId: uuid("storeId").references(() => stores.id, {
-      onDelete: "cascade",
-    }),
-    userId: uuid("userId").references(() => users.id, { onDelete: "cascade" }),
-    guestId: uuid("guestId").references(() => guests.id, {
-      onDelete: "cascade",
-    }),
-    order: integer("order").notNull(),
-    createdOn: timestamp("createdOn", { mode: "date", withTimezone: true })
-      .defaultNow()
-      .notNull(),
-    updatedOn: timestamp("updatedOn", { mode: "date", withTimezone: true })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [
-    primaryKey({
-      columns: [table.appId, table.storeId, table.userId, table.guestId],
-    }),
-    // Unique constraint: one app can only have one order per store+user/guest
-    uniqueIndex("app_order_app_store_user_unique").on(
-      table.appId,
-      table.storeId,
-      table.userId,
-    ),
-    uniqueIndex("app_order_app_store_guest_unique").on(
-      table.appId,
-      table.storeId,
-      table.guestId,
-    ),
-    // Index for fast lookups by store
-    index("app_order_store_id_idx").on(table.storeId),
-    // Index for fast lookups by user
-    index("app_order_user_id_idx").on(table.userId),
-    // Index for fast lookups by guest
-    index("app_order_guest_id_idx").on(table.guestId),
-  ],
-)
 
 export const appExtends = pgTable(
   "appExtends",

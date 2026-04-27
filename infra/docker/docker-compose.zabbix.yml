@@ -1,0 +1,130 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - zabbix-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zabbix-net
+
+  zabbix-java-gateway:
+    image: zabbix/zabbix-java-gateway:alpine-7.4-latest
+    restart: unless-stopped
+    networks:
+      - zabbix-net
+
+  zabbix-snmptraps:
+    image: zabbix/zabbix-snmptraps:alpine-7.4-latest
+    restart: unless-stopped
+    volumes:
+      - zabbix-snmptraps:/var/lib/zabbix/snmptraps
+      - zabbix-mibs:/var/lib/zabbix/mibs
+    networks:
+      - zabbix-net
+
+  zabbix-server-pgsql:
+    image: zabbix/zabbix-server-pgsql:alpine-7.4-latest
+    restart: unless-stopped
+    environment:
+      DB_SERVER_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      ZBX_ENABLE_SNMP_TRAPS: "true"
+      ZBX_JAVAGATEWAY: zabbix-java-gateway
+    depends_on:
+      postgres:
+        condition: service_healthy
+      zabbix-java-gateway:
+        condition: service_started
+      zabbix-snmptraps:
+        condition: service_started
+    volumes:
+      - zabbix-server-data:/var/lib/zabbix
+      - zabbix-snmptraps:/var/lib/zabbix/snmptraps
+      - zabbix-mibs:/var/lib/zabbix/mibs
+    expose:
+      - 10051
+    healthcheck:
+      test: ["CMD", "pgrep", "zabbix_server"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zabbix-net
+
+  zabbix-agent2:
+    image: zabbix/zabbix-agent2:alpine-7.4-latest
+    restart: unless-stopped
+    privileged: true
+    pid: host
+    environment:
+      ZBX_HOSTNAME: Ubuntu-2204-jammy-amd64-base
+      ZBX_SERVER_HOST: zabbix-server-pgsql
+      ZBX_SERVER_PORT: 10051
+      ZBX_ACTIVE_ALLOW: "true"
+      ZBX_PASSIVE_ALLOW: "true"
+      ZBX_TIMEOUT: 30
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/hostfs:ro
+      - /etc:/hostfs/etc:ro
+    depends_on:
+      zabbix-server-pgsql:
+        condition: service_healthy
+    networks:
+      - zabbix-net
+    healthcheck:
+      test: ["CMD", "pgrep", "zabbix_agent2"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  zabbix-web-nginx-pgsql:
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-7.4-latest
+    restart: unless-stopped
+    environment:
+      DB_SERVER_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      ZBX_SERVER_HOST: zabbix-server-pgsql
+      ZBX_SERVER_NAME: ${ZBX_SERVER_NAME}
+      PHP_TZ: ${PHP_TZ}
+    depends_on:
+      zabbix-server-pgsql:
+        condition: service_healthy
+      zabbix-agent2:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:5080:8080"
+    networks:
+      - zabbix-net
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  zabbix-postgres-data:
+  zabbix-server-data:
+  zabbix-snmptraps:
+  zabbix-mibs:
+
+networks:
+  zabbix-net:
+    driver: bridge

@@ -1,0 +1,194 @@
+version: "3.8"
+
+services:
+  # ─────────────────────────────────────────────
+  # PostgreSQL 18 + pgvector
+  # ─────────────────────────────────────────────
+  postgres:
+    image: pgvector/pgvector:pg18
+    container_name: vex-postgres
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vex}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vex_local_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-vex}
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c idle_in_transaction_session_timeout=30000
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ../../scripts/init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh
+    networks:
+      - vex-local
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vex}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # Redis 7.2
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7.2-alpine
+    container_name: vex-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: >
+      sh -c "redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-vex_redis_local}"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vex-local
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-vex_redis_local}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MinIO — S3-compatible storage
+  # API: :9000  Console: :9001
+  # ─────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: vex-minio
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-vex}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-vex_minio_local_password}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - vex-local
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 20s
+      retries: 5
+
+  minio-init:
+    image: minio/minio:latest
+    container_name: vex-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 ${MINIO_ROOT_USER:-vex} ${MINIO_ROOT_PASSWORD:-vex_minio_local_password};
+      mc mb --ignore-existing local/chrry-chat-files;
+      mc mb --ignore-existing local/chrry-app-profiles;
+      mc anonymous set download local/chrry-chat-files;
+      mc anonymous set download local/chrry-app-profiles;
+      echo 'MinIO buckets ready';
+      exit 0;
+      "
+    networks:
+      - vex-local
+
+  # ─────────────────────────────────────────────
+  # FalkorDB — Knowledge Graph
+  # :6380 → container:6379 (Redis conflict önleme)
+  # ─────────────────────────────────────────────
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: vex-falkordb
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - falkordb_data:/data
+    networks:
+      - vex-local
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # NATS — Message Queue + JetStream
+  # Client: :4222  HTTP Monitor: :8222
+  # ─────────────────────────────────────────────
+  nats:
+    image: nats:latest
+    container_name: vex-nats
+    restart: unless-stopped
+    command: "-js"
+    ports:
+      - "127.0.0.1:4222:4222"
+      - "127.0.0.1:8222:8222"
+    volumes:
+      - nats_data:/data/jetstream
+    networks:
+      - vex-local
+
+  # ─────────────────────────────────────────────
+  # Zero Cache — client-side sync / offline-first
+  # WebSocket: ws://localhost:4848
+  # ─────────────────────────────────────────────
+  zero-cache:
+    build:
+      context: ../..
+      dockerfile: infra/docker/zero-cache.Dockerfile
+    container_name: vex-zero-cache
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4848:4848"
+    environment:
+      ZERO_UPSTREAM_DB: postgres://vex:vex_local_dev@postgres:5432/vex
+      ZERO_CVR_DB: postgres://vex:vex_local_dev@postgres:5432/vex
+      ZERO_CHANGE_DB: postgres://vex:vex_local_dev@postgres:5432/vex
+      ZERO_REPLICA_FILE: /data/zero.db
+      ZERO_SCHEMA_PATH: ./src/schema.ts
+    volumes:
+      - zero_data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - vex-local
+
+  # ─────────────────────────────────────────────
+  # Mailhog — local SMTP
+  # SMTP: :1025  UI: http://localhost:8025
+  # ─────────────────────────────────────────────
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: vex-mailhog
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+    networks:
+      - vex-local
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  minio_data:
+    driver: local
+  falkordb_data:
+    driver: local
+  nats_data:
+    driver: local
+  zero_data:
+    driver: local
+
+networks:
+  vex-local:
+    driver: bridge

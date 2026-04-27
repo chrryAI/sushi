@@ -236,6 +236,9 @@ export const MODEL_LIMITS: Record<string, modelLimits> = {
     name: "Grok 4.1 Fast Reasoning",
   },
   "grok-4-1": { maxTokens: 128000, name: "Grok 4.1" },
+  "glm-5.1": { maxTokens: 128000, name: "GLM-5.1" },
+  "ollama/glm-5.1": { maxTokens: 128000, name: "GLM-5.1" },
+  "ollama/glm-5.1:cloud": { maxTokens: 128000, name: "GLM-5.1" },
   "minimax/minimax-m2.7:free": { maxTokens: 200000, name: "MiniMax M2.7 Free" },
   "minimax/minimax-m2.7": { maxTokens: 200000, name: "MiniMax M2.7" },
   "minimax/minimax-m2.5:free": { maxTokens: 200000, name: "MiniMax M2.5 Free" },
@@ -462,7 +465,6 @@ import {
   analyticsSites,
   appCampaigns,
   appExtends,
-  appOrders,
   apps,
   authExchangeCodes,
   autonomousBids,
@@ -627,20 +629,10 @@ export const getApps = async (
     .select({
       app: apps,
       store: stores,
-      appOrder: appOrders,
       storeInstall: storeInstalls,
     })
     .from(apps)
     .innerJoin(stores, eq(apps.storeId, stores.id))
-    .leftJoin(
-      appOrders,
-      and(
-        eq(appOrders.appId, apps.id),
-        storeId ? eq(appOrders.storeId, storeId) : undefined,
-        userId ? eq(appOrders.userId, userId) : undefined,
-        guestId ? eq(appOrders.guestId, guestId) : undefined,
-      ),
-    )
     .leftJoin(
       storeInstalls,
       and(
@@ -661,7 +653,6 @@ export const getApps = async (
       // 2. Chrry second
       desc(sql`CASE WHEN ${apps.slug} = 'chrry' THEN 1 ELSE 0 END`),
       // 3. Custom app order (0, 1, 2, 3...), nulls last
-      sql`${appOrders.order} ASC NULLS LAST`,
       // 4. Store install display order (0, 1, 2, 3...), nulls last
       sql`${storeInstalls.displayOrder} ASC NULLS LAST`,
       // 5. Creation date for apps without custom order
@@ -4076,35 +4067,41 @@ export const OLLAMA_MODEL_MAP: Record<
 > = {
   //glm-5.1:cloud
   "deepseek/deepseek-v3.2": {
-    name: "deepseek-v3.2:cloud",
+    name: "ollama/glm-5.1:cloud",
     reasoning_effort: "none",
   },
   "deepseek/deepseek-r1": {
-    name: "deepseek-v3.2:cloud",
+    name: "ollama/glm-5.1:cloud",
     reasoning_effort: "high",
   },
   "deepseek/deepseek-chat": {
-    name: "deepseek-v3.2:cloud",
+    name: "ollama/glm-5.1:cloud",
     reasoning_effort: "none",
   },
-  "deepseek-chat": { name: "deepseek-v3.2:cloud", reasoning_effort: "none" },
+  "deepseek-chat": {
+    name: "ollama/glm-5.1:cloud",
+    reasoning_effort: "none",
+  },
   "minimax/minimax-m2.7": {
-    name: "minimax-m2.7:cloud",
+    name: "ollama/glm-5.1:cloud",
     reasoning_effort: "high",
   },
   "minimax/minimax-m2.5": {
-    name: "minimax-m2.5:cloud",
-    reasoning_effort: "medium",
+    name: "ollama/glm-5.1:cloud",
+    reasoning_effort: "none",
   },
   "nvidia/nemotron-3-super-120b-a12b": {
-    name: "deepseek-v3.2:cloud",
+    name: "ollama/glm-5.1:cloud",
     reasoning_effort: "high",
   },
-  "google/gemini-3.1-pro-preview": {
-    name: "kimi-k2.5:cloud",
-    reasoning_effort: "high",
-  },
-  "x-ai/grok-4.1-fast": { name: "kimi-k2.6:cloud", reasoning_effort: "high" },
+  // "google/gemini-3.1-pro-preview": {
+  //   name: "ollama/kimi-k2.5:cloud",
+  //   reasoning_effort: "high",
+  // },
+  // "x-ai/grok-4.1-fast": {
+  //   name: "ollama/kimi-k2.6:cloud",
+  //   reasoning_effort: "high",
+  // },
 }
 
 export function toOllamaModel(orModelId: string) {
@@ -4388,7 +4385,6 @@ export async function getModelProvider({
   guest,
   job,
   source,
-  isEffect,
   ...rest
 }: modelProviderOptions): Promise<ModelProviderResult> {
   const agents = (await getAiAgents({ include: app?.id })) as aiAgent[]
@@ -4404,19 +4400,10 @@ export async function getModelProvider({
   const isBYOK = !!accountKey
   const byokKey = accountKey ? byokDecrypt(accountKey) : undefined
 
-  const appKey = safeDecrypt(app?.apiKeys?.openrouter)
-  const systemKey = isDevelopment
-    ? process.env.OPENROUTER_SUSHI!
-    : process.env.OPENROUTER_API_KEY!
-
-  const orKey = byokKey ?? appKey ?? systemKey
-
   const creditsLeft = user?.creditsLeft ?? guest?.creditsLeft ?? 1
   const hasCredits = creditsLeft > 0
   const effectivelyHasCredits = hasCredits || !!byokKey
   const isJob = !!(swarm?.postType || job)
-
-  const degradedKey = orKey
 
   const fallback = (): ModelProviderResult => {
     const { primary } = route("free", { needsTools: false })
@@ -4458,10 +4445,7 @@ export async function getModelProvider({
     job?.modelConfig?.model ??
     rest.modelId
 
-  const safeExplicitModel =
-    explicitModel === "deepseek/deepseek-r1" && isJob
-      ? "deepseek/deepseek-v3.2"
-      : explicitModel
+  const safeExplicitModel = explicitModel
 
   let routeResult: routeResult
 
@@ -4486,8 +4470,6 @@ export async function getModelProvider({
       preferModel: agentModel,
       needsTools: true,
     })
-  } else if (isJob) {
-    routeResult = route("cheap", { needsTools: true })
   } else {
     routeResult = route("mid", { needsTools: true })
   }
@@ -4505,7 +4487,7 @@ export async function getModelProvider({
     canAnalyze: modelCapabilities[modelId]?.canAnalyze ?? false,
     isBYOK: !!byokKey,
     isBELEŞ: resolvedName === "beleş",
-    isFree: modelId.endsWith(":free") || modelId === "qwen/qwen3.6-plus",
+    isFree: modelId.endsWith(":free"),
   }
 }
 
@@ -4543,7 +4525,6 @@ export async function getEmbeddingProvider({
   app,
   user,
   guest,
-  isEffect,
   source,
 }: getModelProviderOptions): Promise<{
   modelId?: string
@@ -6353,13 +6334,15 @@ const makeOllamaEffectLayerForModel = (
 ): Layer.Layer<AiLanguageModel.LanguageModel> => {
   const apiKey = process.env.OLLAMA_API_KEY || "ollama"
   const url = OLLAMA_URL.replace(/\/$/, "")
+  // Ollama Cloud expects model IDs without the "ollama/" prefix
 
   const clientLayer = OpenRouterClient.layer({
     apiKey: Redacted.make(apiKey),
     apiUrl: url,
     transformClient: (client) => {
       // 1. Remove stream_options from request body — Ollama Cloud rejects it
-      // 2. Add reasoning_effort if mapped
+      // 2. Inject reasoning_effort if mapped
+      // 3. Replace "ollama/" prefixed model IDs with bare IDs for Ollama Cloud
       const requestPatched = HttpClient.mapRequest(client, (req) => {
         if (req.method === "POST" && req.body._tag === "Uint8Array") {
           try {
@@ -6376,6 +6359,10 @@ const makeOllamaEffectLayerForModel = (
                 `🧠 Injected reasoning_effort=${reasoningEffort} into Ollama request`,
               )
             }
+            if (json.model && typeof json.model === "string") {
+              json.model = json.model.replace(/^ollama\//, "")
+              console.log(`🦙 Patched request model → ${json.model}`)
+            }
             return HttpClientRequest.bodyUnsafeJson(json)(req)
           } catch {
             // ignore parse errors, pass through unchanged
@@ -6384,9 +6371,8 @@ const makeOllamaEffectLayerForModel = (
         return req
       })
 
-      // 2. Patch response model field — Ollama Cloud returns model IDs without
-      //    a slash (e.g. "deepseek-v3.2:cloud") but OpenRouter schema expects
-      //    ${string}/${string}. Inject a prefix so the SSE response parses.
+      // Response stream patch — Ollama Cloud returns bare model IDs (no "ollama/")
+      // but OpenRouter schema expects ${string}/${string}. Inject the prefix.
       return HttpClient.transformResponse(requestPatched, (effect) =>
         Effect.map(effect, (res) => {
           return new Proxy(res, {
@@ -6474,13 +6460,21 @@ export async function getEffectModelLayer(
     `🔀 getEffectModelLayer: modelId=${result.modelId} source=${options.source ?? "none"} ollamaMapping=${ollamaMapping ? ollamaMapping.name : "null"} ollamaUp=${ollamaUp}`,
   )
 
-  if (ollamaMapping && ollamaUp && options?.user?.role === "admin") {
+  // BG jobs should not use reasoning_effort — it causes 400s on Ollama cloud
+  const reasoningEffort = options.job
+    ? "none"
+    : options.source &&
+        !["ai", "ai/sushi/file", "ai/imageGeneration"].includes(options.source)
+      ? "none"
+      : ollamaMapping?.reasoning_effort
+
+  if (ollamaMapping && ollamaUp) {
     const layer = makeOllamaEffectLayerForModel(
       ollamaMapping.name,
-      ollamaMapping.reasoning_effort,
+      reasoningEffort,
     )
     console.log(
-      `🦙 Routing to Ollama: ${result.modelId} → ${ollamaMapping.name} (reasoning: ${ollamaMapping.reasoning_effort || "none"})`,
+      `🦙 Routing to Ollama: ${result.modelId} → ${ollamaMapping.name} (reasoning: ${reasoningEffort || "none"}`,
     )
     return {
       layer,
@@ -6494,7 +6488,7 @@ export async function getEffectModelLayer(
       isBELEŞ: true,
       isDegraded: false,
       isOllama: true,
-      reasoningEffort: ollamaMapping.reasoning_effort,
+      reasoningEffort: reasoningEffort,
     }
   }
 

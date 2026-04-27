@@ -154,7 +154,8 @@ export function parseModelfile(content: string): ParsedModelfile {
             const [, key, val] = match
             if (val === "true") result.parameters[key] = true
             else if (val === "false") result.parameters[key] = false
-            else if (!isNaN(Number(val))) result.parameters[key] = Number(val)
+            else if (!Number.isNaN(Number(val)))
+              result.parameters[key] = Number(val)
             else result.parameters[key] = val
           }
         }
@@ -468,5 +469,5 @@ export function stringifyModelfile(modelfile: ParsedModelfile): string {
 
   lines.push(`AUTONOMY ${modelfile.autonomy}`)
 
-  return lines.join("\n") + "\n"
+  return `${lines.join("\n")}\n`
 }

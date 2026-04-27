@@ -156,7 +156,7 @@ export function routeMessage(
 
   if (unresolved.length > 0) {
     return {
-      error: `Unknown agent(s): ${unresolved.map((u) => "@" + u).join(", ")}`,
+      error: `Unknown agent(s): ${unresolved.map((u) => `@${u}`).join(", ")}`,
     }
   }
 

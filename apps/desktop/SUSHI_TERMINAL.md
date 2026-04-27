@@ -24,6 +24,7 @@ uuid = { version = "1", features = ["v4"] }
 ### 2. Tauri Komutu (lib.rs)
 
 `execute_command` fonksiyonu eklendi. Bu fonksiyon:
+
 - Komutu spawn eder
 - stdout/stderr'yi stream eder
 - Event olarak frontend'e gönderir
@@ -38,25 +39,26 @@ uuid = { version = "1", features = ["v4"] }
 ## Kullanım
 
 ```tsx
-import { InlineTerminal } from './components/InlineTerminal'
-import './components/InlineTerminal.css'
+import { InlineTerminal } from "./components/InlineTerminal";
+import "./components/InlineTerminal.css";
 
 function App() {
   return (
-    <InlineTerminal 
+    <InlineTerminal
       workingDir="."
       maxSessions={10}
       onSessionComplete={(session) => {
-        console.log('Terminal session completed:', session)
+        console.log("Terminal session completed:", session);
       }}
     />
-  )
+  );
 }
 ```
 
 ## Sushi Şakaları
 
 Başarılı komutlardan sonra rastgele şakalar:
+
 - 🍙 Asahi gibi patladı!
 - 🍣 Wasabi kadar sert çalıştı!
 - 🥢 Chopsticks ready, iş tamam!
@@ -64,6 +66,7 @@ Başarılı komutlardan sonra rastgele şakalar:
 - 🍜 Ramen gibi akıcı!
 
 Hatalı komutlardan sonra:
+
 - 😰 Oh no, soya sosu döküldü!
 - 🍣 Balık taze değil gibi...
 - 🥢 Chopsticks kırıldı, retry?

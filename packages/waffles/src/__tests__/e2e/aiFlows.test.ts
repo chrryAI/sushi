@@ -39,7 +39,9 @@ describe("E2E AI Flows", () => {
           // 3. Generate response
           const response = yield* model.generate(
             "What is 2+2? Answer with just the number.",
-            { maxTokens: 10 },
+            {
+              maxTokens: 10,
+            },
           )
 
           return response

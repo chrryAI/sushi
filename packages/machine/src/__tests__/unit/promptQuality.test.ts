@@ -37,7 +37,11 @@ function truncateToTokens(text: string | undefined, maxTokens: number): string {
 function buildSystemPromptV2Local(params: {
   sections: PromptSection[]
   maxTokens: number
-}): { prompt: string; tokensUsed: number; droppedSections: string[] } {
+}): {
+  prompt: string
+  tokensUsed: number
+  droppedSections: string[]
+} {
   const { sections, maxTokens } = params
   const hardFloor = 1000
   const budget = Math.max(hardFloor, maxTokens - hardFloor)

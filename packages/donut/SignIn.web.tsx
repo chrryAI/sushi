@@ -611,7 +611,7 @@ export default function SignIn({
   return (
     <>
       {!user ? (
-        <Div>
+        <Div style={style}>
           {showSignIn && (
             <Button
               data-testid={`login-button`}
