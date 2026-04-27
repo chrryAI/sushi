@@ -1,0 +1,121 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Sushi Docs",
+  "colors": {
+    "primary": "#E11D48",
+    "light": "#FB7185",
+    "dark": "#BE123C"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "index"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/contributing",
+              "guides/self-hosting",
+              "guides/security",
+              "guides/release",
+              "guides/open-source-checklist",
+              "guides/builder-program",
+              "guides/pricing-tiers",
+              "guides/local-first",
+              "guides/nuke",
+              "guides/daily-questions",
+              "guides/seo-quick-wins",
+              "guides/focus-app-creation",
+              "guides/focus-custom-domain",
+              "guides/apps-migration-summary",
+              "guides/standalone-apps-migration"
+            ]
+          },
+          {
+            "group": "Architecture",
+            "pages": [
+              "architecture/ai-route",
+              "architecture/domain-based-routing",
+              "architecture/spatial-navigation",
+              "architecture/performance-optimization",
+              "architecture/native-bridge-api",
+              "architecture/native-bridge-ide",
+              "architecture/unified-spatial-zero-entity",
+              "architecture/unified-patent-specification",
+              "architecture/comprehensive-spatial-patent"
+            ]
+          },
+          {
+            "group": "Infrastructure",
+            "pages": [
+              "infrastructure/redis-cache",
+              "infrastructure/runtime-platform-detection",
+              "infrastructure/platform-primitives",
+              "infrastructure/platform-styles",
+              "infrastructure/scss-workflow",
+              "infrastructure/google-ads-tracking",
+              "infrastructure/sonarcloud-setup",
+              "infrastructure/sonarcloud-webhook",
+              "infrastructure/sonarcloud-graph",
+              "infrastructure/sonarcloud-auto-sync"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "AI agents",
+        "groups": [
+          {
+            "group": "C-suite",
+            "pages": [
+              "agents/c-suite/core",
+              "agents/c-suite/chrry",
+              "agents/c-suite/sushi",
+              "agents/c-suite/vault",
+              "agents/c-suite/vex",
+              "agents/c-suite/grape",
+              "agents/c-suite/focus",
+              "agents/c-suite/pear",
+              "agents/c-suite/atlas",
+              "agents/c-suite/bloom",
+              "agents/c-suite/burn",
+              "agents/c-suite/popcorn",
+              "agents/c-suite/zarathustra"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Vision",
+        "groups": [
+          {
+            "group": "Vision",
+            "pages": [
+              "vision/grape"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "type": "github",
+        "href": "https://github.com/chrryai/sushi"
+      }
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/chrryai"
+    }
+  }
+}
