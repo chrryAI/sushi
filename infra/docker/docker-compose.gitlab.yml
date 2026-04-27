@@ -1,0 +1,77 @@
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: unless-stopped
+    hostname: git.chrry.ai
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://${GITLAB_HOST}'
+        gitlab_rails['gitlab_ssh_host'] = '${GITLAB_HOST}'
+        gitlab_rails['gitlab_shell_ssh_port'] = 2224
+        gitlab_rails['db_adapter'] = 'postgresql'
+        gitlab_rails['db_host'] = 'postgresql'
+        gitlab_rails['db_port'] = '5432'
+        gitlab_rails['db_database'] = '${POSTGRES_DB}'
+        gitlab_rails['db_username'] = '${POSTGRES_USER}'
+        gitlab_rails['db_password'] = '${POSTGRES_PASSWORD}'
+        # Redis config for external TCP connection
+        gitlab_rails['redis_url'] = 'redis://redis:6379/0'
+        gitlab_rails['redis_host'] = 'redis'
+        gitlab_rails['redis_port'] = 6379
+        gitlab_rails['redis_socket'] = nil
+        gitlab_rails['gitlab_email_enabled'] = false
+        gitlab_rails['gitlab_default_can_create_group'] = true
+        gitlab_rails['gitlab_username_changing_enabled'] = false
+        unicorn['worker_processes'] = 2
+        unicorn['worker_timeout'] = 60
+        postgresql['enable'] = false
+        redis['enable'] = false
+        nginx['enable'] = true
+        nginx['listen_port'] = 80
+        nginx['listen_https'] = false
+        nginx['listen_addresses'] = ['0.0.0.0']
+        prometheus_monitoring['enable'] = false
+        # Trust Cloudflare proxy IPs so GitLab sees real client IPs
+        gitlab_rails['trusted_proxies'] = [
+          '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22',
+          '103.31.4.0/22', '141.101.64.0/18', '108.162.192.0/18',
+          '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22',
+          '198.41.128.0/17', '162.158.0.0/15', '104.16.0.0/13',
+          '104.24.0.0/14', '172.64.0.0/13', '131.0.72.0/22',
+          '2400:cb00::/32', '2606:4700::/32', '2803:f800::/32',
+          '2405:b500::/32', '2405:8100::/32', '2a06:98c0::/29',
+          '2c0f:f248::/32'
+        ]
+    ports:
+      - "80"
+      - "2224"
+    volumes:
+      - gitlab_config:/etc/gitlab
+      - gitlab_logs:/var/log/gitlab
+      - gitlab_data:/var/opt/gitlab
+    depends_on:
+      - postgresql
+      - redis
+
+  postgresql:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+volumes:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
+  postgresql_data:
+  redis_data:

@@ -1,0 +1,119 @@
+# ═══════════════════════════════════════════════════════════════
+# 🐝 SUSHI - DOCKER SWARM MODE
+# ═══════════════════════════════════════════════════════════════
+
+version: "3.8"
+
+services:
+  # ─────────────────────────────────────────────
+  # 🦛 HIPPO - PostgreSQL
+  # ─────────────────────────────────────────────
+  hippo:
+    image: pgvector/pgvector:pg18
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vex}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vexpassword}
+      POSTGRES_DB: ${POSTGRES_DB:-vex}
+    volumes:
+      - type: volume
+        source: hippo_data
+        target: /var/lib/postgresql/data
+    networks:
+      - watermelon-net
+
+  # ─────────────────────────────────────────────
+  # 🍒 CHERRY - Redis
+  # ─────────────────────────────────────────────
+  cherry:
+    image: redis:7.2-alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    command: >
+      sh -c "redis-server
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-cherrypassword}"
+    volumes:
+      - type: volume
+        source: cherry_data
+        target: /data
+    networks:
+      - watermelon-net
+
+  # ─────────────────────────────────────────────
+  # 🍑 PEACH - MinIO
+  # ─────────────────────────────────────────────
+  peach:
+    image: minio/minio:latest
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-sushi}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-peachpassword}
+    command: server /data
+    volumes:
+      - type: volume
+        source: peach_data
+        target: /data
+    networks:
+      - watermelon-net
+
+  # ─────────────────────────────────────────────
+  # 🖥️ MACHINE APP
+  # ─────────────────────────────────────────────
+  machine:
+    image: node:20-alpine
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DB_URL: "postgresql://${POSTGRES_USER:-vex}:${POSTGRES_PASSWORD:-vexpassword}@hippo:5432/${POSTGRES_DB:-vex}"
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-vex}:${POSTGRES_PASSWORD:-vexpassword}@hippo:5432/${POSTGRES_DB:-vex}"
+      REDIS_URL: "redis://:${REDIS_PASSWORD:-cherrypassword}@cherry:6379"
+      S3_ENDPOINT: "http://peach:9000"
+      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-sushi}
+      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-peachpassword}
+    networks:
+      - watermelon-net
+    configs:
+      - source: machine_config
+        target: /app/config.json
+
+networks:
+  watermelon-net:
+    driver: overlay
+    attachable: true
+
+volumes:
+  hippo_data:
+    driver: local
+  cherry_data:
+    driver: local
+  peach_data:
+    driver: local
+
+configs:
+  machine_config:
+    external: true

@@ -2554,5 +2554,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 L'IA phare de Google avec un contexte massif de 2M de tokens. Parfait pour analyser des bases de code entières, de longs documents et des tâches de raisonnement complexes en plusieurs étapes.",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 L'IA la plus humaine d'Anthropic. Exceptionnelle pour les conversations nuancées, l'analyse de documents et l'écriture réfléchie. Idéal pour les projets créatifs et les retours détaillés.",
   "Try {{name}} now": "Essayez {{name}} maintenant",
-  "Nothing liked yet": "Rien n'a encore été aimé"
+  "Nothing liked yet": "Rien n'a encore été aimé",
+  "Top up anytime": "Rechargez à tout moment €{{price}}"
 }

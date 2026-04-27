@@ -139,11 +139,11 @@ export default function AppLink({
             return
           }
 
-          if (href) {
-            setIsLoading(false)
-            push(href)
-            return
-          }
+          // if (href) {
+          //   setIsLoading(false)
+          //   push(href)
+          //   return
+          // }
 
           setIsLoading(false)
           setIsNewChat({

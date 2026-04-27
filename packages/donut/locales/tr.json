@@ -2557,5 +2557,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 Büyük 2M token bağlamına sahip Google'ın amiral gemisi AI. Tüm kod tabanlarını, uzun belgeleri ve karmaşık çok adımlı mantık görevlerini analiz etmek için mükemmel.",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 Anthropic'in en insana benzer AI. İnce ayrıntılı konuşmalar, belge analizi ve düşünceli yazılar konusunda olağanüstü. Yaratıcı projeler ve detaylı geri bildirimler için harika.",
   "Try {{name}} now": "{{name}}'i şimdi dene",
-  "Nothing liked yet": "Henüz beğenilen bir şey yok"
+  "Nothing liked yet": "Henüz beğenilen bir şey yok",
+  "Top up anytime": "Her zaman yükleme yapın €{{price}}"
 }

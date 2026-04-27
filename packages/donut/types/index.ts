@@ -855,7 +855,7 @@ export type apiKeys = {
 // Subscription types
 export type subscription = {
   id: string
-  provider: "stripe" | "apple" | "google" | "crypto"
+  provider: "stripe" | "apple" | "google" | "crypto" | "btcpay"
   subscriptionId: string
   sessionId: string | null
   status: "active" | "canceled" | "pastDue" | "ended" | "trialing"

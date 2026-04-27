@@ -1,0 +1,129 @@
+# ═══════════════════════════════════════════════════════════════
+# ₿ BTCPAY SERVER - Bitcoin Vault
+# ═══════════════════════════════════════════════════════════════
+
+name: btcpay
+
+services:
+  # ─────────────────────────────────────────────
+  # ₿ BTCPay Server
+  # ─────────────────────────────────────────────
+  btcpay:
+    image: btcpayserver/btcpayserver:1.13.0
+    container_name: btcpay-server
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.btcpay.rule=Host(`vault.chrry.dev`)"
+      - "traefik.http.routers.btcpay.entrypoints=websecure"
+      - "traefik.http.routers.btcpay.tls.certResolver=letsencrypt"
+      - "traefik.http.middlewares.btcpay-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.routers.btcpay.middlewares=btcpay-headers"
+      - "traefik.http.services.btcpay.loadbalancer.server.port=80"
+    environment:
+      BTCPAY_NETWORK: ${BTCPAY_NETWORK}
+      BTCPAY_CHAINS: btc
+      BTCPAY_BTCEXPLORERURL: http://nbxplorer:32838
+      BTCPAY_POSTGRES: User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database=btcpayserver
+      BTCPAY_BIND: 0.0.0.0:49392
+      BTCPAY_EXTERNALURL: https://vault.chrry.dev
+      BTCPAY_SSHCONNECTION: ""
+      BTCPAY_DEBUGLOG: btcpay.log
+      BTCPAY_RATES_EXCHANGERATETYPE: ${BTCPAY_RATES_EXCHANGERATETYPE}
+      BTCPAY_FALLBACKEXCHANGERATEPROVIDER: ${BTCPAY_FALLBACKEXCHANGERATEPROVIDER}
+      BTCPAY_DISABLEEXCHANGES: ${BTCPAY_DISABLEEXCHANGES}
+      BTCPAY_RATES_COINGECKO_CURRENCIES: ${BTCPAY_RATES_COINGECKO_CURRENCIES}
+    ports:
+      - "127.0.0.1:49392:49392"
+    volumes:
+      - btcpay_data:/datadir
+      - btcpay_plugins:/root/.btcpayserver/Plugins
+    depends_on:
+      - postgres
+      - nbxplorer
+    networks:
+      - default
+      - dokploy-network
+
+  # ─────────────────────────────────────────────
+  # 🔍 NBXplorer (Bitcoin Indexer)
+  # ─────────────────────────────────────────────
+  nbxplorer:
+    image: nicolasdorier/nbxplorer:2.5.2
+    container_name: btcpay-nbxplorer
+    restart: unless-stopped
+    entrypoint: ["/bin/sh", "-c", "sleep 20 && exec dotnet NBXplorer.dll"]
+    environment:
+      NBXPLORER_NETWORK: ${BTCPAY_NETWORK}
+      NBXPLORER_CHAINS: btc
+      NBXPLORER_BTCRPCURL: http://bitcoind:43782
+      NBXPLORER_BTCRPCUSER: nbxplorer
+      NBXPLORER_BTCRPCPASSWORD: ${BITCOIN_RPCPASSWORD}
+      NBXPLORER_BTCNODEENDPOINT: bitcoind:39388
+      NBXPLORER_BIND: 0.0.0.0:32838
+      NBXPLORER_POSTGRES: User ID=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Host=postgres;Port=5432;Database=nbxplorer
+      NBXPLORER_NOAUTH: 1
+    volumes:
+      - nbxplorer_data:/datadir
+    depends_on:
+      - postgres
+      - bitcoind
+    ports:
+      - "127.0.0.1:32838:32838"
+
+  # ─────────────────────────────────────────────
+  # 🟠 Bitcoin Core
+  # ─────────────────────────────────────────────
+  bitcoind:
+    image: btcpayserver/bitcoin:26.0
+    container_name: btcpay-bitcoind
+    restart: unless-stopped
+    environment:
+      BITCOIN_NETWORK: ${BTCPAY_NETWORK}
+      BITCOIN_EXTRA_ARGS: |
+        rpcport=43782
+        rpcbind=0.0.0.0:43782
+        rpcallowip=0.0.0.0/0
+        rpcallowip=::/0
+        rpcuser=nbxplorer
+        rpcpassword=${BITCOIN_RPCPASSWORD}
+        port=39388
+        listen=1
+        bind=0.0.0.0
+        whitelist=0.0.0.0/0
+        prune=${BTCNODE_PRUNE}
+        maxmempool=256
+        dbcache=1024
+    volumes:
+      - bitcoin_data:/data
+    expose:
+      - "43782"
+      - "39388"
+
+  # ─────────────────────────────────────────────
+  # 🗄️ BTCPay PostgreSQL
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: btcpay-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_MULTIPLE_DATABASES: btcpay,btcpayserver,nbxplorer
+    volumes:
+      - btcpay_postgres:/var/lib/postgresql/data
+
+volumes:
+  btcpay_data:
+  btcpay_plugins:
+  nbxplorer_data:
+  bitcoin_data:
+  btcpay_postgres:
+
+networks:
+  default:
+    name: btcpay-network
+  dokploy-network:
+    external: true

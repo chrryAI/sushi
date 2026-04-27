@@ -370,7 +370,23 @@ export type taskAnalysis = {
   creditMultiplier: number
   estimatedTokens: number
   confidence: number
-  chopstickPayload?: any
+  chopstickPayload?: {
+    agentName?: string
+    modelId?: string
+    keySource?: "byok" | "app_key" | "system_key" | "free"
+    isDegraded?: boolean
+    tokensIn?: number
+    tokensOut?: number
+    costUsd?: number
+    resolvedAt: string
+    /** Section tracking — visibility into prompt composition */
+    sectionTracking?: {
+      includedSections: string[]
+      excludedSections: string[]
+      droppedSections: string[]
+      systemPromptTokens: number
+    }
+  }
 }
 
 export type modelName =
@@ -447,7 +463,23 @@ export const messages = pgTable(
     metadata: jsonb("metadata")
       .$type<{
         analysis?: taskAnalysis
-        chopstickPayload?: any
+        chopstickPayload?: {
+          agentName?: string
+          modelId?: string
+          keySource?: "byok" | "app_key" | "system_key" | "free"
+          isDegraded?: boolean
+          tokensIn?: number
+          tokensOut?: number
+          costUsd?: number
+          resolvedAt: string
+          /** Section tracking — visibility into prompt composition */
+          sectionTracking?: {
+            includedSections: string[]
+            excludedSections: string[]
+            droppedSections: string[]
+            systemPromptTokens: number
+          }
+        }
       }>()
       .default({}),
     task: text("task", {

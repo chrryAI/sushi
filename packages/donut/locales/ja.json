@@ -2554,5 +2554,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 大量の2Mトークンコンテキストを持つGoogleのフラッグシップAI。全体のコードベース、長いドキュメント、複雑な多段階推論タスクの分析に最適。",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 Anthropicの最も人間らしいAI。微妙な会話、ドキュメント分析、思慮深いライティングに優れています。クリエイティブなプロジェクトや詳細なフィードバックに最適。",
   "Try {{name}} now": "{{name}}を今すぐ試してみてください",
-  "Nothing liked yet": "まだ何も気に入ったものはありません"
+  "Nothing liked yet": "まだ何も気に入ったものはありません",
+  "Top up anytime": "いつでもチャージ €{{price}}"
 }

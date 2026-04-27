@@ -206,9 +206,34 @@ export default function BtcpaySubscribeButton({
           clearInterval(pollingRef.current!)
           pollingRef.current = null
 
-          toast.success(
-            "⚡ " + t("Payment received! Activating subscription..."),
-          )
+          toast.success(`⚡ ${t("Payment received! Verifying...")}`)
+
+          // Verify payment on backend to activate subscription/credits
+          try {
+            const verifyRes = await apiFetch(
+              `${API_URL}/btcpay/verify-payment`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ invoiceId }),
+              },
+            )
+            const verifyData = await verifyRes.json()
+            if (verifyData.success) {
+              toast.success(t("Subscribed"))
+            } else if (verifyData.message === "Already processed") {
+              toast.success(t("Already activated"))
+            } else {
+              toast.error(verifyData.error || t("Verification failed"))
+            }
+          } catch (verifyErr) {
+            console.error("BTCPay verify error:", verifyErr)
+            toast.error(t("Verification request failed"))
+          }
+
           plausible({
             name: ANALYTICS_EVENTS.SUBSCRIBE_PAYMENT_VERIFIED,
           })

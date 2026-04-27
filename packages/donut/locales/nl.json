@@ -2555,5 +2555,6 @@
   "🔮 Google's flagship AI with massive 2M token context. Perfect for analyzing entire codebases, long documents, and complex multi-step reasoning tasks.": "🔮 Google's vlaggenschip AI met een enorme 2M token context. Perfect voor het analyseren van volledige codebases, lange documenten en complexe meerstaps redeneertaken.",
   "🎭 Anthropic's most human-like AI. Exceptional at nuanced conversations, document analysis, and thoughtful writing. Great for creative projects and detailed feedback.": "🎭 Anthropic's meest mensachtige AI. Uitzonderlijk goed in genuanceerde gesprekken, documentanalyse en doordacht schrijven. Geweldig voor creatieve projecten en gedetailleerde feedback.",
   "Try {{name}} now": "Probeer {{name}} nu",
-  "Nothing liked yet": "Nog niets leuk gevonden"
+  "Nothing liked yet": "Nog niets leuk gevonden",
+  "Top up anytime": "Op elk moment opwaarderen €{{price}}"
 }

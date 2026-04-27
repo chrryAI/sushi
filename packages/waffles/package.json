@@ -1,7 +1,10 @@
 {
   "name": "@chrryai/waffles",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -14,9 +17,6 @@
       "require": "./dist/test-utils.cjs"
     }
   },
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsup",
     "dev": "vp dev run --port 3000",

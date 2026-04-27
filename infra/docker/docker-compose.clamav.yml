@@ -1,0 +1,39 @@
+services:
+  malware-scanner:
+    build:
+      context: ../malwareScanner
+      dockerfile: Dockerfile
+    container_name: vex-clamav
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=production
+      - PORT=3006
+      - CLAMD_SOCKET=/var/run/clamav/clamd.ctl
+    volumes:
+      # Persist virus signatures
+      - clamav-db:/var/lib/clamav
+      - clamav-log:/var/log/clamav
+      - clamav-run:/var/run/clamav
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "3006"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - vex-network
+    restart: unless-stopped
+
+volumes:
+  clamav-db:
+    driver: local
+  clamav-log:
+    driver: local
+  clamav-run:
+    driver: local
+
+networks:
+  vex-network:
+    external: true
+    name: vex-network

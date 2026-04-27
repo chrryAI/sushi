@@ -335,13 +335,16 @@ export default function Skeleton({
                   >
                     <CharacterProfiles />
 
-                    {auth?.isDevelopment && (
-                      <Suspense fallback={null}>
-                        <Subscribe />
-                      </Suspense>
-                    )}
+                    <Suspense fallback={null}>
+                      <Subscribe />
+                    </Suspense>
 
-                    <SignIn showSignIn={false} />
+                    <SignIn
+                      style={{
+                        display: isMobileDevice ? "none" : undefined,
+                      }}
+                      showSignIn={false}
+                    />
 
                     <LanguageSwitcher />
                   </Div>

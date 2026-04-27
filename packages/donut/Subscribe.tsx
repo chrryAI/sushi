@@ -37,7 +37,22 @@ import { Button, Div, Input, P, Span, usePlatform, useTheme } from "./platform"
 import { MotiView } from "./platform/MotiView"
 import { useSubscribeStyles } from "./Subscribe.styles"
 import type { subscription, user } from "./types"
-import { apiFetch, capitalizeFirstLetter } from "./utils"
+import {
+  AGENCY_PRICE,
+  ARCHITECT_PRICE,
+  apiFetch,
+  CODER_PRICE,
+  CREDITS_PRICE,
+  capitalizeFirstLetter,
+  FREE_DAYS,
+  GRAPE_PLUS_PRICE,
+  GRAPE_PRO_PRICE,
+  PEAR_PLUS_PRICE,
+  PEAR_PRO_PRICE,
+  PLUS_PRICE,
+  PRO_PRICE,
+  SOVEREIGN_PRICE,
+} from "./utils"
 import { ANALYTICS_EVENTS } from "./utils/analyticsEvents"
 import { getFeatures } from "./utils/subscription"
 
@@ -112,7 +127,6 @@ export default function Subscribe({
     API_URL,
     FRONTEND_URL,
     ADDITIONAL_CREDITS,
-    CREDITS_PRICE,
     FREE_DAYS,
     PLUS_PRICE,
     PRO_PRICE,
@@ -604,7 +618,43 @@ export default function Subscribe({
           data.invoice?.status === "Processing"
         ) {
           clearInterval(interval)
-          toast.success("⚡ Payment received! Activating subscription...")
+          toast.success("⚡ Payment received! Verifying...")
+
+          // Verify payment on backend to activate subscription
+          try {
+            const verifyRes = await apiFetch(
+              `${API_URL}/btcpay/verify-payment`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ invoiceId }),
+              },
+            )
+            const verifyData = await verifyRes.json()
+            if (verifyData.success) {
+              toast.success(
+                verifyData.gift
+                  ? t("🥰 Thank you for your gift")
+                  : t("Subscribed"),
+              )
+              plausible({ name: ANALYTICS_EVENTS.SUBSCRIBE_PAYMENT_VERIFIED })
+            } else if (verifyData.message === "Already processed") {
+              toast.success(t("Already activated"))
+            } else {
+              toast.error(
+                verifyData.error
+                  ? `${verifyData.error}${verifyData.status ? ` (${verifyData.status})` : ""}`
+                  : t("Verification failed"),
+              )
+            }
+          } catch (verifyErr) {
+            console.error("BTCPay verify error:", verifyErr)
+            toast.error(t("Verification request failed"))
+          }
+
           await fetchSession()
           setBtcpayInvoice(null)
           setIsModalOpen(false)
@@ -876,7 +926,7 @@ export default function Subscribe({
                 ) : (
                   <>
                     <CircleArrowUp size={20} />
-                    {t("Upgrade for", {
+                    {t("Enroll", {
                       price: PRO_PRICE,
                     })}
                   </>
@@ -910,21 +960,36 @@ export default function Subscribe({
                         ₿
                       </span>
                       <Span>
-                        {["credits", "molt", "tribe"].includes(selectedPlan)
-                          ? cta || "Pay with Bitcoin"
-                          : selectedPlan === "grape"
-                            ? `Pay €${grapeTier === "plus" ? "50" : "500"}/mo`
-                            : selectedPlan === "pear"
-                              ? `Pay €${pearTier === "plus" ? "50" : "500"}/mo`
-                              : selectedPlan === "coder"
-                                ? `Pay €${sushiTier === "coder" ? "50" : "500"}/mo`
-                                : selectedPlan === "watermelon"
-                                  ? `Pay €${watermelonTier === "standard" ? "1,000" : "5,000"}/mo`
-                                  : selectedPlan === "plus"
-                                    ? `Pay €${PLUS_PRICE}/mo`
-                                    : selectedPlan === "pro"
-                                      ? `Pay €${PRO_PRICE}/mo`
-                                      : "Pay with Bitcoin"}
+                        {t(
+                          ["credits"].includes(selectedPlan)
+                            ? "credits_pricing"
+                            : "Top up anytime",
+                          {
+                            price:
+                              selectedPlan === "grape"
+                                ? grapeTier === "plus"
+                                  ? GRAPE_PLUS_PRICE
+                                  : GRAPE_PRO_PRICE
+                                : selectedPlan === "pear"
+                                  ? pearTier === "plus"
+                                    ? PEAR_PLUS_PRICE
+                                    : PEAR_PRO_PRICE
+                                  : selectedPlan === "coder"
+                                    ? sushiTier === "coder"
+                                      ? CODER_PRICE
+                                      : ARCHITECT_PRICE
+                                    : selectedPlan === "watermelon"
+                                      ? watermelonTier === "standard"
+                                        ? "1,000"
+                                        : "5,000"
+                                      : selectedPlan === "plus"
+                                        ? PLUS_PRICE
+                                        : selectedPlan === "pro"
+                                          ? PRO_PRICE
+                                          : CREDITS_PRICE,
+                            credits: 500,
+                          },
+                        )}
                       </Span>
                     </>
                   )}

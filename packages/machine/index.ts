@@ -67,6 +67,15 @@ import {
 } from "./src/ai/sushi/aiProvider"
 
 export * from "./src/ai/sushi/aiProvider"
+export {
+  type CacheStats,
+  countTokens,
+  generateCacheKey,
+  type OptimizeResult,
+  TokenOptimizerLayer,
+  TokenOptimizerTag,
+  tokenOptimizerUtils,
+} from "./src/ai/sushi/tokenOptimizer"
 
 import { MODEL_LIMITS, type ModelProviderResult } from "./src/ai/vault"
 // import { createStores } from "./src/dna/createStores"
@@ -97,7 +106,6 @@ import {
   type apiKeys,
   appCampaigns,
   appExtends,
-  appOrders,
   apps,
   authExchangeCodes,
   autonomousBids,
@@ -397,9 +405,6 @@ export type newSonarMetric = typeof sonarMetrics.$inferInsert
 
 export type feedbackTransaction = typeof feedbackTransactions.$inferSelect
 export type newFeedbackTransaction = typeof feedbackTransactions.$inferInsert
-
-export type appOrder = typeof appOrders.$inferSelect
-export type newAppOrder = typeof appOrders.$inferInsert
 
 export type appExtend = typeof appExtends.$inferSelect
 export type newAppExtend = typeof appExtends.$inferInsert
@@ -5078,20 +5083,10 @@ export const getApps = async (
     .select({
       app: apps,
       store: stores,
-      appOrder: appOrders,
       storeInstall: storeInstalls,
     })
     .from(apps)
     .innerJoin(stores, eq(apps.storeId, stores.id))
-    .leftJoin(
-      appOrders,
-      and(
-        eq(appOrders.appId, apps.id),
-        storeId ? eq(appOrders.storeId, storeId) : undefined,
-        userId ? eq(appOrders.userId, userId) : undefined,
-        guestId ? eq(appOrders.guestId, guestId) : undefined,
-      ),
-    )
     .leftJoin(
       storeInstalls,
       and(
@@ -5112,7 +5107,6 @@ export const getApps = async (
       // 2. Chrry second
       desc(sql`CASE WHEN ${apps.slug} = 'chrry' THEN 1 ELSE 0 END`),
       // 3. Custom app order (0, 1, 2, 3...), nulls last
-      sql`${appOrders.order} ASC NULLS LAST`,
       // 4. Store install display order (0, 1, 2, 3...), nulls last
       sql`${storeInstalls.displayOrder} ASC NULLS LAST`,
       // 5. Creation date for apps without custom order
@@ -6204,84 +6198,6 @@ export async function deleteAppExtend({ appId }: { appId: string }) {
     .delete(appExtends)
     .where(eq(appExtends.appId, appId))
     .returning()
-  return deleted
-}
-
-export async function createAppOrder(data: newAppOrder) {
-  const [result] = await db.insert(appOrders).values(data).returning()
-  return result
-}
-
-export async function getAppOrders({
-  storeId,
-  userId,
-  guestId,
-}: {
-  storeId?: string
-  userId?: string
-  guestId?: string
-}) {
-  const conditions = []
-  if (storeId) conditions.push(eq(appOrders.storeId, storeId))
-  if (userId) conditions.push(eq(appOrders.userId, userId))
-  if (guestId) conditions.push(eq(appOrders.guestId, guestId))
-
-  const result = await db
-    .select()
-    .from(appOrders)
-    .innerJoin(apps, eq(appOrders.appId, apps.id))
-    .where(and(...conditions))
-    .orderBy(appOrders.order)
-
-  return result.map((r) => ({
-    ...r.app,
-    order: r.appOrders.order,
-    items: r.appOrders,
-  }))
-}
-
-export async function updateAppOrder({
-  appId,
-  storeId,
-  userId,
-  guestId,
-  order,
-}: appOrder) {
-  const conditions = [eq(appOrders.appId, appId)]
-  if (storeId) conditions.push(eq(appOrders.storeId, storeId))
-  if (userId) conditions.push(eq(appOrders.userId, userId))
-  if (guestId) conditions.push(eq(appOrders.guestId, guestId))
-
-  const [updated] = await db
-    .update(appOrders)
-    .set({ order, updatedOn: new Date() })
-    .where(and(...conditions))
-    .returning()
-
-  return updated
-}
-
-export async function deleteAppOrder({
-  appId,
-  storeId,
-  userId,
-  guestId,
-}: {
-  appId: string
-  storeId?: string
-  userId?: string
-  guestId?: string
-}) {
-  const conditions = [eq(appOrders.appId, appId)]
-  if (storeId) conditions.push(eq(appOrders.storeId, storeId))
-  if (userId) conditions.push(eq(appOrders.userId, userId))
-  if (guestId) conditions.push(eq(appOrders.guestId, guestId))
-
-  const [deleted] = await db
-    .delete(appOrders)
-    .where(and(...conditions))
-    .returning()
-
   return deleted
 }
 

@@ -134,7 +134,7 @@ app.post("/v1/messages", async (c) => {
     "Content-Type": "application/json",
   }
   if (API_KEY) {
-    headers["Authorization"] = `Bearer ${API_KEY}`
+    headers.Authorization = `Bearer ${API_KEY}`
   }
 
   // ── Streaming ──────────────────────────────────────────────
@@ -215,7 +215,7 @@ app.post("/v1/messages", async (c) => {
 
           for (const line of lines) {
             const trimmed = line.trim()
-            if (!trimmed || !trimmed.startsWith("data: ")) continue
+            if (!trimmed?.startsWith("data: ")) continue
 
             const dataStr = trimmed.slice(6)
             if (dataStr === "[DONE]") continue

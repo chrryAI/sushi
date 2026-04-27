@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: vex-falkordb
+    ports:
+      - "6379:6379" # Redis port
+      - "3000:3000" # Browser UI (optional)
+    volumes:
+      - ../../falkordb_data:/var/lib/falkordb/data
+    restart: unless-stopped
+    networks:
+      - vex-network
+
+volumes:
+  falkordb_data:
+
+networks:
+  vex-network:
+    external: true # Join the existing vex network if possible, or create new
+    driver: bridge

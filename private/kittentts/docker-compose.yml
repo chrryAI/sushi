@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  kittentts:
+    build: .
+    container_name: kittentts
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=KittenML/kitten-tts-nano-0.8
+    volumes:
+      - kittentts-cache:/cache/huggingface
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  kittentts-cache:
