@@ -61,6 +61,7 @@ rm -rf \
 echo "🗑️  Removing private infrastructure..."
 rm -rf \
   infra \
+  private \
   .hetzner \
   .vps
 

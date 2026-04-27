@@ -49,8 +49,8 @@ services:
   # 🔍 NBXplorer (Bitcoin Indexer)
   # ─────────────────────────────────────────────
   nbxplorer:
-    image: nicolasdorier/nbxplorer:2.5.2
-    container_name: btcpay-nbxplorer
+    image: nicolasdorier/nbxplorer:2.6.13
+    # container_name: btcpay-nbxplorer
     restart: unless-stopped
     entrypoint: ["/bin/sh", "-c", "sleep 20 && exec dotnet NBXplorer.dll"]
     environment:
