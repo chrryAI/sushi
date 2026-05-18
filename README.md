@@ -1,5 +1,7 @@
-🍣.🍒.ai
+# 🍣 Sushi
 
-bye github.
+Source code is open.
 
-https://git.chrry.ai/chrry/sushi 👈
+Subscribe to a Watermelon 🍉 plan: [watermelon.chrry.ai/?subscribe=true&plan=watermelon](https://chrry.ai/?subscribe=true&plan=watermelon)
+
+Questions? Reach us at **sushi@chrry.ai**
